@@ -1,0 +1,11 @@
+#test webserver files
+mongoose*
+
+#python script generated log
+tools/python_script.log
+
+#vscode launch configs
+.vscode
+
+#python-related
+__pycache__
