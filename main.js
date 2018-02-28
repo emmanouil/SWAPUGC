@@ -58,7 +58,7 @@ function init() {
 	main_view.src = window.URL.createObjectURL(mediaSource);
 
 	//fetch playlist and parse elements (IDs) in 'playlist' array
-	fetch_promise('/' + PLAYLIST_FILE, 'no-type', true)
+	fetch_promise(PLAYLIST_FILE, 'no-type', true)
 		.then(
 			//then fetch the descriptor jsons and build the globalSetIndex[]
 			function (response, mpd) {

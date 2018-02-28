@@ -56,12 +56,13 @@ File `parser_single_file` located inside the `tool` dir will generate files, fro
 
 
 =====
+
 ### Platform-specific data used
 
 #### Global Pairs Holder
 global variable name: ```globalSetIndex```
 decription: an Array of recordings - the Location/Sensor Pair Objects of each recording are stored in the ```set``` field)
-```JSON
+```javascript
     {
         id: "1234567_12345"
         index: 0
@@ -100,8 +101,9 @@ decription: An Object holding Orientation and Location information for a POI
     }
 ```
 
-=====
 
 Links:
- * [contact](https://emmanouil.wp.imt.fr/contact/) 
- * [GPAC](www.gpac.io)
+======
+
+ * [contact](https://emmanouil.wp.imt.fr/contact/) @emmanouil
+ * [GPAC](www.gpac.io) @gpac
