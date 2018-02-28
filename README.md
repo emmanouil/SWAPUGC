@@ -100,7 +100,6 @@ decription: An Object holding Orientation and Location information for a POI
     }
 ```
 
-
 =====
 
 Links:
