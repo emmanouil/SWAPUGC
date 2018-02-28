@@ -2,6 +2,14 @@
 
 SWAPUGC: **S**oft**w**are for **A**daptive **P**layback of Geotagged **U**ser-**G**enerated **C**ontent
 
+Contents:
+[About](##about)
+[Architecture Flow](##architecture-flow-of-the-client)
+[Demo](#demo)
+[Generate/Record Compatible Files](##Generate-Compatible-Files)
+[Links/Contact](##links)
+
+
 ## About
 
 This repository contains a browser-based platoform for viewing content recorder with spatiotemporal information.
@@ -25,8 +33,8 @@ When the client is launched it does the following, in the corresponding order:
 
 
 ## Demo
+An online demo is available at https://emmanouil.github.io/SWAPUGC/
 To run a local demo, start a server on the top dir and navigate to `index.html`
-
 
 ## Generate Compatible Files
 
@@ -54,8 +62,6 @@ File `parser_single_file` located inside the `tool` dir will generate files, fro
 2. _NAMEOFFILE_`_ORIENT.json`, containg the timestamped orientation samples of the recording
 3. _NAMEOFFILE_`_LOC.json`, containg the timestamped location samples of the recording
 
-
-=====
 
 ### Platform-specific data used
 
@@ -102,8 +108,7 @@ decription: An Object holding Orientation and Location information for a POI
 ```
 
 
-Links:
-======
+##Links:
 
- * [contact](https://emmanouil.wp.imt.fr/contact/) @emmanouil
- * [GPAC](www.gpac.io) @gpac
+ * [contact](https://emmanouil.wp.imt.fr/contact/) , on github @emmanouil
+ * [GPAC](https://www.gpac.io) , on github @gpac
