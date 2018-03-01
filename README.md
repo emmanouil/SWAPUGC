@@ -1,13 +1,13 @@
 # SWAPUGC
 
-SWAPUGC: **S**oft**w**are for **A**daptive **P**layback of Geotagged **U**ser-**G**enerated **C**ontent
+**SWAPUGC**: **S**oft**w**are for **A**daptive **P**layback of Geotagged **U**ser-**G**enerated **C**ontent
 
-Contents:
-[About](##about)
-[Architecture Flow](##architecture-flow-of-the-client)
-[Demo](#demo)
-[Generate/Record Compatible Files](##Generate-Compatible-Files)
-[Links/Contact](##links)
+GoTo:  
+[About](##about)   
+[Architecture Flow](##architecture-flow-of-the-client)   
+[Demo](#demo)   
+[Generate/Record Compatible Files](##Generate-Compatible-Files)   
+[Links/Contact](##links)   
 
 
 ## About
