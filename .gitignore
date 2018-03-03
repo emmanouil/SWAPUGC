@@ -9,3 +9,6 @@ tools/python_script.log
 
 #python-related
 __pycache__
+
+#test files
+player.js

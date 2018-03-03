@@ -7,7 +7,7 @@ html, body {
 
 
 #map {
-	height: 50%;
+	height: 35%;
 	width: 640px;
 	z-index: 53;
 	margin-left:auto;

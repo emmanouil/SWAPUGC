@@ -16,7 +16,6 @@ MPD.prototype = {
         return this.document;
     },
     set fullDocument(document) {
-        console.log(document);
         this.document = document;
     },
     get initSegment() {
@@ -57,8 +56,9 @@ function mpd_getRepresentationNodeByID(mpd_in, r_id) {
     for (var i = 0; i < tmp_reps.length; i++) {
         tmp_rep = tmp_reps[i];
         if (tmp_rep.getAttribute("id") === r_id.toString()) {
-            console.log("representation found")
             return tmp_rep
+        }else{
+            logERR("could not find representation with ID "+r_id);
         }
     }
     return null;
