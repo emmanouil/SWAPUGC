@@ -2,12 +2,13 @@
 
 **SWAPUGC**: **S**oft**w**are for **A**daptive **P**layback of Geotagged **U**ser-**G**enerated **C**ontent
 
-GoTo:  
-[About](##about)   
-[Architecture Flow](##architecture-flow-of-the-client)   
-[Demo](#demo)   
-[Generate/Record Compatible Files](##Generate-Compatible-Files)   
-[Links/Contact](##links)   
+GoTo:
+[About](##about)
+[Architecture Flow](##architecture-flow-of-the-client)
+[Demo](#demo)
+[Generate/Record Compatible Files](##Generate-Compatible-Files)
+[Known Issues](##Known-Issues)
+[Links/Contact](##links)
 
 
 ## About
@@ -16,7 +17,9 @@ This repository contains a browser-based platoform for viewing content recorder 
 
 The client is a modified version of the client used for the _"Extended Video Streams for Spatiotemporal Video Navigation"_, presented at The Graphical Web 2016 ([slides](https://emmanouil.wp.imt.fr/files/2017/03/Extended-Video-Streams-for-Spatiotemporal-Navigation.pdf) [video](https://www.youtube.com/watch?v=iUhGZV9SSiM)), part of the project _"Streaming And Presentation Architectures for Extended Video Streams"_ ([short-paper](https://www.researchgate.net/publication/317593679_Streaming_and_Presentation_Architectures_for_Extended_Video_Streams)) showcased at the TVX '17.
 
+
 ## Architecture flow of the client
+
 When the client is launched it does the following, in the corresponding order:
 1. Load items from the _playlist.txt_, containing the _NAMEOFFILE_ of relevant recordings. And then, for each _NAMEOFFILE_ entry:
     1. Construct `globalSetIndex` where all the information/data on the recordings is placed
@@ -31,8 +34,8 @@ When the client is launched it does the following, in the corresponding order:
 6. Adjust MSE accordingly
 
 
-
 ## Demo
+
 An online demo is available at https://emmanouil.github.io/SWAPUGC/
 To run a local demo, start a server on the top dir and navigate to `index.html`
 
@@ -42,11 +45,16 @@ To run a local demo, start a server on the top dir and navigate to `index.html`
 
 A compatible UGC recorder Android application that can be used, is available [here](https://github.com/emmanouil/Spatiotemporal-Navigation-Recorder)
 
-### Generate DASH-compatible Segmented Video Files
+### Generate DASH-compatible Segmented Video Files [1]
 
 For the demo we used MP4Box of the [GPAC](gpac.io) suite, but other tools (like ffmpeg) should work.
-With MP4Box, an example command to generate 2s-long segments would be: 
+With MP4Box, an example command to generate 2s-long segments would be [2]: 
 `MP4Box -frag 2000 -dash 2000 -segment-name file_out_seg_ file_in.mp4`
+
+
+NOTE: MP4Box does _not_ do any transcoding on the media files. For that, we used ffmpeg. An example command for encoding a video in x264 (audio aac) with framerate = 30 fps and GOP size of 30 frames at 2Mbps bitrate, scaled with height = 1080px would be :
+`ffmpeg.exe -i 20140325_121238.webm -r 30 -preset slow -vf scale=-1:1080 -c:v libx264 -b:v 2000k -movflags +faststart -sc_threshold 0 -keyint_min 30 -g 30 -c:a aac 20140325_121238.mp4`
+
 
 ### Format XML sensor data (compatible with ICoSOLE dataset)
 
@@ -108,7 +116,15 @@ decription: An Object holding Orientation and Location information for a POI
 ```
 
 
-##Links:
+## Known Issues
 
+[1] MP4Box does not play nice when generating the mpd of the files. More specifically, the "mimeType" and "codec" of the mpd's are *extremely* unreliable. It is recommendaded to completely delete the "codecs" attributed and change mimeType="video/mp4"
+
+[2] Even though in the official blog of GPAC recommends using the "-rap" option when creating files for dash using MP4Box, I strongly suggest to ommit it, since it can misalign the timing of the MSE
+
+If an issue is not mentioned here, you can either contact [us](##links), or submit a [New Issue](https://github.com/emmanouil/SWAPUGC/issues)
+
+
+## Links:
  * [contact](https://emmanouil.wp.imt.fr/contact/) , on github @emmanouil
  * [GPAC](https://www.gpac.io) , on github @gpac
