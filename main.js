@@ -1,6 +1,9 @@
 "use strict";
 //var globalSetIndex = [];	//in helper.js holds EVERYTHING parsed
 //var map;	//in maps.js holds MAP
+//temporary vars used for testing purposes
+var last_fetched_seg_n = -1;
+var last_fetched_index = -1;
 
 /**
  * Playlist & File Parameters
@@ -25,9 +28,9 @@ var PORT = '8000'
 var BASE_URL = '';	//set when parse_playlist is called (e.g. 192.0.0.1:8000)
 
 //pseudo-simulation parameters
-const INTERVAL_MS = 1200;	//check interval (in ms)
+const INTERVAL_MS = 900;	//check interval (in ms)
 var interval_id = -1;	//timeout id
-const UPDATE_S = 1;	//condition (in s) to fetch next segment, relative to the current video time and end of the sourceBuffer
+const UPDATE_S = 1.7;	//condition (in s) to fetch next segment, relative to the current video time and end of the sourceBuffer
 const MARKER_UPDATE_LIMIT_ON = true;	//enable cue timespan limit
 const MARKER_UPDATE_LIMIT = 500;	// (in ms) limit the timespan between two updates for the same marker (i.e. number of cues)
 const MARKER_LIMIT_BEHAVIOUR = 'discard';	//'discard' or 'average' - not implemented TODO
@@ -81,7 +84,6 @@ function init() {
 						}
 						Promise.all(promises)
 							.then(function (values) {
-								console.log(values);
 								for (var i = 0; i < values.length; i++) {
 									if (values[i].status === 200) {
 										for (var j = 0; j < globalSetIndex.length; j++) {
@@ -132,7 +134,7 @@ function init() {
 			}).then(function (response) {
 				//we currently do not do anything after parsing playlist, prior to mpds
 				//TODO delete this block if not needed
-			}).catch(function (err) { logWARN('Failed promise - Error log: '); console.log(err); });
+			}).catch(function (err) { logWARN('Failed promise - Error log: '); logERR(err); });
 	main_view.addEventListener("playing", function () { interval_id = setInterval(check_status, INTERVAL_MS); }, { once: true });
 }
 
@@ -171,7 +173,7 @@ function check_status() {
 
 	//first we check if the video is rolling //TODO later, add support for updating buffer *and* switching videos at paused state
 	if (main_view.paused) {
-		console.log('main view paused')
+		logDEBUG('check_status called with main view paused - skipping check');
 		return;
 	}
 
@@ -183,14 +185,23 @@ function check_status() {
 
 	let end_time = getSourceBufferEnd();
 
-	//is there "enough" video in the buffer?
-	if (end_time - main_view.currentTime > UPDATE_S || getSourceBufferTimeRangeNumber == 0) {
+	if (getSourceBufferTimeRangeNumber() > 2) {
+		logDEBUG('sourceBuffer contains more than 2 time ranges. cleaning up contents...')
+		resetSourceBuffer();
+		return;
+	} else if (end_time - main_view.currentTime > UPDATE_S || getSourceBufferTimeRangeNumber == 0) {
 		return;
 	}
 
 	let seg_n = mpd_getSegmentIndexAtTime(globalSetIndex[active_video_index].mpd.representations[0], end_time - globalSetIndex[active_video_index].descriptor.tDiffwReferenceMs / 1000);
 	seg_n++;	//in this case we need the next segment
 
+	if (seg_n == last_fetched_seg_n && active_video_index == active_video_index) {
+		logWARN('previously fetched seg had same number, incrementing by 1');
+		seg_n++;
+	}
+	last_fetched_seg_n = seg_n;
+	last_fetched_index = active_video_index;
 	fetch_res(DASH_DIR + '/' + globalSetIndex[active_video_index].mpd.representations[0].SegmentList.Segments[seg_n], addSegment, "arraybuffer");
 
 }
@@ -244,9 +255,8 @@ function setMainViewStartTime() {
 	fetch_promise(DASH_DIR + '/' + globalSetIndex[0].mpd.representations[0].SegmentList.Segments[index], "arraybuffer", false)
 		.then(function (response) {
 			addSegment(response);
-			console.log(main_view.ms.readyState);
 			main_view.currentTime = main_view_startTime = reference_start_time = (tmp_time / 1000);	//in seconds
-		}).catch(function (err) { logWARN('Failed promise - Error log: '); console.log(err); });
+		}).catch(function (err) { logWARN('Failed promise - Error log: '); logERR(err); });
 
 }
 
@@ -273,7 +283,7 @@ function loadAssets(type, Xreq_target) {
 					logERR('type ' + type + ' not recognized');
 					break;
 			}
-			console.log('found coord set for ' + tmp_name);
+			logDEBUG('found coord set for ' + tmp_name);
 			return;
 		}
 	}
@@ -352,7 +362,6 @@ function addMarkerUpdates(set_in, tmp_index) {
 
 	}
 	*/
-	console.log(tmp_track)
 }
 
 //called when the play button is pressed
@@ -370,9 +379,15 @@ function switchToStream(set_index, recordingID) {
 	}
 
 	let new_set = getSetByVideoId(recordingID);
-	let old_set = getSetByVideoId(active_video_id);
-	let end_time = getSourceBufferEnd();
-
+	let end_time = main_view.currentTime;
+	/*
+		let end_time = getSourceBufferEnd();
+	
+		if(Math.abs(end_time - main_view.currentTime) < 0.2){
+			logDEBUG('safety check for time diff between buffer and video end');
+			end_time -= 0.2;
+		}
+	*/
 	active_video_id = recordingID;
 	active_video_index = set_index;
 
@@ -386,6 +401,8 @@ function switchToStream(set_index, recordingID) {
 function resetSourceBuffer() {
 	logINFO('resetting sourceBuffer');
 	killInterval();
+	last_fetched_index = -1;
+	last_fetched_seg_n = -1;
 	for (let i = sourceBuffer.buffered.length - 1; i >= 0; i--) {
 		if (sourceBuffer.updating) {
 			sourceBuffer.addEventListener('updateend', function () {
@@ -404,6 +421,10 @@ function resetSourceBuffer() {
 	} else {
 		mse_initAndAdd(active_video_index, seg_n);
 	}
+	//TODO workaround because Chrome does not auto-play (nor auto-pauses) after reset
+	if (navigator.userAgent.indexOf("Chrome") != -1) {
+		main_view.currentTime += 0.001;
+	}
 	startInterval();
 }
 
@@ -415,7 +436,6 @@ function addOption(file_id) {
 }
 
 function mse_initAndAdd(stream_index, segment_n) {
-	console.log("CLICKED BETA FUNCTION + " + segment_n);
 	fetch_promise(DASH_DIR + '/' + globalSetIndex[stream_index].mpd.init_seg, "arraybuffer", false)
 		.then(function (response) {
 			addSegment(response);
@@ -445,6 +465,8 @@ function startInterval() {
 function resetInterval() {
 	killInterval();
 	startInterval();
+}
+
 
 function printBufferStatus() {
 	console.log('Current video time: ' + main_view.currentTime);
