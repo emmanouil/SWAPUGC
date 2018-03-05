@@ -21,6 +21,18 @@ function onSourceOpen(mime_codec) {
     sourceBuffer = mediaSource.addSourceBuffer(mime_codec);
     sourceBuffer.ms = mediaSource;
 
+    sourceBuffer.addEventListener('onerror', function (e) {
+        logERR('Error on sourceBuffer');
+        logERR(e);
+    }, { once: false });
+
+
+    sourceBuffer.addEventListener('onabort', function (e) {
+        logWARN('Abort ofsourceBuffer');
+        logWARN(e);
+    }, { once: false });
+
+
     //We also add the init element
     if (sourceBuffer.updating) {
         sourceBuffer.addEventListener('updateend', function () {

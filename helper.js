@@ -1,7 +1,7 @@
 "use strict";
 var globalSetIndex = [];
 const SHOW_DEBUG = true;
-const LOG_LVL = 0; //0: all, 1: INFO, 2: WARN, 3: ERR, 4: NONE
+const LOG_LVL = 3; //0: all, 1: INFO, 2: WARN, 3: ERR, 4: NONE
 
 function logERR(msg) {
     if (LOG_LVL > 3) return;
