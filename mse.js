@@ -45,9 +45,12 @@ function onSourceOpen(mime_codec) {
 
 //Append the initialization segment.
 function addSegment(seg_in) {
+    if (sourceBuffer.updating) {
+        logWARN('sourceBuffer was updating when addSegment was called');
+    }
     if (seg_in == null) {
         // Error fetching the initialization segment. Signal end of stream with an error.
-        console.log("[ERROR] endofstream?")
+        logERR("[ERROR] endofstream?")
         mediaSource.endOfStream("network");
         return;
     }
@@ -58,7 +61,7 @@ function addSegment(seg_in) {
 }
 
 //Returns the number of TimeRage objects of the SourceBuffer
-function getSourceBufferTimeRangeNumber(){
+function getSourceBufferTimeRangeNumber() {
     return sourceBuffer.buffered.length;
 }
 
@@ -68,15 +71,15 @@ function getSourceBufferEnd() {
         logWARN("SourceBuffer is empty (contains no TimeRanges");
         return -1;
     } else if (sourceBuffer.buffered.length > 1) {
-        logWARN("SourceBuffer contains multiple TimeRanges - returning the end of the first one");
+        logWARN("SourceBuffer contains multiple TimeRanges - returning the end of the last one");
     }
-    return sourceBuffer.buffered.end(0);
+    return sourceBuffer.buffered.end(sourceBuffer.buffered.length - 1);
 }
 
 //Get/set timestamp offset for sourcebuffer
-function getTimeStampOffset(){
+function getTimeStampOffset() {
     return sourceBuffer.timestampOffset;
 }
-function setTimeStampOffset(t_in){
+function setTimeStampOffset(t_in) {
     sourceBuffer.timestampOffset = t_in;
 }
