@@ -53,7 +53,7 @@ html, body {
 #body_div{
 	height: 768px;
 	width: 1280px;
-	margin:auto;
+	margin: auto;
 	display: grid;
 	grid-template-columns: 310px 640px 310px;
 	grid-template-rows: 768px;
@@ -67,8 +67,8 @@ html, body {
 	height: 100%;
 	width: 310px;
 	z-index: 80;
-	margin-left:none;
-	margin-right:none;
+	margin-left: none;
+	margin-right: none;
 	background-color: rgb(220, 250, 220);
 }
 
@@ -78,8 +78,8 @@ html, body {
 	width: 640px;
 	top: auto;
 	/* text-align: center; */
-	margin-left:auto;
-	margin-right:auto;
+	margin-left: auto;
+	margin-right: auto;
 }
 
 #d_rep {
@@ -88,8 +88,8 @@ html, body {
 	height: 100%;
 	width: 310px;
 	z-index: 80;
-	margin-left:none;
-	margin-right:none;
+	margin-left: none;
+	margin-right: none;
 	background-color: rgb(220, 250, 220);
 }
 
@@ -97,19 +97,19 @@ html, body {
 	height: 320px;
 	width: 640px;
 	z-index: 53;
-	margin-left:auto;
-	margin-right:auto;
+	margin-left: auto;
+	margin-right: auto;
 	margin-bottom: 3px;
 }
 
 #user-svg{
 	visibility: hidden;
-	position:absolute;
+	position: absolute;
 	z-index: 55;
 	margin: 0;
 	padding: 0;
 	top: 50%;
-	left:50%;
+	left: 50%;
 	transform: translateY(-32px) translateX(-16px);
 }
 
@@ -117,8 +117,8 @@ html, body {
 	width: 640px;
 	top: auto;
 	/* text-align: center; */
-	margin-left:auto;
-	margin-right:auto;
+	margin-left: auto;
+	margin-right: auto;
 }
 
 #menu{
