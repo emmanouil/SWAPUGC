@@ -1,10 +1,97 @@
 html, body {
-	height: 100%;
-	width: 100%;
-	margin: 0;
+	height: auto;
+	width: 1280px;
+	margin: auto;
 /*	background-color: rgb(220, 250, 220)*/
 }
 
+@font-face{
+	font-family: "Roboto";
+	src: url("fonts/Roboto/Roboto-Regular.ttf");
+}
+
+@font-face{
+	font-family: "Roboto";
+	src: url("fonts/Roboto/Roboto-Bold.ttf");
+	font-weight: bold;
+}
+
+@font-face{
+	font-family: "Roboto";
+	src: url("fonts/Roboto/Roboto-Light.ttf");
+	font-weight: lighter;
+}
+
+@font-face{
+	font-family: "Roboto";
+	src: url("fonts/Roboto/Roboto-Italic.ttf");
+	font-style: italic;
+}
+@font-face{
+	font-family: "Raleway";
+	src: url("fonts/Raleway/Raleway-Regular.ttf");
+}
+
+@font-face{
+	font-family: "Raleway";
+	src: url("fonts/Raleway/Raleway-Bold.ttf");
+	font-weight: bold;
+}
+
+@font-face{
+	font-family: "Raleway";
+	src: url("fonts/Raleway/Raleway-Light.ttf");
+	font-weight: lighter;
+}
+
+@font-face{
+	font-family: "Raleway";
+	src: url("fonts/Raleway/Raleway-Italic.ttf");
+	font-style: italic;
+}
+
+#body_div{
+	height: 768px;
+	width: 1280px;
+	margin:auto;
+	display: grid;
+	grid-template-columns: 310px 640px 310px;
+	grid-template-rows: 768px;
+	grid-gap: 10px;
+	grid-auto-rows: 1fr;
+}
+
+#d_view {
+	grid-column: 1;
+	grid-row: 1;
+	height: 100%;
+	width: 310px;
+	z-index: 80;
+	margin-left:none;
+	margin-right:none;
+	background-color: rgb(220, 250, 220);
+}
+
+#container{
+	grid-column: 2;
+	grid-row: 1;
+	width: 640px;
+	top: auto;
+	/* text-align: center; */
+	margin-left:auto;
+	margin-right:auto;
+}
+
+#d_rep {
+	grid-column: 3;
+	grid-row: 1;
+	height: 100%;
+	width: 310px;
+	z-index: 80;
+	margin-left:none;
+	margin-right:none;
+	background-color: rgb(220, 250, 220);
+}
 
 #map {
 	height: 35%;
@@ -12,6 +99,7 @@ html, body {
 	z-index: 53;
 	margin-left:auto;
 	margin-right:auto;
+	margin-bottom: 2em;
 }
 
 #user-svg{
@@ -22,14 +110,6 @@ html, body {
 	top: 50%;
 	left:50%;
 	transform: translateY(-32px) translateX(-16px);
-}
-
-#container{
-	width: 640px;
-	top: auto;
-	/* text-align: center; */
-	margin-left:auto;
-	margin-right:auto;
 }
 
 #about{

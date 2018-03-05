@@ -2,12 +2,15 @@
 <html>
 
 <head>
-    <title>Simple Map w. MediaSource Extensions</title>
+    <title>SWAPUGC Demo Page</title>
     <meta charset="utf-8">
     <link rel="stylesheet" type="text/css" href="assets/style.css">
 </head>
 
 <body>
+    <div id="title_div" style="margin:auto;font-family: 'Roboto', sans-serif;text-align: center;">
+        <h3>SWAPUGC: Software for Adaptive Playback of UGC videos - Demo</h3>
+    </div>
     <svg id="user-svg">
         <circle cx="32" cy="32" r="30" stroke="black" stroke-width="3" fill="red" fill-opacity="0.4" />
     </svg>
@@ -23,34 +26,112 @@
     <script src="video.js"></script>
     <script src="mse.js"></script>
     <script src="main.js" defer></script>
+    <div id="body_div">
 
 
-    <div id="map">
-    </div>
-    <br/>
-    <div id="container">
-        <div id="video_container">
-            <!--<video src="blob" id="v" hidden=true controls muted=true width="320" height="240"></video>-->
-            <video id="v_main" controls muted=true width="640" height="360"></video>
+        <div id="d_view" style="text-align: justify; font-family: 'Roboto', sans-serif;">
+            <span style="margin:auto;font-family: 'Raleway', sans-serif;font-weight:bold;text-align: center;font-size:large;">(How To) Use the Demo</span>
+            <br/>
+            <br/> Wait for the map to load (it is fetched using the Google maps API). When the map is ready, the "Init Time &amp;
+            Space" will be activated.
+            <ol type="1">
+                <li>
+                    <span style="font-weight:lighter;font-size:smaller;">(when activated)</span> Click "Init Time &amp; Space", to fetch video with associated Spatiotemporal
+                    data.
+                </li>
+                <li>
+                    <span style="font-weight:lighter;font-size:smaller;">(when activated)</span> Click "Init Markers", to center map and place markers.</li>
+                <li>
+                    <span style="font-weight:lighter;font-size:smaller;">(when activated)</span> Click "Play", to start playback.</li>
+                <li>
+                    To change active view
+                    <ul style="list-style-type:circle">
+                        <li>Click on a map marker, to navigate to this view</li>
+                        <li>Click on the "Switch" button, to navigate to the next view</li>
+                        <!--<li>Select a recording from the dropdown</li>-->
+                    </ul>
+                </li>
+            </ol>
+            If during playback the video stops responding, click "Fix MSE"
+            <br/>
+            <br/> The recommended browser to view the demo is Firefox. It was tested on Firefox and Chrome.
+            <br/> For other issues, or suggestion, you can
+            <a href="https://github.com/emmanouil/SWAPUGC/issues">file an issue</a> on github, or
+            <a href="https://github.com/emmanouil/SWAPUGC#links">contact us</a>.
         </div>
-        <div id="menu">
-            Select File:
-            <select name="select" onchange="selectFile(this.selectedIndex)">
-            </select>
-            <!--
+
+
+        <div id="d_rep" style="text-align: justify; font-family: 'Roboto', sans-serif;">
+            <span style="margin:auto;font-family: 'Raleway', sans-serif;font-weight:bold;text-align: center;font-size:large;">(How To) Reproduce / Modify The Demo</span>
+            <br/>
+            <br/> This demo is part of the
+            <a href="https://github.com/emmanouil/SWAPUGC#swapugc" style="font-weight:bold;color:black;">SWAPUGC</a> platform. Threre are no external dependencies or libraries used, except Google Maps for the map rendering.
+            In order to run it locally, or on your own server, you should perform the following steps:
+            <ol type="1">
+                <li>
+                    Clone, or check-out the source code, from the
+                    <a href="https://github.com/emmanouil/SWAPUGC">github repository</a>.
+                </li>
+                <li>
+                    (Optional) add your own dataset in the
+                    <span style="font-weight:lighter;font-size:small;">samples</span> folder
+                </li>
+                <li>
+                    (Optional) modify the parameters in
+                    <span style="font-weight:lighter;font-size:small;">parameters.js</span> and
+                    <span style="font-weight:lighter;font-size:small;">main.js</span>
+                </li>
+                <li>
+                    Run a local server on the top level, or upload the repository contents to your server.</li>
+                <li>
+                    Use your browser to navigate to
+                    <ul style="list-style-type:circle">
+                        <li>
+                            <span style="font-size:small;"> www.server-domain.com/index.html </span> , for remote server
+                        </li>
+                        <li>
+                            <span style="font-size:small;"> localhost:8000/index.html </span> , if you are running it locally (with an example port of 8000)
+                        </li>
+                    </ul>
+
+            </ol>
+            If during playback the video stops responding, click "Fix MSE".
+            <br/>
+            <br/> The recommended browser to view the demo is Firefox. It was tested on Firefox and Chrome.
+            <br/> For other issues, or suggestion, you can
+            <a href="https://github.com/emmanouil/SWAPUGC/issues">file an issue</a> on github, or
+            <a href="https://github.com/emmanouil/SWAPUGC#links">contact us</a>.
+        </div>
+
+
+        <div id="container">
+            <div id="map">
+                If you see this text, the map is still loading
+            </div>
+            <div id="video_container">
+                <!--<video src="blob" id="v" hidden=true controls muted=true width="320" height="240"></video>-->
+                <video id="v_main" controls muted=true width="640" height="360"></video>
+            </div>
+            <div id="menu">
+                Select File:
+                <select name="select" onchange="selectFile(this.selectedIndex)">
+                </select>
+                <!--
             <br/> Set Time:
             <input type="text" id="start_time_input"></input>
             -->
-            <br/>
-            <button id="init_ts_btn" onclick="initTimeAndSpace(this);" disabled=true>Init Time & Space</button>
-            <button id="init_mk_btn" onclick="initMarkers(this);" disabled=true>Init Markers</button>
-            <button id="play_btn" onclick="goToAndPlay(this);" disabled=true>Play</button>
-            <br/>
-            <!-- <label>0<input name ="zoomLevel" type='range' onchange="setDefaultZoom();" min="0" max="21" step="1"/>21 Set value of Default Zoom level</label> -->
+                <br/>
+                <button id="init_ts_btn" onclick="initTimeAndSpace(this);" disabled=true>Init Time & Space</button>
+                <button id="init_mk_btn" onclick="initMarkers(this);" disabled=true>Init Markers</button>
+                <button id="play_btn" onclick="goToAndPlay(this);" disabled=true>Play</button>
+                <br/>
+                <!-- <label>0<input name ="zoomLevel" type='range' onchange="setDefaultZoom();" min="0" max="21" step="1"/>21 Set value of Default Zoom level</label> -->
+
+                <button id="reset_btn" onclick="resetSourceBuffer();">Fix MSE</button>
+                <button id="test_btn" onclick="printBufferStatus();" disabled>print Buffer Status</button>
+                <button id="next_btn" onclick="nextStream();">Switch</button>
+            </div>
         </div>
-        <button id="reset_btn" onclick="resetSourceBuffer();">Fix MSE</button>
-        <button id="test_btn" onclick="printBufferStatus();">print Buffer Status</button>
-        <button id="next_btn" onclick="nextStream();">Switch</button>
     </div>
     <div id="about">
         <p>The demo plays a segmented mp4 file (generated using MP4Box of
