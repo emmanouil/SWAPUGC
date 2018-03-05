@@ -3,12 +3,12 @@
 **SWAPUGC**: **S**oft**w**are for **A**daptive **P**layback of Geotagged **U**ser-**G**enerated **C**ontent
 
 GoTo:
-[About](##about)
-[Architecture Flow](##architecture-flow-of-the-client)
-[Demo](#demo)
-[Generate/Record Compatible Files](##Generate-Compatible-Files)
-[Known Issues](##Known-Issues)
-[Links/Contact](##links)
+[About](##about)  
+[Architecture Flow](##architecture-flow-of-the-client)  
+[Demo](#demo)  
+[Generate/Record Compatible Files](##Generate-Compatible-Files)  
+[Known Issues](##Known-Issues)  
+[Links/Contact](##links)  
 
 
 ## About
@@ -45,10 +45,10 @@ To run a local demo, start a server on the top dir and navigate to `index.html`
 
 A compatible UGC recorder Android application that can be used, is available [here](https://github.com/emmanouil/Spatiotemporal-Navigation-Recorder)
 
-### Generate DASH-compatible Segmented Video Files [1]
+### Generate DASH-compatible Segmented Video Files
 
 For the demo we used MP4Box of the [GPAC](gpac.io) suite, but other tools (like ffmpeg) should work.
-With MP4Box, an example command to generate 2s-long segments would be [2]: 
+With MP4Box, an example command to generate the mpd file [1] and the associated 2s-long segments would be [2]: 
 `MP4Box -frag 2000 -dash 2000 -segment-name file_out_seg_ file_in.mp4`
 
 
