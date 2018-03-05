@@ -445,4 +445,21 @@ function startInterval() {
 function resetInterval() {
 	killInterval();
 	startInterval();
+
+function printBufferStatus() {
+	console.log('Current video time: ' + main_view.currentTime);
+	for (let i = 0; i < getSourceBufferTimeRangeNumber(); i++) {
+		console.log('buffer with index ' + i + ' starts at ' + sourceBuffer.buffered.start(i))
+		console.log('buffer with index ' + i + ' ends at ' + sourceBuffer.buffered.end(i))
+	}
+}
+
+function nextStream() {
+	let next_index = -1;
+	if (active_video_index == globalSetIndex.length - 1) {
+		next_index = 0;
+	} else {
+		next_index = active_video_index + 1;
+	}
+	switchToStream(next_index, globalSetIndex[next_index].id);
 }
