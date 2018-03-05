@@ -94,15 +94,16 @@ html, body {
 }
 
 #map {
-	height: 35%;
+	height: 320px;
 	width: 640px;
 	z-index: 53;
 	margin-left:auto;
 	margin-right:auto;
-	margin-bottom: 2em;
+	margin-bottom: 3px;
 }
 
 #user-svg{
+	visibility: hidden;
 	position:absolute;
 	z-index: 55;
 	margin: 0;

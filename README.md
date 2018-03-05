@@ -2,13 +2,13 @@
 
 **SWAPUGC**: **S**oft**w**are for **A**daptive **P**layback of Geotagged **U**ser-**G**enerated **C**ontent
 
-GoTo:
-[About](##about)  
-[Architecture Flow](##architecture-flow-of-the-client)  
+GoTo:  
+[About](#about)  
+[Architecture Flow](#architecture-flow-of-the-client)  
 [Demo](#demo)  
-[Generate/Record Compatible Files](##Generate-Compatible-Files)  
-[Known Issues](##Known-Issues)  
-[Links/Contact](##links)  
+[Generate/Record Compatible Files](#Generate-Compatible-Files)  
+[Known Issues](#Known-Issues)  
+[Links/Contact](#links)  
 
 
 ## About
@@ -38,6 +38,8 @@ When the client is launched it does the following, in the corresponding order:
 
 An online demo is available at https://emmanouil.github.io/SWAPUGC/
 To run a local demo, start a server on the top dir and navigate to `index.html`
+
+The demo is working better with Chrome, was tested and works with Firefox [3], and does *not* work with Microsoft Edge [4].
 
 ## Generate Compatible Files
 
@@ -121,6 +123,10 @@ decription: An Object holding Orientation and Location information for a POI
 [1] MP4Box does not play nice when generating the mpd of the files. More specifically, the "mimeType" and "codec" of the mpd's are *extremely* unreliable. It is recommendaded to completely delete the "codecs" attributed and change mimeType="video/mp4"
 
 [2] Even though in the official blog of GPAC recommends using the "-rap" option when creating files for dash using MP4Box, I strongly suggest to ommit it, since it can misalign the timing of the MSE
+
+[3] For this demo, we are using non-aligned segments. This is an edge non-standardized case scenario, but it is the only way to seamlessly switch between views. Chrome handles its bufffers as expected, but Firefox keeps the audio of all the fetched segments, even if newer have arrived, thus occasionally switching the video before the audio.
+
+[4] Demo does not work on Microsoft Edge, because we are using VTTCues for the marker updates, [that are not supported by Edge](https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/8120475/)
 
 If an issue is not mentioned here, you can either contact [us](##links), or submit a [New Issue](https://github.com/emmanouil/SWAPUGC/issues)
 

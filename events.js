@@ -65,4 +65,6 @@ function goToAndPlay(e) {
     document.getElementById('play_btn').disabled = true;
     logINFO('starting playback from (ms): ' + main_view_startTime);
     startPlayback();
+    document.getElementById('reset_btn').disabled = false;
+    document.getElementById('next_btn').disabled = false;
 }

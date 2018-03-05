@@ -45,9 +45,10 @@ function initMap() {
 		 */
 	});
 	if (ENABLE_HIGHLIGHTER) {
-		map.getDiv().appendChild(document.getElementById('user-svg'))
+		document.getElementById('user-svg').style.visibility = "visible";
+		map.getDiv().appendChild(document.getElementById('user-svg'));
 	} else {
-		document.getElementById('user-svg').style.visibility = "hidden"
+		document.getElementById('user-svg').style.visibility = "hidden";
 	}
 
 	activateMapEvents();	//in events.js

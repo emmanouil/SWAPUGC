@@ -180,3 +180,8 @@ function getSetByVideoId(id_in) {
             return globalSetIndex[item];
     }
 }
+
+function disable_btn_for(btn_name, dur) {
+    document.getElementById(btn_name).disabled = true;
+    setTimeout(function () { document.getElementById(btn_name).disabled = false; }, dur);
+}
