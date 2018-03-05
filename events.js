@@ -14,12 +14,16 @@ function activateMapEvents() {
 }
 
 function activateUI() {
-    selector = document.getElementsByName('select')[0];
+    selector = document.getElementById('selector');
 }
 
 //called when file is selected from the dropdown
-function selectFile(index_in) {
-    logINFO("selectFile is deactivated. it was used with index: " + index_in);
+function selectFile(index_in, id_in) {
+    if (main_view.paused) {
+        return;
+    }
+    logDEBUG("selected option using dropdown (selectFile). index: " + index_in + " id: " + id_in);
+    switchToStream(index_in, id_in);
     //active_video_id = selector[index_in].text;
 }
 
@@ -48,9 +52,7 @@ function initTimeAndSpace(e) {
  */
 function initMarkers(e) {
     document.getElementById('init_mk_btn').disabled = true;
-    //document.getElementById('play_btn').innerText = 'Go To ' + main_view_startTime + ', and Play';
     logINFO('Initializing markers for reference start time (ms): ' + main_view_startTime);
-    //document.getElementById('start_time_input').value = main_view_startTime;
     /* Setup main view */
     centerMap(reference_location[0], reference_location[1], 20)
     analyzeGeospatialData();
@@ -67,4 +69,5 @@ function goToAndPlay(e) {
     startPlayback();
     document.getElementById('reset_btn').disabled = false;
     document.getElementById('next_btn').disabled = false;
+    document.getElementById('selector').disabled = false;
 }

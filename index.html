@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>SWAPUGC Demo Page</title>
+    <title>SWAPUGC Demo Player</title>
     <meta charset="UTF-8">
     <meta name="description" content="A demo implementation of the SWAPUGC: Software for Adaptive Playback of UGC video platform. SWAPUGC is an experimental platform to synchronously play User-Generated Content consisting of video and geospatial data. It supports seamless view switching and adaptive streaming integration.">
     <meta name="keywords" content="UGC, MPEG, DASH, Adaptive, Streaming, MediaSource Extensions">
@@ -47,18 +47,18 @@
                 <li>
                     <span style="font-weight:lighter;font-size:smaller;">(when activated)</span> Click "Play", to start playback.</li>
                 <li>
-                    To change active view
+                    To change active view during playback:
                     <ul style="list-style-type:circle">
                         <li>Click on a map marker, to navigate to this view</li>
                         <li>Click on the "Switch" button, to navigate to the next view</li>
-                        <!--<li>Select a recording from the dropdown</li>-->
+                        <li>Select a recording from the dropdown</li>
                     </ul>
                 </li>
             </ol>
             If during playback the video stops responding, click "Fix MSE"
             <br/>
-            <br/> The recommended browser to view the demo is Chrome. Tested on Firefox and Chrome. Does NOT work on
-            Edge (<a href="https://github.com/emmanouil/SWAPUGC#known-issues" target="_blank">issue [4]</a>).
+            <br/> The recommended browser to view the demo is Chrome. Tested on Firefox and Chrome. Does NOT work on Edge (
+            <a href="https://github.com/emmanouil/SWAPUGC#known-issues" target="_blank">issue [4]</a>).
             <br/>
             <br/> For hickups or suggestions, you can
             <a href="https://github.com/emmanouil/SWAPUGC/issues" target="_blank">file an issue</a> on github, or
@@ -113,26 +113,20 @@
 
             </div>
             <div id="video_container">
-                <video id="v_main" width="640" height="360" poster="/assets/v_poster.png"></video>
+                <video id="v_main" width="640" height="360" poster="assets/v_poster.png"></video>
             </div>
             <div id="menu">
-                Select File:
-                <select name="select" onchange="selectFile(this.selectedIndex)">
-                </select>
-                <!--
-            <br/> Set Time:
-            <input type="text" id="start_time_input"></input>
-            -->
-                <br/>
                 <button id="init_ts_btn" onclick="initTimeAndSpace(this);" disabled>Init Time & Space</button>
                 <button id="init_mk_btn" onclick="initMarkers(this);" disabled>Init Markers</button>
                 <button id="play_btn" onclick="goToAndPlay(this);" disabled>Play</button>
                 <br/>
                 <!-- <label>0<input name ="zoomLevel" type='range' onchange="setDefaultZoom();" min="0" max="21" step="1"/>21 Set value of Default Zoom level</label> -->
-
-                <button id="reset_btn" onclick="resetSourceBuffer(); disable_btn_for('reset_btn', 2000);" disabled>Fix MSE</button>
                 <button id="test_btn" onclick="printBufferStatus();" disabled hidden>print Buffer Status</button>
-                <button id="next_btn" onclick="nextStream(); disable_btn_for('next_btn', 2000);" disabled>Switch</button>
+                <button id="next_btn" onclick="nextStream(); disable_btn_for('next_btn', 2000); disable_btn_for('selector', 2000);" disabled>Switch</button>
+                Select File:
+                <select id="selector" disabled onchange="selectFile(this.selectedIndex, this.selectedOptions[0].value); disable_btn_for('selector', 2000);">
+                </select>
+                <button id="reset_btn" onclick="resetSourceBuffer(); disable_btn_for('reset_btn', 2000);" disabled>Fix MSE</button>
             </div>
         </div>
     </div>
