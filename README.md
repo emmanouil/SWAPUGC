@@ -1,6 +1,12 @@
+---
+title: SWAPUGC README.md
+---
+
 # SWAPUGC
 
 **SWAPUGC**: **S**oft**w**are for **A**daptive **P**layback of Geotagged **U**ser-**G**enerated **C**ontent
+
+---
 
 GoTo:  
 [About](#about)  
@@ -10,8 +16,11 @@ GoTo:
 [Known Issues](#known-issues)  
 [Links/Contact](#links)  
 
+---
 
 ## About
+
+The about page is [here](https://github.com/emmanouil/SWAPUGC/blob/master/ABOUT.md), this is the TL;DR:
 
 This repository contains a browser-based platoform for viewing content recorder with spatiotemporal information.
 
