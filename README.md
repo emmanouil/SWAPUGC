@@ -52,7 +52,7 @@ When the client is launched it does the following, in the corresponding order:
 
 ## Demo
 
-An online demo is available at https://emmanouil.github.io/SWAPUGC/
+An online demo is available at [https://emmanouil.github.io/SWAPUGC/](https://emmanouil.github.io/SWAPUGC/). 
 To run a local demo, start a server on the top dir and navigate to `index.html`
 
 The demo is working better with Chrome, was tested and works with Firefox [3], and does *not* work with Microsoft Edge [4].
