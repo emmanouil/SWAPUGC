@@ -40,10 +40,8 @@
             <ol type="1">
                 <li>
                     <span style="font-weight:lighter;font-size:smaller;">(when activated)</span> Click "Init Time &amp; Space", to fetch video with associated Spatiotemporal
-                    data.
+                    data, center map and place markers..
                 </li>
-                <li>
-                    <span style="font-weight:lighter;font-size:smaller;">(when activated)</span> Click "Init Markers", to center map and place markers.</li>
                 <li>
                     <span style="font-weight:lighter;font-size:smaller;">(when activated)</span> Click "Play", to start playback.</li>
                 <li>
@@ -116,8 +114,7 @@
                 <video id="v_main" width="640" height="360" poster="assets/v_poster.png"></video>
             </div>
             <div id="menu">
-                <button id="init_ts_btn" onclick="initTimeAndSpace(this);" disabled>Init Time & Space</button>
-                <button id="init_mk_btn" onclick="initMarkers(this);" disabled>Init Markers</button>
+                <button id="init_ts_btn" onclick="fetchAndInitMarkers();" disabled>Init Time & Space</button>
                 <button id="play_btn" onclick="goToAndPlay(this);" disabled>Play</button>
                 <br/>
                 <!-- <label>0<input name ="zoomLevel" type='range' onchange="setDefaultZoom();" min="0" max="21" step="1"/>21 Set value of Default Zoom level</label> -->

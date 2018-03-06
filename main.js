@@ -256,6 +256,8 @@ function setMainViewStartTime() {
 		.then(function (response) {
 			addSegment(response);
 			main_view.currentTime = main_view_startTime = reference_start_time = (tmp_time / 1000);	//in seconds
+			//TODO (#33) for now we use an event to signal timing info is ready
+			window.dispatchEvent(new CustomEvent('timeDataReady', { detail: 'done' }));
 		}).catch(function (err) { logWARN('Failed promise - Error log: '); logERR(err); });
 
 }

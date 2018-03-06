@@ -35,29 +35,32 @@ function goToVideo(i_in) {
 }
 
 /**
- * Called 
- * @param {*} e 
+ * Called when Init Time & Space button is clicked
  */
-function initTimeAndSpace(e) {
+function fetchAndInitMarkers() {
+    //TODO (#33) the following is a workaround - we fire an event when start time is calculated - promise to re-implement with promises
+    window.addEventListener('timeDataReady', function (e) {
+        logDEBUG('timeDataReady event fired - calling initMarkers');
+        initMarkers();
+    }, { once: true });
+
     document.getElementById('init_ts_btn').disabled = true;
-    document.getElementById('init_mk_btn').disabled = false;
     loadSpatialData();
     setMainViewStartTime();
 }
 
-
 /**
- * Called when Init Markers button is clicked
- * @param {*} e 
+ * Called when timeDataReady event is fired
  */
-function initMarkers(e) {
-    document.getElementById('init_mk_btn').disabled = true;
+function initMarkers() {
     logINFO('Initializing markers for reference start time (ms): ' + main_view_startTime);
     /* Setup main view */
     centerMap(reference_location[0], reference_location[1], 20)
     analyzeGeospatialData();
     document.getElementById('play_btn').disabled = false;
 }
+
+
 
 /**
  * Called when GoToAndPlay button is clicked
