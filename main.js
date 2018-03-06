@@ -232,10 +232,26 @@ function addVideoToIndex(XMLHttpRequest_in) {
 
 /* Called when "Init Time & Space" btn is clicked and fetches location and orientation sets */
 function loadSpatialData() {
-	for (var i = 0; i < globalSetIndex.length; i++) {
-		fetch(globalSetIndex[i].descriptor.locationFilename, loadCoords, 'json');
-		fetch(globalSetIndex[i].descriptor.orientationFilename, loadLocs, 'json');
+
+	let loc_promises = [];
+	let orient_promises = [];
+	for (let i = 0; i < globalSetIndex.length; i++) {
+		loc_promises.push(fetch_promise(globalSetIndex[i].descriptor.locationFilename, 'json', true));
+		orient_promises.push(fetch_promise(globalSetIndex[i].descriptor.orientationFilename, 'json', true));
 	}
+	Promise.all(loc_promises).then(function (values) {
+		for (var i = 0; i < values.length; i++) {
+			loadCoords(values[i]);
+		}
+	}).catch(function (err) { logERR('Error parsing location files'); logERR(err) });
+
+	Promise.all(orient_promises).then(function (values) {
+		for (var i = 0; i < values.length; i++) {
+			loadLocs(values[i]);
+		}
+	}).then(function () {
+		window.dispatchEvent(new CustomEvent('spatialDataReady', { detail: 'done' }));
+	}).catch(function (err) { logERR('Error parsing orientation files'); logERR(err) });
 }
 
 /* Called when "Init Time & Space" btn is clicked and calculates relative time between views */
@@ -262,12 +278,12 @@ function setMainViewStartTime() {
 
 }
 
-function loadCoords(XMLHttpRequest_in) {
-	loadAssets('_LOC', XMLHttpRequest_in.target)
+function loadCoords(req_in) {
+	loadAssets('_LOC', req_in)
 }
 
-function loadLocs(XMLHttpRequest_in) {
-	loadAssets('_ORIENT', XMLHttpRequest_in.target)
+function loadLocs(req_in) {
+	loadAssets('_ORIENT', req_in)
 }
 
 function loadAssets(type, Xreq_target) {

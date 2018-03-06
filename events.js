@@ -39,14 +39,19 @@ function goToVideo(i_in) {
  */
 function fetchAndInitMarkers() {
     //TODO (#33) the following is a workaround - we fire an event when start time is calculated - promise to re-implement with promises
+    // execution order: 1. loadSpatialData 2. setMainViewStartTime 3. initMarkers
     window.addEventListener('timeDataReady', function (e) {
         logDEBUG('timeDataReady event fired - calling initMarkers');
         initMarkers();
     }, { once: true });
 
+    window.addEventListener('spatialDataReady', function (e) {
+        logDEBUG('spatialDataReady event fired - calling setMainViewStartTime');
+        setMainViewStartTime();
+    }, { once: true });
+
     document.getElementById('init_ts_btn').disabled = true;
     loadSpatialData();
-    setMainViewStartTime();
 }
 
 /**

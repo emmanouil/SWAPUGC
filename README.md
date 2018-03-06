@@ -6,8 +6,8 @@ GoTo:
 [About](#about)  
 [Architecture Flow](#architecture-flow-of-the-client)  
 [Demo](#demo)  
-[Generate/Record Compatible Files](#Generate-Compatible-Files)  
-[Known Issues](#Known-Issues)  
+[Generate/Record Compatible Files](#generate-compatible-files)  
+[Known Issues](#known-issues)  
 [Links/Contact](#links)  
 
 
