@@ -1,10 +1,11 @@
 ---
-title: SWAPUGC README.md
 ---
 
 # SWAPUGC
 
 **SWAPUGC**: **S**oft**w**are for **A**daptive **P**layback of Geotagged **U**ser-**G**enerated **C**ontent
+
+This is the repository for *SWAPUGC*: a platform for creating applications that consume geotagged User-Generated Content (UGC).
 
 ---
 
@@ -20,11 +21,17 @@ GoTo:
 
 ## About
 
-The about page is [here](https://github.com/emmanouil/SWAPUGC/blob/master/ABOUT.md), this is the TL;DR:
+The about page is [here](https://github.com/emmanouil/SWAPUGC/blob/master/ABOUT.md).
 
-This repository contains a browser-based platoform for viewing content recorder with spatiotemporal information.
+TL;DR:  
+SWAPUGC is a platform for building web applications that consume geotagged UGC, in a syncrhonous and adaptive manner. Some key features:
 
-The client is a modified version of the client used for the _"Extended Video Streams for Spatiotemporal Video Navigation"_, presented at The Graphical Web 2016 ([slides](https://emmanouil.wp.imt.fr/files/2017/03/Extended-Video-Streams-for-Spatiotemporal-Navigation.pdf) [video](https://www.youtube.com/watch?v=iUhGZV9SSiM)), part of the project _"Streaming And Presentation Architectures for Extended Video Streams"_ ([short-paper](https://www.researchgate.net/publication/317593679_Streaming_and_Presentation_Architectures_for_Extended_Video_Streams)) showcased at the TVX '17.
+* Support for **_mixed_ adaptation policies**. Stream adaptation can be based on spatial and/or cinematic and/or quality and/or system criteria.
+* **Inter-stream synchronization** between the geospatial data and the video.
+* **Inter-bundle synchronization** between the different recordings.
+* **Extensibility** for other timed data types (e.g. network metrics).
+
+
 
 
 ## Architecture flow of the client
