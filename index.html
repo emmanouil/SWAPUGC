@@ -119,6 +119,8 @@
             <div id="menu">
                 <button id="init_ts_btn" onclick="fetchAndInitMarkers();" disabled>Init Time & Space</button>
                 <button id="play_btn" onclick="goToAndPlay(this);" disabled>Play</button>
+                <button id="pause_btn" onclick="pausePlayback(this);" disabled title="When paused, view does not update">Pause</button>
+                <button id="toggle_room_btn" onclick="toggleRoom(this);" disabled title="Room overlay is an approximation">Toggle Room Overlay</button>
                 <br/>
                 <!-- <label>0<input name ="zoomLevel" type='range' onchange="setDefaultZoom();" min="0" max="21" step="1"/>21 Set value of Default Zoom level</label> -->
                 <button id="test_btn" onclick="printBufferStatus();" disabled hidden>print Buffer Status</button>

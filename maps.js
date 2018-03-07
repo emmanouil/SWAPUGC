@@ -18,6 +18,38 @@ var test_icon = {
 	fillOpacity: 1
 };
 
+var roomPoly;	//constructed by roomCoords and roomStyle
+var roomCoords = [
+	{ lat: 53.47266, lng: -2.29929 },
+	{ lat: 53.47279, lng: -2.29904 },
+	{ lat: 53.47263, lng: -2.29879 },
+	{ lat: 53.47251, lng: -2.29904 },
+	{ lat: 53.47266, lng: -2.29929 }
+];
+var roomStyle = {
+	paths: roomCoords,
+	strokeColor: '#FF0000',
+	strokeOpacity: 0.8,
+	strokeWeight: 2,
+	fillColor: '#FF6600',
+	fillOpacity: 0.2
+};
+
+var orchestraPath;	//constructed by orchestraCoords and orchestraStyle
+var orchestraCoords = [
+	{ lat: 53.47274, lng: -2.29904 },
+	{ lat: 53.47272, lng: -2.29898 },
+	{ lat: 53.47269, lng: -2.29894 },
+];
+var orchestraStyle = {
+	path: orchestraCoords,
+	geodesic: true,
+	strokeColor: '#FF0000',
+	strokeOpacity: 0.5,
+	strokeWeight: 10
+};
+
+
 function initMap() {
 
 	mapOptions = {
@@ -64,6 +96,14 @@ function initMap() {
 		map.getDiv().appendChild(document.getElementById('user-svg'));
 	} else {
 		document.getElementById('user-svg').style.visibility = "hidden";
+	}
+
+	if (SHOW_ROOM) {
+		roomPoly = new google.maps.Polygon(roomStyle);
+		roomPoly.setMap(map);
+		orchestraPath = new google.maps.Polyline(orchestraStyle);
+		orchestraPath.setMap(map);
+
 	}
 
 	activateMapEvents();	//in events.js
@@ -169,4 +209,16 @@ function updateMarkerByID(marker_id, orientation = "none", loc = "none") {
 		}
 	}
 	logINFO('marker ' + marker_id + ' not found in order to be updated');
+}
+
+function toggleRoom() {
+	if (!SHOW_ROOM) {
+		roomPoly.setMap(null);
+		orchestraPath.setMap(null);
+		SHOW_ROOM = true;
+	} else {
+		roomPoly.setMap(map);
+		orchestraPath.setMap(map);
+		SHOW_ROOM = false;
+	}
 }
