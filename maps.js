@@ -3,6 +3,9 @@ var map;
 var markers = [];
 var marker_icon = 'assets/icon_48px.svg';
 var current_zoom = DEFAULT_ZOOM;
+var mapOptions; // set inside initMap()
+
+
 
 //we use this for now
 var test_icon = {
@@ -16,12 +19,18 @@ var test_icon = {
 };
 
 function initMap() {
-	map = new google.maps.Map(document.getElementById('map'), {
+
+	mapOptions = {
 		center: {
-			lat: -34.397,
-			lng: 150.644
+			lat: 48.8263,
+			lng: 2.3463
 		},
-		mapTypeControl: true,
+		clickableIcons: false,
+		mapTypeControl: false,
+		disableDefaultUI: true,
+		gestureHandling: "none",
+		keyboardShortcuts: false,
+		mapTypeId: google.maps.MapTypeId.ROADMAP,
 		mapTypeControlOptions: {
 			style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
 			mapTypeIds: [
@@ -32,7 +41,7 @@ function initMap() {
 			]
 		},
 		scaleControl: true,
-		zoom: 10
+		zoom: 20
 		/**
 		 Zoom levels (approx.)
 		 
@@ -43,7 +52,13 @@ function initMap() {
 			20: Buildings
 		
 		 */
-	});
+	};
+
+
+
+
+
+	map = new google.maps.Map(document.getElementById('map'), mapOptions);
 	if (ENABLE_HIGHLIGHTER) {
 		document.getElementById('user-svg').style.visibility = "visible";
 		map.getDiv().appendChild(document.getElementById('user-svg'));
@@ -113,7 +128,7 @@ function addLiveMarker(lat, lng, index, recording_id, bearing, active = false) {
 	marker.index = index;
 	marker.recording_id = recording_id;
 	marker.addListener('click', function () {
-		console.log("click");
+		logDEBUG('clicked on marker with title: ' + marker.title + 'of ID: ' + marker.recording_id);
 		switchToStream(index, recording_id);
 	});
 	markers.push(marker);
@@ -121,13 +136,13 @@ function addLiveMarker(lat, lng, index, recording_id, bearing, active = false) {
 }
 
 
-function updateMarkerByLabel(marker_label, orientation) {
+function updateMarkerByID(marker_id, orientation) {
 	for (var m in markers) {
-		if (markers[m].title.split(' ')[1] == marker_label.split(' ')[0]) {
+		if (markers[m].recording_id == marker_id) {
 			markers[m].icon.rotation = orientation;
 			markers[m].setMap(map);
 			return;
 		}
 	}
-	logINFO('marker ' + marker_label + ' not found in order to be updated');
+	logINFO('marker ' + marker_id + ' not found in order to be updated');
 }

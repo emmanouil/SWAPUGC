@@ -337,7 +337,7 @@ function analyzeGeospatialData() {
 			globalSetIndex[i].main_view_tracks_no = tmp_index - 1;
 			main_view_tracks[tmp_index - 1].oncuechange = function () {
 				for (let i = 0; i < this.activeCues.length; i++) {
-					updateMarkerByLabel(this.activeCues[i].track.label, Number(this.activeCues[i].text));
+					updateMarkerByID(this.activeCues[i].track.label, Number(this.activeCues[i].text));
 				}
 			}
 		} else {
