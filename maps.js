@@ -135,11 +135,35 @@ function addLiveMarker(lat, lng, index, recording_id, bearing, active = false) {
 	globalSetIndex[index].marker = marker;
 }
 
+function updateMarkerOrientation(marker_id, orientation = "none") {
+	if (orientation != "none") {
+		updateMarkerByID(marker_id, orientation);
+		logDEBUG("Updated marker orientation to " + orientation)
+	} else {
+		logWARN("Did not update orientation of marker with id" + marker_id);
+	}
+}
 
-function updateMarkerByID(marker_id, orientation) {
+//loc should be in the form of {lat: value, lng: value}
+function updateMarkerLocation(marker_id, loc = "none") {
+	if (loc != "none") {
+		updateMarkerByID(marker_id, "none", loc);
+		logDEBUG("Updated marker position to " + loc)
+	} else {
+		logWARN("Did not update location of marker with id" + marker_id);
+	}
+}
+
+//orientation is just a number (in degrees) - loc should be in the form of {lat: value, lng: value}
+function updateMarkerByID(marker_id, orientation = "none", loc = "none") {
 	for (var m in markers) {
 		if (markers[m].recording_id == marker_id) {
-			markers[m].icon.rotation = orientation;
+			if (orientation != "none") {
+				markers[m].icon.rotation = orientation;
+			}
+			if (loc != "none") {
+				markers[m].setPosition(loc);
+			}
 			markers[m].setMap(map);
 			return;
 		}
