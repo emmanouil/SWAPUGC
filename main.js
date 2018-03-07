@@ -28,12 +28,15 @@ var PORT = '8000'
 var BASE_URL = '';	//set when parse_playlist is called (e.g. 192.0.0.1:8000)
 
 //pseudo-simulation parameters
-const INTERVAL_MS = 900;	//check interval (in ms)
 var interval_id = -1;	//timeout id
 const UPDATE_S = 1.7;	//condition (in s) to fetch next segment, relative to the current video time and end of the sourceBuffer
 const MARKER_UPDATE_LIMIT_ON = true;	//enable cue timespan limit
-const MARKER_UPDATE_LIMIT = 400;	// (in ms) limit the timespan between two updates for the same marker (i.e. number of cues)
+const MARKER_UPDATE_LIMIT = 600;	// (in ms) limit the timespan between two updates for the same marker (i.e. number of cues)
 const MARKER_LIMIT_BEHAVIOUR = 'discard';	//'discard' or 'average' - not implemented TODO
+
+//performance parameters
+const INTERVAL_MS = 900;	//check interval (in ms)
+const VTTCUE_DURATION = 400;	//whenever a cuechange event is fired all cues are checked if active (and if so, updated) - recommended value < MARKER_UPDATE_LIMIT
 
 
 /**
@@ -371,14 +374,14 @@ function addMarkerUpdates(set_in, tmp_index) {
 	for (let i = 0; i < set_in.orientSet.length - 1; i++) {
 		let tmp_orient = set_in.orientSet[i];
 		//check if we have set a min timespan between marker updates
-		if (MARKER_UPDATE_LIMIT_ON) {
+		if (MARKER_UPDATE_LIMIT_ON && i > 0) {
 			if (tmp_orient.PresentationTime - cur_t < MARKER_UPDATE_LIMIT) {
 				continue;
 			}
 		}
 		cur_t = tmp_orient.PresentationTime;
 		//TODO handle cues according to main vid time (not relevant to the take time)
-		let vtc = new VTTCue((t_diff + cur_t) / 1000, (t_diff + set_in.orientSet[i + 1].PresentationTime) / 1000, String(tmp_orient.X));
+		let vtc = new VTTCue((t_diff + cur_t) / 1000, (t_diff + cur_t + VTTCUE_DURATION) / 1000, String(tmp_orient.X));
 		vtc.size = 1;	//we set size 1 since we only set orientation
 		tmp_track.addCue(vtc);
 	}
@@ -388,14 +391,14 @@ function addMarkerUpdates(set_in, tmp_index) {
 	for (var i = 0; i < set_in.coordSet.length - 1; i++) {
 		let tmp_loc = set_in.coordSet[i];
 		//check if we have set a min timespan between marker updates
-		if (MARKER_UPDATE_LIMIT_ON) {
+		if (MARKER_UPDATE_LIMIT_ON && i > 0) {
 			if (tmp_loc.PresentationTime - cur_t < MARKER_UPDATE_LIMIT) {
 				continue;
 			}
 		}
 		cur_t = tmp_loc.PresentationTime;
 		//TODO handle cues according to main vid time (not relevant to the take time)
-		let vtc = new VTTCue((t_diff + cur_t) / 1000, (t_diff + set_in.coordSet[i + 1].PresentationTime) / 1000, "{\"lat\":" + tmp_loc.Latitude + ", \"lng\":" + tmp_loc.Longitude + "}");
+		let vtc = new VTTCue((t_diff + cur_t) / 1000, (t_diff + cur_t + VTTCUE_DURATION) / 1000, "{\"lat\":" + tmp_loc.Latitude + ", \"lng\":" + tmp_loc.Longitude + "}");
 		vtc.size = 2;	//we set size 1 since we set lat and lng
 		tmp_track.addCue(vtc);
 	}
