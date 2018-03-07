@@ -33,4 +33,4 @@ This web application allowed for users to navigate on a map according to the cur
 
 **_Who_ is behind it**
 
-SWAPUGC was developed at the Multimedia group of Telecom ParisTech engineering school. It was designed and currently maintained by [Emmanouil Potetsianakis](emmanouil.wp.imt.fr) (gh: @emmanouil) and [Jean Le Feuvre](https://lefeuvre.wp.imt.fr/) (gh: @jeanlf).
+SWAPUGC was developed at the Multimedia group of Telecom ParisTech engineering school. It was designed and currently maintained by [Emmanouil Potetsianakis](https://emmanouil.wp.imt.fr) (gh: @emmanouil) and [Jean Le Feuvre](https://lefeuvre.wp.imt.fr/) (gh: @jeanlf).
