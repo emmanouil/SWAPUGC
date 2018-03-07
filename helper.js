@@ -1,7 +1,13 @@
 "use strict";
 var globalSetIndex = [];
+var msg_div;    //set in main
 const SHOW_DEBUG = true;
-const LOG_LVL = 3; //0: all, 1: INFO, 2: WARN, 3: ERR, 4: NONE
+const LOG_LVL = 0; //0: all, 1: INFO, 2: WARN, 3: ERR, 4: NONE
+
+function logUI(msg) {
+    logINFO(msg);
+    msg_div.innerText = "INFO: " + msg;
+}
 
 function logERR(msg) {
     if (LOG_LVL > 3) return;

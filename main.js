@@ -62,7 +62,8 @@ function init() {
 	main_view.ms = mediaSource;
 	mediaSource.video = main_view;
 	main_view.src = window.URL.createObjectURL(mediaSource);
-
+	msg_div = document.getElementById('messages_div');
+	
 	//fetch playlist and parse elements (IDs) in 'playlist' array
 	fetch_promise(PLAYLIST_FILE, 'no-type', true)
 		.then(
@@ -418,11 +419,15 @@ function startPlayback() {
 
 //called when marker is clicked
 function switchToStream(set_index, recordingID) {
+	if (main_view.paused) {
+		logUI("Ignoring switch - main view paused");
+		return;
+	}
 	if (active_video_id === recordingID) {
-		logINFO("currently active stream selected - ignoring switch");
+		logUI("Ignoring Switch - currently active stream selected");
 		return;
 	} else {
-		logINFO("switching to stream with ID: " + recordingID);
+		logUI("Switching to stream with ID: " + recordingID);
 	}
 
 	let new_set = getSetByVideoId(recordingID);
