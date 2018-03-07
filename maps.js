@@ -28,6 +28,8 @@ var roomCoords = [
 ];
 var roomStyle = {
 	paths: roomCoords,
+	draggable: false,
+	clickable: false,
 	strokeColor: '#FF0000',
 	strokeOpacity: 0.8,
 	strokeWeight: 2,
@@ -43,7 +45,8 @@ var orchestraCoords = [
 ];
 var orchestraStyle = {
 	path: orchestraCoords,
-	geodesic: true,
+	draggable: false,
+	clickable: false,
 	strokeColor: '#FF0000',
 	strokeOpacity: 0.5,
 	strokeWeight: 10
@@ -98,12 +101,14 @@ function initMap() {
 		document.getElementById('user-svg').style.visibility = "hidden";
 	}
 
-	if (SHOW_ROOM) {
-		roomPoly = new google.maps.Polygon(roomStyle);
-		roomPoly.setMap(map);
-		orchestraPath = new google.maps.Polyline(orchestraStyle);
-		orchestraPath.setMap(map);
 
+	//we build the overlay anyway, and if SHOW_ROOM is enabled, we render it
+	roomPoly = new google.maps.Polygon(roomStyle);
+	orchestraPath = new google.maps.Polyline(orchestraStyle);
+
+	if (SHOW_ROOM) {
+		roomPoly.setMap(map);
+		orchestraPath.setMap(map);
 	}
 
 	activateMapEvents();	//in events.js
@@ -212,13 +217,13 @@ function updateMarkerByID(marker_id, orientation = "none", loc = "none") {
 }
 
 function toggleRoom() {
-	if (!SHOW_ROOM) {
+	if (SHOW_ROOM) {
 		roomPoly.setMap(null);
 		orchestraPath.setMap(null);
-		SHOW_ROOM = true;
+		SHOW_ROOM = false;
 	} else {
 		roomPoly.setMap(map);
 		orchestraPath.setMap(map);
-		SHOW_ROOM = false;
+		SHOW_ROOM = true;
 	}
 }
