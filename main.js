@@ -545,6 +545,29 @@ function nextStream() {
 	}
 	switchToStream(next_index, globalSetIndex[next_index].id);
 }
+
+function selectPolicy(p_in) {
+	switch (p_in) {
+		case 'Manual':
+			stopRoundRobin();
+			activateUIselection();
+			break;
+		case 'Round-Robin 10s':
+			deactivateUIselection();
+			startRoundRobin(10);
+			break;
+		case 'Round-Robin 20s':
+			deactivateUIselection();
+			startRoundRobin(20);
+			break;
+		case 'Proximity-Stability':
+			break;
+		default:
+			logWARN('Policy ' + p_in + ' unknown');
+			break;
+	}
+}
+
 function deactivateUIselection() {
 	for (let i = 0; i < markers.length; i++) {
 		deactivateMarkerClick(markers[i]);
