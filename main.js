@@ -63,7 +63,7 @@ function init() {
 	mediaSource.video = main_view;
 	main_view.src = window.URL.createObjectURL(mediaSource);
 	msg_div = document.getElementById('messages_div');
-	
+
 	//fetch playlist and parse elements (IDs) in 'playlist' array
 	fetch_promise(PLAYLIST_FILE, 'no-type', true)
 		.then(
@@ -320,12 +320,17 @@ function analyzeGeospatialData() {
 	 */
 	for (let i = 0; i < globalSetIndex.length; i++) {
 		let s = globalSetIndex[i];
-		if (s.id != reference_recordingID) {
-			addLiveMarker(s.coordSet[0].Latitude, s.coordSet[0].Longitude,
-				s.index, s.id, s.orientSet[0].X, true);
+		let is_active = false;
+		if (s.coordSet.length > 3) {	//we consider a recording to be mobile if it has more than 2 updates
+			s.descriptor.is_mobile = true;
 		} else {
-			addLiveMarker(s.coordSet[0].Latitude, s.coordSet[0].Longitude,
-				s.index, s.id, s.orientSet[0].X, false);
+			s.descriptor.is_mobile = false;
+		}
+		addLiveMarker(s.coordSet[0].Latitude, s.coordSet[0].Longitude,
+			s.index, s.id, s.orientSet[0].X, s.descriptor.is_mobile);
+
+		if (s.id == reference_recordingID) {
+			highlightMarker(s.marker, true);	//we start by the current marker selected
 		}
 	}
 
@@ -440,6 +445,9 @@ function switchToStream(set_index, recordingID) {
 			end_time -= 0.2;
 		}
 	*/
+	highlightMarker(new_set.marker, true); //highlight new marker
+	highlightMarker(globalSetIndex[active_video_index].marker, false)	//de-hihglight old marker
+
 	active_video_id = recordingID;
 	active_video_index = set_index;
 

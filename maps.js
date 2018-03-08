@@ -216,6 +216,18 @@ function updateMarkerByID(marker_id, orientation = "none", loc = "none") {
 	logINFO('marker ' + marker_id + ' not found in order to be updated');
 }
 
+function highlightMarker(marker_in, highlight = true) {
+	let ic = marker_in.icon;
+	if (highlight) {
+		ic.strokeWeight = 2;
+		ic.strokeColor = 'red';
+	} else {
+		ic.strokeWeight = 1;
+		ic.strokeColor = 'black';
+	}
+	marker_in.setMap(map);
+}
+
 function toggleRoom() {
 	if (SHOW_ROOM) {
 		roomPoly.setMap(null);
