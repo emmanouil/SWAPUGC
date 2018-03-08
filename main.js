@@ -38,6 +38,11 @@ const MARKER_LIMIT_BEHAVIOUR = 'discard';	//'discard' or 'average' - not impleme
 const INTERVAL_MS = 900;	//check interval (in ms)
 const VTTCUE_DURATION = 400;	//whenever a cuechange event is fired all cues are checked if active (and if so, updated) - recommended value < MARKER_UPDATE_LIMIT
 
+//selection policy;
+var policies = ['Manual', 'Round-Robin 10s', 'Round-Robin 20s'];
+var roundRobin_interval_t;
+var roundRobin_interval_id = -1;
+
 
 /**
  * Script Parameters & Objs
@@ -63,6 +68,7 @@ function init() {
 	mediaSource.video = main_view;
 	main_view.src = window.URL.createObjectURL(mediaSource);
 	msg_div = document.getElementById('messages_div');
+	activate_policies();
 
 	//fetch playlist and parse elements (IDs) in 'playlist' array
 	fetch_promise(PLAYLIST_FILE, 'no-type', true)
@@ -584,3 +590,24 @@ function activateUIselection() {
 	document.getElementById('selector').disabled = false;
 }
 
+function stopRoundRobin() {
+	clearInterval(roundRobin_interval_id);
+	roundRobin_interval_id = -1;
+}
+
+function startRoundRobin(t_sec) {
+	if (roundRobin_interval_id > 0) {
+		stopRoundRobin();
+	}
+	roundRobin_interval_t = t_sec;
+	roundRobin_interval_id = setInterval(nextStream, t_sec * 1000);
+}
+
+function activate_policies() {
+	for (let i = 0; i < policies.length; i++) {
+		let p_i = policies[i];
+		let option = document.createElement("option");
+		option.text = option.value = p_i;
+		policy_slk.add(option);
+	}
+}
