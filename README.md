@@ -53,9 +53,15 @@ When the client is launched it does the following, in the corresponding order:
 ## Demo
 
 An online demo is available at [https://emmanouil.github.io/SWAPUGC/](https://emmanouil.github.io/SWAPUGC/). 
-To run a local demo, start a server on the top dir and navigate to `index.html`
 
-The demo is working better with Chrome, was tested and works with Firefox [3], and does *not* work with Microsoft Edge [4].
+To run a local demo:
+1. [Download](https://github.com/emmanouil/SWAPUGC/archive/master.zip) and extract, or Clone (`git clone https://github.com/emmanouil/SWAPUGC.git`) the repository
+2. Start an http server on the top dir of your local repository copy (e.g. download, copy and run [Mongoose](https://cesanta.com/binary.html) in the `SWAPUGC` folder)
+3. Open your browser, and navigate to the location of `index.html` (e.g. http://localhost:8080/index.html - for port = 8080)
+
+To run a remote demo, repeat the same process at your server, by replacing `localhost` with your server IP.
+
+The demo is working better with Chrome, was tested and works with Firefox [3], and does *not* work with Microsoft Edge or IE [4].
 
 ## Generate Compatible Files
 

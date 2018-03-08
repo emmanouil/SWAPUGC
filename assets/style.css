@@ -65,10 +65,11 @@ html, body {
 	grid-column: 1;
 	grid-row: 1;
 	height: 100%;
-	width: 310px;
+	width: 302px;
 	z-index: 80;
 	margin-left: none;
 	margin-right: none;
+	padding: 4px;
 	background-color: rgb(220, 250, 220);
 }
 
@@ -86,10 +87,11 @@ html, body {
 	grid-column: 3;
 	grid-row: 1;
 	height: 100%;
-	width: 310px;
+	width: 302px;
 	z-index: 80;
 	margin-left: none;
 	margin-right: none;
+	padding: 4px;
 	background-color: rgb(220, 250, 220);
 }
 
