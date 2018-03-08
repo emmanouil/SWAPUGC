@@ -545,3 +545,19 @@ function nextStream() {
 	}
 	switchToStream(next_index, globalSetIndex[next_index].id);
 }
+function deactivateUIselection() {
+	for (let i = 0; i < markers.length; i++) {
+		deactivateMarkerClick(markers[i]);
+	}
+	document.getElementById('next_btn').disabled = true;
+	document.getElementById('selector').disabled = true;
+}
+
+function activateUIselection() {
+	for (let i = 0; i < markers.length; i++) {
+		activateMarkerClick(markers[i]);
+	}
+	document.getElementById('next_btn').disabled = false;
+	document.getElementById('selector').disabled = false;
+}
+
