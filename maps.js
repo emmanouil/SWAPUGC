@@ -228,6 +228,22 @@ function highlightMarker(marker_in, highlight = true) {
 	marker_in.setMap(map);
 }
 
+function deactivateMarkerClick(marker_in) {
+	marker_in.setClickable(false);
+	marker_in.icon.fillColor = 'gray';
+	marker_in.setMap(map);
+}
+
+function activateMarkerClick(marker_in) {
+	marker_in.setClickable(true);
+	if (globalSetIndex[marker_in.index].descriptor.is_mobile) {
+		marker_in.icon.fillColor = 'green';
+	} else {
+		marker_in.icon.fillColor = 'black';
+	}
+	marker_in.setMap(map);
+}
+
 function toggleRoom() {
 	if (SHOW_ROOM) {
 		roomPoly.setMap(null);
