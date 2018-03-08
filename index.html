@@ -53,7 +53,7 @@
                     </ul>
                 </li>
             </ol>
-            If during playback the video stops responding, click "Fix MSE"
+            If during playback the video stops responding, click "Reset MSE"
             <br/>
             <br/> The recommended browser to view the demo is Chrome. Tested on Firefox and Chrome. Does NOT work on Edge (
             <a href="https://github.com/emmanouil/SWAPUGC#known-issues" target="_blank">issue [4]</a>).
@@ -119,8 +119,8 @@
             <div id="menu">
                 <button id="init_ts_btn" onclick="fetchAndInitMarkers();" disabled>Init Time & Space</button>
                 <button id="play_btn" onclick="goToAndPlay(this);" disabled>Play</button>
-                <button id="pause_btn" onclick="pausePlayback(this);" disabled title="When paused, view does not update">Pause</button>
-                <button id="toggle_room_btn" onclick="toggleRoom(this);" disabled title="Room overlay is an approximation">Toggle Room Overlay</button>
+                <!--<button id="pause_btn" onclick="pausePlayback(this);" disabled title="When paused, view does not update">Pause</button>-->
+                <button id="mute_btn" style="width: 5em;" onclick="main_view.muted = !main_view.muted; if(this.innerText =='Mute'){this.innerText ='Unmute'}else{this.innerText ='Mute'};">Mute</button>
                 <br/>
                 <!-- <label>0<input name ="zoomLevel" type='range' onchange="setDefaultZoom();" min="0" max="21" step="1"/>21 Set value of Default Zoom level</label> -->
                 <button id="test_btn" onclick="printBufferStatus();" disabled hidden>print Buffer Status</button>
@@ -128,12 +128,17 @@
                 Select File:
                 <select id="selector" disabled onchange="selectFile(this.selectedIndex, this.selectedOptions[0].value); disable_btn_for('selector', 2000);">
                 </select>
-                <button id="reset_btn" onclick="resetSourceBuffer(); disable_btn_for('reset_btn', 2000);" disabled>Fix MSE</button>
+                <br/>
+                <div id="bottom_line">
+                    <button id="reset_btn" onclick="resetSourceBuffer(); logUI('Manually reseting sourceBuffer'); disable_btn_for('reset_btn', 2000);"
+                        disabled>Reset MSE</button>
+                    <button id="toggle_room_btn" onclick="toggleRoom(this);" disabled title="Room overlay is an approximation">Toggle Room Overlay</button>
+                    <span id="messages_div" style="text-align: justify; font-size:small; font-family: 'Roboto', sans-serif;">What is
+                        <a href="https://github.com/emmanouil/SWAPUGC#swapugc" target="_blank" style="color:black;">SWAPUGC</a>?</span>
+                </div>
             </div>
-            <br/>
-            <div id="messages_div" style="text-align: justify; font-size:small; font-family: 'Roboto', sans-serif;"> What is
-                <a href="https://github.com/emmanouil/SWAPUGC#swapugc" target="_blank" style="color:black;">SWAPUGC</a>?</div>
         </div>
+        <br/>
     </div>
     <!--
     <div id="about">
