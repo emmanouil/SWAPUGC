@@ -107,15 +107,17 @@ function fetch_promise(what, resp_type = 'no-type', full_request = false) {
 
         req.onload = function () {
             var resp;
-            if (full_request) {
+            if (full_request && req.status === 200) {
                 resolve(req);
             } else if (req.status === 200) {
                 resolve(req.response);
             } else {
+                logERR(req.statusText);
                 reject(Error('Request for ' + what + ' failed. Error: ' + req.statusText));
             }
         };
         req.onerror = function () {
+            logERR(req.statusText);
             reject(Error('Request for ' + what + ' failed. Netowork error: ' + req.statusText));
         };
 

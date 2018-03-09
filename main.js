@@ -145,7 +145,7 @@ function init() {
 									mediaSource.addEventListener("sourceopen", function () { fetchAndInitMarkers() }, { once: true });
 								}
 							}).catch(function (err) { logERR(err); });
-					}).catch(function (err) { logERR('Error parsing playlist - check file ' + PLAYLIST_FILE); });
+					}).catch(function (err) { logERR('Possible error parsing file ' + PLAYLIST_FILE); logERR(err); });
 			}).then(function (response) {
 				//we currently do not do anything after parsing playlist, prior to mpds
 				//TODO delete this block if not needed
