@@ -63,7 +63,6 @@ function initMarkers() {
     centerMap(reference_location[0], reference_location[1], 20)
     analyzeGeospatialData();
     document.getElementById('play_btn').disabled = false;
-    document.getElementById('toggle_room_btn').disabled = false;
 }
 
 

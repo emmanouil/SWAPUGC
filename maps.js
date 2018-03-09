@@ -95,6 +95,7 @@ function CustomControl(controlDiv, map, c_title, c_text, c_function) {
 }
 
 
+
 function initMap() {
 
 	mapOptions = {
@@ -105,7 +106,9 @@ function initMap() {
 		clickableIcons: false,
 		mapTypeControl: false,
 		disableDefaultUI: true,
-		gestureHandling: "none",
+		gestureHandling: "cooperative",
+		maxZoom: 20,
+		minZoom: 20,
 		keyboardShortcuts: false,
 		mapTypeId: google.maps.MapTypeId.ROADMAP,
 		mapTypeControlOptions: {
@@ -153,13 +156,35 @@ function initMap() {
 		orchestraPath.setMap(map);
 	}
 
+
+	//Add custom controls
+	//custom control for centering map
+	var centerControlDiv = document.createElement('div');
+	//	var centerControl = new CenterControl(centerControlDiv, map);
+	var centerControl = new CustomControl(centerControlDiv, map, 'Click to recenter the map', 'Center Map', function () {
+		centerMap(reference_location[0], reference_location[1]);
+	});
+
+	centerControlDiv.index = 1;
+	map.controls[google.maps.ControlPosition.TOP_LEFT].push(centerControlDiv);
+
+	//custom control for togggling room overlay
+	var toggleControlDiv = document.createElement('div');
+	var toggleControl = new CustomControl(toggleControlDiv, map, 'Click to toggle room overlay on/off', 'Toggle Overlay', toggleRoom);
+
+	toggleControlDiv.index = 1;
+	map.controls[google.maps.ControlPosition.TOP_LEFT].push(toggleControlDiv);
+
+	//endof add custom controls
+
+
 	activateMapEvents();	//in events.js
 	activateUI();	//in events.js
 }
 
 function centerMap(latitude, longitude, zoom) {
 	if (!latitude || !longitude) {
-		console.log("Lat and/or Lng not set");
+		logDEBUG("Lat and/or Lng not set");
 		return;
 	} else {
 		map.panTo({ lat: latitude, lng: longitude });
