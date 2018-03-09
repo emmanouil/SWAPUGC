@@ -138,7 +138,12 @@ function init() {
 								active_video_id = globalSetIndex[PLAYLIST_MAIN_VIEW_INDEX].id;
 								active_video_index = PLAYLIST_MAIN_VIEW_INDEX;
 								logINFO('active_video_id set to ' + active_video_id);
-								document.getElementById('init_ts_btn').disabled = false;
+								//we want MSE to be ready before calling fetchAndInitMarkers
+								if (mediaSource.readyState == "open") {
+									fetchAndInitMarkers()
+								} else {
+									mediaSource.addEventListener("sourceopen", function () { fetchAndInitMarkers() }, { once: true });
+								}
 							}).catch(function (err) { logERR(err); });
 					}).catch(function (err) { logERR('Error parsing playlist - check file ' + PLAYLIST_FILE); });
 			}).then(function (response) {
@@ -240,7 +245,7 @@ function addVideoToIndex(XMLHttpRequest_in) {
 	return loc_obj;
 }
 
-/* Called when "Init Time & Space" btn is clicked and fetches location and orientation sets */
+/* Called from fetchAndInitMarkers and fetches location and orientation sets */
 function loadSpatialData() {
 
 	let loc_promises = [];
@@ -264,7 +269,7 @@ function loadSpatialData() {
 	}).catch(function (err) { logERR('Error parsing orientation files'); logERR(err) });
 }
 
-/* Called when "Init Time & Space" btn is clicked and calculates relative time between views */
+/* Called from fetchAndInitMarkers and calculates relative time between views */
 function setMainViewStartTime() {
 	let tmp_time = globalSetIndex[PLAYLIST_MAIN_VIEW_INDEX].descriptor.startTimeMs - reference_recording_set.descriptor.startTimeMs;
 	if (tmp_time) {//should be 0

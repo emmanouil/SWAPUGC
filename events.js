@@ -36,7 +36,7 @@ function goToVideo(i_in) {
 }
 
 /**
- * Called when Init Time & Space button is clicked
+ * Called after map is loaded and MSE is ready
  */
 function fetchAndInitMarkers() {
     //TODO (#33) the following is a workaround - we fire an event when start time is calculated - promise to re-implement with promises
@@ -51,7 +51,6 @@ function fetchAndInitMarkers() {
         setMainViewStartTime();
     }, { once: true });
 
-    document.getElementById('init_ts_btn').disabled = true;
     loadSpatialData();
 }
 

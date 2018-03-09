@@ -35,13 +35,8 @@
         <div id="d_view" style="text-align: justify; font-family: 'Roboto', sans-serif;">
             <span style="margin:auto;font-family: 'Raleway', sans-serif;font-weight:bold;text-align: center;font-size:large;">(How To) Use the Demo</span>
             <br/>
-            <br/> Wait for the map to load (it is fetched using the Google maps API). When the map is ready, the "Init Time &amp;
-            Space" will be activated.
+            <br/> Wait for the map to load and setup; when ready, the "Play" button will be activated.
             <ol type="1">
-                <li>
-                    <span style="font-weight:lighter;font-size:smaller;">(when activated)</span> Click "Init Time &amp; Space", to fetch video with associated Spatiotemporal
-                    data, center map and place markers..
-                </li>
                 <li>
                     <span style="font-weight:lighter;font-size:smaller;">(when activated)</span> Click "Play", to start playback.</li>
                 <li>
@@ -50,8 +45,9 @@
                         <li>Click on a map marker, to navigate to this view</li>
                         <li>Click on the "Switch" button, to navigate to the next view</li>
                         <li>Select a recording ID from the File select dropdown</li>
-                        <li>Select an algorithm from the Policy select dropdown <span style="font-weight:lighter;font-size:smaller;">(note: other options will be disabled until
-                            'Manual' is selected again)</span></li>
+                        <li>Select an algorithm from the Policy select dropdown
+                            <span style="font-weight:lighter;font-size:smaller;">(note: other options will be disabled until 'Manual' is selected again)</span>
+                        </li>
                     </ul>
                 </li>
             </ol>
@@ -87,7 +83,9 @@
                     <span style="font-weight:lighter;font-size:small;">main.js</span>
                 </li>
                 <li>
-                    Run a local server (e.g. <a href="https://cesanta.com/binary.html">Mongoose</a>) on the top level (i.e. inside the "SWAPUGC" folder), or upload the repository contents to your server.</li>
+                    Run a local server (e.g.
+                    <a href="https://cesanta.com/binary.html">Mongoose</a>) on the top level (i.e. inside the "SWAPUGC" folder), or upload the repository contents
+                    to your server.</li>
                 <li>
                     Use your browser to navigate to
                     <ul style="list-style-type:circle">
@@ -109,7 +107,7 @@
 
         <div id="container">
             <div id="map">
-                As long as you see this text, the map is still loading. After the map is loaded, click on "Init Time and Space" button.
+                As long as you see this text, the map is still loading...
                 <br/>
                 <br/> NOTE: this demo uses the Google Maps API. If the map is not loading, make sure that the Google Maps service
                 is online and that it is not blocked by your firewall/proxy
@@ -119,12 +117,10 @@
                 <video id="v_main" width="640" height="360" poster="assets/v_poster.png"></video>
             </div>
             <div id="menu">
-                <button id="init_ts_btn" onclick="fetchAndInitMarkers();" disabled>Init Time & Space</button>
                 <button id="play_btn" onclick="goToAndPlay(this);" disabled>Play</button>
                 <!--<button id="pause_btn" onclick="pausePlayback(this);" disabled title="When paused, view does not update">Pause</button>-->
                 <button id="mute_btn" style="width: 5em;" onclick="main_view.muted = !main_view.muted; if(this.innerText =='Mute'){this.innerText ='Unmute'}else{this.innerText ='Mute'};">Mute</button>
                 <br/>
-                <!-- <label>0<input name ="zoomLevel" type='range' onchange="setDefaultZoom();" min="0" max="21" step="1"/>21 Set value of Default Zoom level</label> -->
                 <button id="test_btn" onclick="printBufferStatus();" disabled hidden>print Buffer Status</button>
                 <button id="next_btn" onclick="nextStream(); disable_btn_for('next_btn', 2000); disable_btn_for('selector', 2000);disable_btn_for('policy_slk', 2000);"
                     disabled>Switch</button>
