@@ -52,6 +52,48 @@ var orchestraStyle = {
 	strokeWeight: 10
 };
 
+function setControlStyle(control, title) {
+	control.style.backgroundColor = '#fff';
+	control.style.border = '1px solid grey';
+	control.style.borderRadius = '1px';
+	//control.style.boxShadow = '0 2px 6px rgba(0,0,0,.3)';
+	control.style.cursor = 'pointer';
+	control.style.marginBottom = '2px';
+	control.style.marginLeft = '4px';
+	control.style.marginTop = '1px';
+	control.style.textAlign = 'center';
+	control.title = title;
+};
+
+function setControlTextStyle(control, text) {
+	control.style.color = 'rgb(25,25,25)';
+	control.style.fontFamily = 'Roboto,Arial,sans-serif';
+	control.style.fontSize = '12px';
+	control.style.lineHeight = '16px';
+	control.style.paddingLeft = '5px';
+	control.style.paddingRight = '5px';
+	control.style['user-select'] = 'none';
+	control.innerHTML = text;
+}
+
+//Custom control constructor
+function CustomControl(controlDiv, map, c_title, c_text, c_function) {
+
+	// Set CSS for the control border.
+	var controlUI = document.createElement('div');
+	setControlStyle(controlUI, c_title);
+	controlDiv.appendChild(controlUI);
+
+	// Set CSS for the control interior.
+	var controlText = document.createElement('div');
+	setControlTextStyle(controlText, c_text);
+
+	controlUI.appendChild(controlText);
+
+	// Setup the click event listener
+	controlUI.addEventListener('click', c_function);
+}
+
 
 function initMap() {
 
