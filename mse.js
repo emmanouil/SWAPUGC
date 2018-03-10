@@ -47,6 +47,11 @@ function onSourceOpen(mime_codec) {
 function addSegment(seg_in) {
     if (sourceBuffer.updating) {
         logWARN('sourceBuffer was updating when addSegment was called');
+        //If we are on roundRobin, we do not want to get stuck - so we reset to be on the safe side
+        if (roundRobin_interval_id > 0) {
+            sourceBuffer.addEventListener('updateend', resetSourceBuffer, { once: true });
+            //sourceBuffer.addEventListener('updateend', addSegment(seg_in), { once: true });
+        }
     }
     if (seg_in == null) {
         // Error fetching the initialization segment. Signal end of stream with an error.
