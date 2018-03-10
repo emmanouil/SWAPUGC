@@ -43,7 +43,6 @@
                     <ul style="list-style-type:circle">
                         <li>Click on a map marker, to navigate to this view</li>
                         <li>Click on the "Switch" button, to navigate to the next view</li>
-                        <li>Select a recording ID from the File select dropdown</li>
                         <li>Select an algorithm from the Policy select dropdown
                             <span style="font-weight:lighter;font-size:smaller;">(note: other options will be disabled until 'Manual' is selected again)</span>
                         </li>
@@ -125,8 +124,7 @@
                 <button id="test_btn" onclick="printBufferStatus();" disabled hidden>print Buffer Status</button>
                 <button id="next_btn" onclick="nextStream(); disable_btn_for('next_btn', 2000); disable_btn_for('selector', 2000);disable_btn_for('policy_slk', 2000);"
                     disabled>Switch</button>
-                Select File:
-                <select id="selector" disabled onchange="selectFile(this.selectedIndex, this.selectedOptions[0].value); disable_btn_for('selector', 2000);">
+                <select id="selector" hidden disabled onchange="selectFile(this.selectedIndex, this.selectedOptions[0].value); disable_btn_for('selector', 2000);">
                 </select>
                 Select Switching Policy:
                 <select id="policy_slk" disabled onchange="selectPolicy(this.selectedOptions[0].value); disable_btn_for('policy_slk', 2000);">
