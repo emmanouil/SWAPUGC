@@ -10,8 +10,8 @@
 </head>
 
 <body>
-    <div id="title_div" style="margin:auto;font-family: 'Roboto', sans-serif;text-align: center;">
-        <h3>SWAPUGC: Software for Adaptive Playback of UGC videos - Demo</h3>
+    <div id="title_div">
+        SWAPUGC: Software for Adaptive Playback of UGC videos - Demo
     </div>
 
     <svg id="user-svg">
@@ -118,9 +118,6 @@
                 <button id="play_btn" onclick="goToAndPlay(this);" disabled>Play</button>
                 <!--<button id="pause_btn" onclick="pausePlayback(this);" disabled title="When paused, view does not update">Pause</button>-->
                 <button id="mute_btn" style="width: 5em;" onclick="main_view.muted = !main_view.muted; if(this.innerText =='Mute'){this.innerText ='Unmute'}else{this.innerText ='Mute'};">Mute</button>
-                <button id="reset_btn" onclick="resetSourceBuffer(); logUI('Manually reseting sourceBuffer'); disable_btn_for('reset_btn', 2000);"
-                    disabled>Reset MSE</button>
-                <br/>
                 <button id="test_btn" onclick="printBufferStatus();" disabled hidden>print Buffer Status</button>
                 <button id="next_btn" onclick="nextStream(); disable_btn_for('next_btn', 2000); disable_btn_for('selector', 2000);disable_btn_for('policy_slk', 2000);"
                     disabled>Switch</button>
@@ -131,6 +128,8 @@
                 </select>
                 <br/>
                 <div id="bottom_line">
+                    <button id="reset_btn" onclick="resetSourceBuffer(); logUI('Manually reseting sourceBuffer'); disable_btn_for('reset_btn', 2000);"
+                        disabled>Reset MSE</button>
                     <span id="messages_div" style="text-align: justify; font-size:small; font-family: 'Roboto', sans-serif;">What is
                         <a href="https://github.com/emmanouil/SWAPUGC#swapugc" target="_blank" style="color:black;">SWAPUGC</a>?</span>
                 </div>

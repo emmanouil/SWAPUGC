@@ -49,7 +49,14 @@ html, body {
 	src: url("fonts/Raleway/Raleway-Italic.ttf");
 	font-style: italic;
 }
-
+#title_div{
+	margin:none;
+	 font-family: 'Roboto', sans-serif;
+	  text-align: center;
+	  font-size: 16px;
+	  font-weight: bold;
+	  margin: 2px;
+}
 #body_div{
 	height: 768px;
 	width: 1280px;
@@ -101,7 +108,7 @@ html, body {
 	z-index: 53;
 	margin-left: auto;
 	margin-right: auto;
-	margin-bottom: 3px;
+	margin-bottom: 2px;
 }
 
 #user-svg{
@@ -124,6 +131,7 @@ html, body {
 }
 
 #menu{
+	margin: none;
 	padding: 0.5em;
 	line-height: 25px;
 }
