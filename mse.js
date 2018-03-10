@@ -47,11 +47,8 @@ function onSourceOpen(mime_codec) {
 function addSegment(seg_in) {
     if (sourceBuffer.updating) {
         logWARN('sourceBuffer was updating when addSegment was called');
-        //If we are on roundRobin, we do not want to get stuck - so we reset to be on the safe side
-        if (roundRobin_interval_id > 0) {
-            sourceBuffer.addEventListener('updateend', resetSourceBuffer, { once: true });
-            //sourceBuffer.addEventListener('updateend', addSegment(seg_in), { once: true });
-        }
+        sourceBuffer.addEventListener('updateend', check_status, { once: true });
+        return; //we return instead of setting a callback on "updateend" because we might have switched stream in the meantime
     }
     if (seg_in == null) {
         // Error fetching the initialization segment. Signal end of stream with an error.
@@ -59,8 +56,12 @@ function addSegment(seg_in) {
         mediaSource.endOfStream("network");
         return;
     }
-
-    sourceBuffer.appendBuffer(seg_in);
+    try {
+        sourceBuffer.appendBuffer(seg_in);
+    } catch (e) {
+        console.error(e);
+        resetSourceBuffer();
+    }
     //    playlistPosition++;
     //    sourceBuffer.addEventListener('updateend', handleNextPlElement, { once: false });
 }
