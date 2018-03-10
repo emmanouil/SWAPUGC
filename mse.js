@@ -47,7 +47,9 @@ function onSourceOpen(mime_codec) {
 function addSegment(seg_in) {
     if (sourceBuffer.updating) {
         logWARN('sourceBuffer was updating when addSegment was called');
-        sourceBuffer.addEventListener('updateend', check_status, { once: true });
+        sourceBuffer.abort();
+        sourceBuffer.check_status();
+        //sourceBuffer.addEventListener('updateend', check_status, { once: true });
         return; //we return instead of setting a callback on "updateend" because we might have switched stream in the meantime
     }
     if (seg_in == null) {
