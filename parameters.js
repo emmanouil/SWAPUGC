@@ -26,9 +26,10 @@ var reference_location = [53.472667, -2.299053]
 var reference_recordingID = 'A002C001_140325E3';
 /* main/reference parsed recording data set (samples) */
 var reference_recording_set;
-//TODO remove reference_start_time or main_view_startTime
+//time at which the video element starts TODO remove reference_start_time or main_view_startTime
 var reference_start_time = 0;
-
+//time at which an end event is fired
+var reference_end_time = Infinity;
 
 
 

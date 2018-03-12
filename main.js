@@ -298,6 +298,32 @@ function setMainViewStartTime() {
 
 }
 
+/* Called from fetchAndInitMarkers and sets an event to fire when the shortest video is over */
+function setMainViewEndTime() {
+	let end_time = Infinity;
+	for (let i = 0; i < globalSetIndex.length; i++) {
+		if (globalSetIndex[i].id == reference_recordingID) {
+			continue;
+		}
+		if (globalSetIndex[i].descriptor.durationMs / 1000 + reference_start_time < end_time) {
+			end_time = globalSetIndex[i].descriptor.durationMs / 1000 + reference_start_time;
+		}
+	}
+	reference_end_time = end_time;
+
+	//we add the end time event at the textTrack of reference view
+	let vtc = new VTTCue(reference_end_time - 1.0, reference_end_time + VTTCUE_DURATION / 1000, "{ \"Event\": \"video_end\" }");
+	vtc.size = 0;	//TODO: hack, size 0 indicating an event
+	for (let i = 0; i < main_view_tracks.length; i++) {
+		if (main_view_tracks[i].label == reference_recordingID) {
+			main_view_tracks[i].addCue(vtc);
+			return;
+		}
+	}
+}
+
+
+
 function loadCoords(req_in) {
 	loadAssets('_LOC', req_in)
 }
@@ -374,6 +400,11 @@ function analyzeGeospatialData() {
 			continue;
 		}
 	}
+
+
+	//TODO after we move set reference_start_time out of addMarkerUpdates, move this out of here
+	setMainViewEndTime();
+
 }
 
 function addMarkerUpdates(set_in, tmp_index) {
