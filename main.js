@@ -139,6 +139,10 @@ function init() {
 								active_video_id = globalSetIndex[PLAYLIST_MAIN_VIEW_INDEX].id;
 								active_video_index = PLAYLIST_MAIN_VIEW_INDEX;
 								logINFO('active_video_id set to ' + active_video_id);
+								//prepare the textTracks
+								for (let s_i of globalSetIndex) {
+									s_i.main_view_tracks_no = main_view_tracks.push(main_view.addTextTrack("metadata", s_i.id)) - 1;
+								}
 								//we want MSE to be ready before calling fetchAndInitMarkers
 								if (mediaSource.readyState == "open") {
 									fetchAndInitMarkers()
@@ -382,22 +386,18 @@ function analyzeGeospatialData() {
 	 */
 	for (let i = 0; i < globalSetIndex.length; i++) {
 		let s = globalSetIndex[i];
-		if (s.id != reference_recordingID) {
-			let tmp_index = main_view_tracks.push(main_view.addTextTrack("metadata", s.id))
-			addMarkerUpdates(s, tmp_index - 1);
-			globalSetIndex[i].main_view_tracks_no = tmp_index - 1;
-			main_view_tracks[tmp_index - 1].oncuechange = function () {
-				for (let i = 0; i < this.activeCues.length; i++) {
-					if (this.activeCues[i].size == 1) {
-						updateMarkerOrientation(this.activeCues[i].track.label, Number(this.activeCues[i].text));
-					} else if (this.activeCues[i].size == 2) {
-						updateMarkerLocation(this.activeCues[i].track.label, JSON.parse(this.activeCues[i].text));
-					}
+		addMarkerUpdates(s, i);
+		globalSetIndex[i].main_view_tracks_no = i;
+		main_view_tracks[i].oncuechange = function () {
+			for (let i = 0; i < this.activeCues.length; i++) {
+				if (this.activeCues[i].size == 1) {
+					updateMarkerOrientation(this.activeCues[i].track.label, Number(this.activeCues[i].text));
+				} else if (this.activeCues[i].size == 2) {
+					updateMarkerLocation(this.activeCues[i].track.label, JSON.parse(this.activeCues[i].text));
+				} else if (this.activeCues[i].size == 0) {
+					handleEvent(this.activeCues[i].track.label, JSON.parse(this.activeCues[i].text));
 				}
 			}
-		} else {
-			logINFO('main view has no changes in loc/orient, skipping addMarkerUpdates for set')
-			continue;
 		}
 	}
 
@@ -455,13 +455,6 @@ function addMarkerUpdates(set_in, tmp_index) {
 		vtc.size = 2;	//we set size 1 since we set lat and lng
 		tmp_track.addCue(vtc);
 	}
-
-	/*
-	var t_start = set_in.descriptor.startTimeMs;
-	for( var i =0; i< set_in.orientSet; i++){
-
-	}
-	*/
 }
 
 //called when the play button is pressed
@@ -688,4 +681,19 @@ function activate_policies() {
 		option.text = option.value = p_i;
 		policy_slk.add(option);
 	}
+}
+
+function handleEvent(marker_id, obj_in) {
+	if (obj_in.Event == 'video_end') {
+		video_end();
+	}
+}
+
+function video_end() {
+	killInterval();
+	main_view.load();
+	deactivateUIselection();
+	stopRoundRobin();
+	deactivateUIselection();
+	logUI('Demo is over, reload page to start over');
 }
