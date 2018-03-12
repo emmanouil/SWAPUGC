@@ -474,16 +474,16 @@ function resetSourceBuffer() {
 	killInterval();
 	last_fetched_index = -1;
 	last_fetched_seg_n = -1;
-	for (let i = sourceBuffer.buffered.length - 1; i >= 0; i--) {
-		if (sourceBuffer.updating) {
-			sourceBuffer.addEventListener('updateend', function () {
-				resetSourceBuffer();
-			}, { once: true });
-			logINFO('sourceBuffer is updating, reset will commence when the update is over');
-			return;
-		}
-		sourceBuffer.remove(sourceBuffer.buffered.start(i), sourceBuffer.buffered.end(i));
+
+	if (sourceBuffer.updating) {
+		sourceBuffer.addEventListener('updateend', function () {
+			resetSourceBuffer();
+		}, { once: true });
+		logINFO('sourceBuffer is updating, reset will commence when the update is over');
+		return;
 	}
+	sourceBuffer.remove(sourceBuffer.buffered.start(0), sourceBuffer.buffered.end(sourceBuffer.buffered.length - 1));
+
 	let seg_n = mpd_getSegmentIndexAtTime(globalSetIndex[active_video_index].mpd.representations[0], main_view.currentTime - (globalSetIndex[active_video_index].descriptor.tDiffwReferenceMs / 1000));
 	if (sourceBuffer.updating) {
 		sourceBuffer.addEventListener('updateend', function () {
@@ -498,6 +498,7 @@ function resetSourceBuffer() {
 	}
 	startInterval();
 }
+
 
 function addOption(file_id) {
 	let option = document.createElement("option");
