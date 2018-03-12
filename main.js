@@ -4,6 +4,7 @@
 //temporary vars used for testing purposes
 var last_fetched_seg_n = -1;
 var last_fetched_index = -1;
+var last_removed_timerage = -1;	//during resetSourceBuffer or cleanSourceBuffer
 
 /**
  * Playlist & File Parameters
@@ -201,8 +202,12 @@ function check_status() {
 	let end_time = getSourceBufferEnd();
 
 	if (getSourceBufferTimeRangeNumber() > 2) {
-		logDEBUG('sourceBuffer contains more than 2 time ranges. cleaning up contents...')
+		logDEBUG('sourceBuffer contains more than 2 time ranges. resetting...')
 		resetSourceBuffer();
+		return;
+	} else if (getSourceBufferTimeRangeNumber() == 2) {
+		logDEBUG('sourceBuffer contains 2 time ranges. cleaning up contents...')
+		cleanSourceBuffer();
 		return;
 	} else if (end_time - main_view.currentTime > UPDATE_S || getSourceBufferTimeRangeNumber == 0) {
 		return;
@@ -496,6 +501,43 @@ function resetSourceBuffer() {
 	if (navigator.userAgent.indexOf("Chrome") != -1) {
 		main_view.currentTime += 0.001;
 	}
+	startInterval();
+}
+
+//WARNING: so far we call it only with 2 timeranges inside the source buffer
+function cleanSourceBuffer() {
+	logINFO('cleaning sourceBuffer');
+	killInterval();
+	last_fetched_index = -1;
+	last_fetched_seg_n = -1;
+
+	if (sourceBuffer.updating) {
+		sourceBuffer.addEventListener('updateend', function () {
+			cleanSourceBuffer();
+		}, { once: true });
+		logINFO('sourceBuffer is updating, cleanup will commence when the update is over');
+		return;
+	}
+
+	if (sourceBuffer.buffered.end(0) < main_view.currentTime) {	//if the early source buffer ends before the current time
+		if (last_removed_timerage == sourceBuffer.buffered.end(0)) {	//check that we did not get into a loophole (usually when the diff is less than the dur of a frame)
+			resetSourceBuffer();
+			return;
+		}
+		last_removed_timerage = sourceBuffer.buffered.end(0);
+		sourceBuffer.remove(sourceBuffer.buffered.start(0), sourceBuffer.buffered.end(0));
+	} else if (sourceBuffer.buffered.start(1) > main_view.currentTime) {//or the late start after the current time
+		if (last_removed_timerage == sourceBuffer.buffered.start(1)) {//check that we did not get into a loophole (usually when the diff is less than the dur of a frame)
+			resetSourceBuffer();
+			return;
+		}
+		last_removed_timerage = sourceBuffer.buffered.start(1);
+		sourceBuffer.remove(sourceBuffer.buffered.start(1), sourceBuffer.buffered.end(1));
+	} else {
+		logWARN("cleanSourceBuffer FAILED, printing buffer status");
+		printBufferStatus();
+	}
+
 	startInterval();
 }
 
