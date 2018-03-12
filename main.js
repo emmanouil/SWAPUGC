@@ -526,7 +526,7 @@ function cleanSourceBuffer() {
 		}
 		last_removed_timerage = sourceBuffer.buffered.end(0);
 		sourceBuffer.remove(sourceBuffer.buffered.start(0), sourceBuffer.buffered.end(0));
-	} else if (sourceBuffer.buffered.start(1) > main_view.currentTime) {//or the late start after the current time
+	} else if (sourceBuffer.buffered.start(1) > main_view.currentTime && ((sourceBuffer.buffered.end(0) + globalSetIndex[0].mpd.representations[0].frameRate / 1000) < sourceBuffer.buffered.start(1))) {//or the late start after the current time
 		if (last_removed_timerage == sourceBuffer.buffered.start(1)) {//check that we did not get into a loophole (usually when the diff is less than the dur of a frame)
 			resetSourceBuffer();
 			return;
@@ -537,7 +537,6 @@ function cleanSourceBuffer() {
 		logWARN("cleanSourceBuffer FAILED, printing buffer status");
 		printBufferStatus();
 	}
-
 	startInterval();
 }
 
