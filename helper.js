@@ -25,13 +25,13 @@ function logWARN(msg) {
 
 function logINFO(msg) {
     if (LOG_LVL > 1) return;
-    console.log("[INFO] " + msg);
+    console.info("[INFO] " + msg);
 }
 
 function logDEBUG(msg) {
     if (LOG_LVL > 0) return;
     if (SHOW_DEBUG)
-        console.log("[DEBUG] " + msg)
+        console.debug("[DEBUG] " + msg)
 }
 
 /**
@@ -39,7 +39,7 @@ function logDEBUG(msg) {
  * TODO: replace with fetch_res
  */
 function fetch(what, where, resp_type = 'no-type', args) {
-    logINFO("fetching " + what + "   for " + where.name);
+    logDEBUG("fetching " + what + "   for " + where.name);
     if (what.length < 2) {
         logERR("erroneous request");
     }
@@ -56,7 +56,7 @@ function fetch(what, where, resp_type = 'no-type', args) {
     if (resp_type != 'no-type') {
         req.responseType = resp_type;
     }
-    logINFO("fetched " + what + " of type " + resp_type + ", for function " + where.name)
+    logDEBUG("fetched " + what + " of type " + resp_type + ", for function " + where.name)
     req.send();
 }
 
@@ -68,7 +68,7 @@ function fetch(what, where, resp_type = 'no-type', args) {
  * @param {*} args arguments to be passed to the <where>
  */
 function fetch_res(what, where, resp_type = 'no-type', args) {
-    logINFO("fetching " + what + "   for " + where.name);
+    logDEBUG("fetching " + what + "   for " + where.name);
     if (what.length < 2) {
         logERR("erroneous request");
     }
@@ -140,7 +140,7 @@ function assert_fetch(response, target, args = 'no-args') {
         logERR("could NOT fetch file " + response.responseURL + " for " + where + "   . Error: " + response.status + " " + response.statusText);
         return false;
     } else {
-        logINFO("fetched " + response.responseURL + " of type " + ", for function " + target.name)
+        logDEBUG("fetched " + response.responseURL + " of type " + ", for function " + target.name)
     }
     if (args === 'no-args') {
         target(response.response);
