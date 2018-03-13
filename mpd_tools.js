@@ -140,6 +140,14 @@ function mpd_getSegmentNumAtTime(representation_in, t_sec) {
 }
 
 /**
+ * Returns segment numbers (starting counting at 1 )corresponding to the specified time (in s) FOR LIVE (TODO merge)
+ */
+function mpd_getSegmentNumAtTime4Live(seg_template, t_sec) {
+    let time_factor = seg_template.duration / seg_template.timescale;
+    return Math.round(t_sec / time_factor);
+}
+
+/**
  * Returns segment index (starting counting at 0 )corresponding to the specified time (in s)
  */
 function mpd_getSegmentIndexAtTime(representation_in, t_sec) {
@@ -147,9 +155,8 @@ function mpd_getSegmentIndexAtTime(representation_in, t_sec) {
 }
 
 /**
- * Returns segment numbers (starting counting at 1 )corresponding to the specified time (in s) FOR LIVE (TODO merge)
+ * Returns segment index (starting counting at 0 )corresponding to the specified time (in s)
  */
-function mpd_getSegmentNumAtTime4Live(seg_template, t_sec) {
-    let time_factor = seg_template.duration / seg_template.timescale;
-    return Math.round(t_sec / time_factor);
+function mpd_getSegmentIndexAtTime4Live(seg_template, t_sec) {
+    return mpd_getSegmentNumAtTime4Live(seg_template, t_sec) - 1;
 }
