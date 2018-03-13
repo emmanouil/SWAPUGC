@@ -312,14 +312,27 @@ function setMainViewStartTime() {
 		}
 	}
 
-	let index = mpd_getSegmentIndexAtTime(globalSetIndex[0].mpd.representations[0], (tmp_time / 1000)) + 1;
-	fetch_promise(DASH_DIR + '/' + globalSetIndex[0].mpd.representations[0].SegmentList.Segments[index], "arraybuffer", false)
-		.then(function (response) {
-			addSegment(response);
-			main_view.currentTime = main_view_startTime = reference_start_time = (tmp_time / 1000);	//in seconds
-			//TODO (#33) for now we use an event to signal timing info is ready
-			window.dispatchEvent(new CustomEvent('timeDataReady', { detail: 'done' }));
-		}).catch(function (err) { logWARN('Failed promise - Error log: '); logERR(err); });
+
+	let index;
+	if (globalSetIndex[0].mpd.isLiveProfile) {
+		index = mpd_getSegmentIndexAtTime4Live(globalSetIndex[0].mpd.SegmentTemplate, (tmp_time / 1000)) + 2;	//TODO fix this +1
+		fetch_promise(DASH_DIR + '/' + globalSetIndex[0].mpd.SegmentTemplate.media.replace("$Number$", index), "arraybuffer", false)
+			.then(function (response) {
+				addSegment(response);
+				main_view.currentTime = main_view_startTime = reference_start_time = (tmp_time / 1000);	//in seconds
+				//TODO (#33) for now we use an event to signal timing info is ready
+				window.dispatchEvent(new CustomEvent('timeDataReady', { detail: 'done' }));
+			}).catch(function (err) { logWARN('Failed promise - Error log: '); logERR(err); });
+	} else {
+		index = mpd_getSegmentIndexAtTime(globalSetIndex[0].mpd.representations[0], (tmp_time / 1000)) + 1; //TODO fix this +1
+		fetch_promise(DASH_DIR + '/' + globalSetIndex[0].mpd.representations[0].SegmentList.Segments[index], "arraybuffer", false)
+			.then(function (response) {
+				addSegment(response);
+				main_view.currentTime = main_view_startTime = reference_start_time = (tmp_time / 1000);	//in seconds
+				//TODO (#33) for now we use an event to signal timing info is ready
+				window.dispatchEvent(new CustomEvent('timeDataReady', { detail: 'done' }));
+			}).catch(function (err) { logWARN('Failed promise - Error log: '); logERR(err); });
+	}
 
 }
 
@@ -519,7 +532,6 @@ function switchToStream(set_index, recordingID) {
 		seg_n = mpd_getSegmentNumAtTime4Live(globalSetIndex[set_index].mpd.SegmentTemplate, end_time - globalSetIndex[set_index].descriptor.tDiffwReferenceMs / 1000);
 	} else {
 		seg_n = mpd_getSegmentIndexAtTime(globalSetIndex[set_index].mpd.representations[0], end_time - globalSetIndex[set_index].descriptor.tDiffwReferenceMs / 1000);
-
 	}
 	seg_n++;	//because we are switching we need the segment after the end of the currently playing
 	mse_initAndAdd(set_index, seg_n);
@@ -611,8 +623,6 @@ function mse_initAndAdd(stream_index, segment_n) {
 		.then(function (response) {
 			addSegment(response);
 
-
-
 			if (globalSetIndex[stream_index].mpd.isLiveProfile) {
 				sourceBuffer.addEventListener('updateend', function () {
 					fetch_promise(DASH_DIR + '/' + globalSetIndex[stream_index].mpd.SegmentTemplate.media.replace("$Number$", segment_n), "arraybuffer", false)
@@ -631,8 +641,6 @@ function mse_initAndAdd(stream_index, segment_n) {
 						.catch(function (err) { logWARN('Failed promise - Error log: '); logERR(err); });
 				}, { once: true });
 			}
-
-
 
 		}).catch(function (err) { logWARN('Failed promise - Error log: '); logERR(err); });
 }
