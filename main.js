@@ -101,9 +101,21 @@ function init() {
 											if (values[i].responseURL.search(globalSetIndex[j].id) > -1) {
 												globalSetIndex[j].mpd = new MPD(values[i].responseURL);
 												globalSetIndex[j].mpd.fullDocument = mpd_parse(values[i].response);
-												globalSetIndex[j].mpd.initSegment = mpd_getInitSegURL(globalSetIndex[j].mpd.fullDocument);
-												var t_rep = mpd_getRepresentationNodeByID(globalSetIndex[j].mpd.fullDocument, 1);
-												globalSetIndex[j].mpd.representations.push(mpd_getRepresentationByNode(t_rep));
+												//we have a live profile - generate segment list
+												if (globalSetIndex[j].mpd.document.getAttribute("profiles").indexOf("dash:profile:isoff-live") != -1) {
+													globalSetIndex[j].mpd.isLiveProfile = true;
+													let temp_template = globalSetIndex[j].mpd.document.getElementsByTagName("SegmentTemplate")[0];
+													globalSetIndex[j].mpd.SegmentTemplate = mpd_getRepresentationAttributesByNode(globalSetIndex[j].mpd.document.getElementsByTagName("SegmentTemplate")[0]);
+													globalSetIndex[j].mpd.initSegment = temp_template.getAttribute("initialization");
+													var t_rep = mpd_getRepresentationNodeByID(globalSetIndex[j].mpd.fullDocument, 1);
+													globalSetIndex[j].mpd.representations.push(mpd_getRepresentationAttributesByNode(t_rep));
+
+												} else { //we do not have a live profile - parse segment list
+													globalSetIndex[j].mpd.isLiveProfile = false;
+													globalSetIndex[j].mpd.initSegment = mpd_getInitSegURL(globalSetIndex[j].mpd.fullDocument);
+													var t_rep = mpd_getRepresentationNodeByID(globalSetIndex[j].mpd.fullDocument, 1);
+													globalSetIndex[j].mpd.representations.push(mpd_getRepresentationByNode(t_rep));
+												}
 												break;
 											}
 										}
@@ -217,7 +229,12 @@ function check_status() {
 		return;
 	}
 
-	let seg_n = mpd_getSegmentIndexAtTime(globalSetIndex[active_video_index].mpd.representations[0], end_time - globalSetIndex[active_video_index].descriptor.tDiffwReferenceMs / 1000);
+	let seg_n = 0;
+	if (globalSetIndex[active_video_index].mpd.isLiveProfile) {
+		seg_n = mpd_getSegmentNumAtTime4Live(globalSetIndex[active_video_index].mpd.SegmentTemplate, end_time - globalSetIndex[active_video_index].descriptor.tDiffwReferenceMs / 1000);
+	} else {
+		seg_n = mpd_getSegmentIndexAtTime(globalSetIndex[active_video_index].mpd.representations[0], end_time - globalSetIndex[active_video_index].descriptor.tDiffwReferenceMs / 1000);
+	}
 	seg_n++;	//in this case we need the next segment
 
 	if (seg_n == last_fetched_seg_n && active_video_index == active_video_index) {
@@ -226,7 +243,11 @@ function check_status() {
 	}
 	last_fetched_seg_n = seg_n;
 	last_fetched_index = active_video_index;
-	fetch_res(DASH_DIR + '/' + globalSetIndex[active_video_index].mpd.representations[0].SegmentList.Segments[seg_n], addSegment, "arraybuffer");
+	if (globalSetIndex[active_video_index].mpd.isLiveProfile) {
+		fetch_res(DASH_DIR + '/' + globalSetIndex[active_video_index].mpd.SegmentTemplate.media.replace("$Number$", seg_n), addSegment, "arraybuffer");
+	} else {
+		fetch_res(DASH_DIR + '/' + globalSetIndex[active_video_index].mpd.representations[0].SegmentList.Segments[seg_n], addSegment, "arraybuffer");
+	}
 
 }
 
@@ -493,7 +514,13 @@ function switchToStream(set_index, recordingID) {
 
 	setTimeStampOffset(globalSetIndex[set_index].descriptor.tDiffwReferenceMs / 1000);
 
-	let seg_n = mpd_getSegmentIndexAtTime(globalSetIndex[set_index].mpd.representations[0], end_time - globalSetIndex[set_index].descriptor.tDiffwReferenceMs / 1000);
+
+	let seg_n = 0;
+	if (globalSetIndex[set_index].mpd.isLiveProfile) {
+		seg_n = mpd_getSegmentNumAtTime4Live(globalSetIndex[set_index].mpd.SegmentTemplate, end_time - globalSetIndex[set_index].descriptor.tDiffwReferenceMs / 1000);
+	} else {
+		seg_n = mpd_getSegmentIndexAtTime(globalSetIndex[set_index].mpd.representations[0], end_time - globalSetIndex[set_index].descriptor.tDiffwReferenceMs / 1000);
+	}
 
 	mse_initAndAdd(set_index, seg_n);
 }
@@ -513,7 +540,14 @@ function resetSourceBuffer() {
 	}
 	sourceBuffer.remove(sourceBuffer.buffered.start(0), sourceBuffer.buffered.end(sourceBuffer.buffered.length - 1));
 
-	let seg_n = mpd_getSegmentIndexAtTime(globalSetIndex[active_video_index].mpd.representations[0], main_view.currentTime - (globalSetIndex[active_video_index].descriptor.tDiffwReferenceMs / 1000));
+	let seg_n;
+
+	if (globalSetIndex[active_video_index].mpd.isLiveProfile) {
+		seg_n = mpd_getSegmentNumAtTime4Live(globalSetIndex[active_video_index].mpd.SegmentTemplate, main_view.currentTime - (globalSetIndex[active_video_index].descriptor.tDiffwReferenceMs / 1000));
+	} else {
+		seg_n =mpd_getSegmentIndexAtTime(globalSetIndex[active_video_index].mpd.representations[0], main_view.currentTime - (globalSetIndex[active_video_index].descriptor.tDiffwReferenceMs / 1000));
+	}
+
 	if (sourceBuffer.updating) {
 		sourceBuffer.addEventListener('updateend', function () {
 			mse_initAndAdd(active_video_index, seg_n);
@@ -576,13 +610,30 @@ function mse_initAndAdd(stream_index, segment_n) {
 	fetch_promise(DASH_DIR + '/' + globalSetIndex[stream_index].mpd.init_seg, "arraybuffer", false)
 		.then(function (response) {
 			addSegment(response);
-			sourceBuffer.addEventListener('updateend', function () {
-				fetch_promise(DASH_DIR + '/' + globalSetIndex[stream_index].mpd.representations[0].SegmentList.Segments[segment_n], "arraybuffer", false)
-					.then(function (response) {
-						addSegment(response);
-					})
-					.catch(function (err) { logWARN('Failed promise - Error log: '); logERR(err); });
-			}, { once: true });
+
+
+
+			if (globalSetIndex[stream_index].mpd.isLiveProfile) {
+				sourceBuffer.addEventListener('updateend', function () {
+					fetch_promise(DASH_DIR + '/' + globalSetIndex[stream_index].mpd.SegmentTemplate.media.replace("$Number$", segment_n), "arraybuffer", false)
+						.then(function (response) {
+							addSegment(response);
+						})
+						.catch(function (err) { logWARN('Failed promise - Error log: '); logERR(err); });
+				}, { once: true });
+
+			} else {
+				sourceBuffer.addEventListener('updateend', function () {
+					fetch_promise(DASH_DIR + '/' + globalSetIndex[stream_index].mpd.representations[0].SegmentList.Segments[segment_n], "arraybuffer", false)
+						.then(function (response) {
+							addSegment(response);
+						})
+						.catch(function (err) { logWARN('Failed promise - Error log: '); logERR(err); });
+				}, { once: true });
+			}
+
+
+
 		}).catch(function (err) { logWARN('Failed promise - Error log: '); logERR(err); });
 }
 

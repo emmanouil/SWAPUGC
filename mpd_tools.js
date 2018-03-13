@@ -10,6 +10,7 @@
 function MPD(sourceURL) {
     this.sourceURL = sourceURL;
     this.representations = [];
+    this.is_live = null;
 }
 MPD.prototype = {
     get fullDocument() {
@@ -23,6 +24,12 @@ MPD.prototype = {
     },
     set initSegment(init_seg) {
         this.init_seg = init_seg;
+    },
+    get isLiveProfile() {
+        return this.is_live;
+    },
+    set isLiveProfile(islive) {
+        this.is_live = islive;
     },
     get representationCount() {
         return this.representations.length;
@@ -57,13 +64,26 @@ function mpd_getRepresentationNodeByID(mpd_in, r_id) {
         tmp_rep = tmp_reps[i];
         if (tmp_rep.getAttribute("id") === r_id.toString()) {
             return tmp_rep
-        }else{
-            logERR("could not find representation with ID "+r_id);
+        } else {
+            logERR("could not find representation with ID " + r_id);
         }
     }
     return null;
 }
 
+/**
+ * Parses the attributes and segment info/urls from a representation Node to an Object
+ * @param {Object} rep_in representation Node (as returned by mpd_getRepresentationNodeByID)
+ * @returns {Object} an object containing the representation attributes
+ */
+function mpd_getRepresentationAttributesByNode(rep_in) {
+    var tmp_rep = new Object();
+    //get representation properties
+    for (var i = 0; i < rep_in.attributes.length; i++) {
+        tmp_rep[rep_in.attributes[i].name] = rep_in.attributes[i].value
+    }
+    return tmp_rep;
+}
 
 /**
  * Parses the attributes and segment info/urls from a representation Node to an Object
@@ -124,4 +144,12 @@ function mpd_getSegmentNumAtTime(representation_in, t_sec) {
  */
 function mpd_getSegmentIndexAtTime(representation_in, t_sec) {
     return mpd_getSegmentNumAtTime(representation_in, t_sec) - 1;
+}
+
+/**
+ * Returns segment numbers (starting counting at 1 )corresponding to the specified time (in s) FOR LIVE (TODO merge)
+ */
+function mpd_getSegmentNumAtTime4Live(seg_template, t_sec) {
+    let time_factor = seg_template.duration / seg_template.timescale;
+    return Math.round(t_sec / time_factor);
 }
