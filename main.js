@@ -495,7 +495,6 @@ function switchToStream(set_index, recordingID) {
 	} else {
 		logUI("Switching to stream with ID: " + recordingID);
 	}
-
 	let new_set = getSetByVideoId(recordingID);
 	let end_time = main_view.currentTime;
 	/*
@@ -520,8 +519,9 @@ function switchToStream(set_index, recordingID) {
 		seg_n = mpd_getSegmentNumAtTime4Live(globalSetIndex[set_index].mpd.SegmentTemplate, end_time - globalSetIndex[set_index].descriptor.tDiffwReferenceMs / 1000);
 	} else {
 		seg_n = mpd_getSegmentIndexAtTime(globalSetIndex[set_index].mpd.representations[0], end_time - globalSetIndex[set_index].descriptor.tDiffwReferenceMs / 1000);
-	}
 
+	}
+	seg_n++;	//because we are switching we need the segment after the end of the currently playing
 	mse_initAndAdd(set_index, seg_n);
 }
 
@@ -545,7 +545,7 @@ function resetSourceBuffer() {
 	if (globalSetIndex[active_video_index].mpd.isLiveProfile) {
 		seg_n = mpd_getSegmentNumAtTime4Live(globalSetIndex[active_video_index].mpd.SegmentTemplate, main_view.currentTime - (globalSetIndex[active_video_index].descriptor.tDiffwReferenceMs / 1000));
 	} else {
-		seg_n =mpd_getSegmentIndexAtTime(globalSetIndex[active_video_index].mpd.representations[0], main_view.currentTime - (globalSetIndex[active_video_index].descriptor.tDiffwReferenceMs / 1000));
+		seg_n = mpd_getSegmentIndexAtTime(globalSetIndex[active_video_index].mpd.representations[0], main_view.currentTime - (globalSetIndex[active_video_index].descriptor.tDiffwReferenceMs / 1000));
 	}
 
 	if (sourceBuffer.updating) {
