@@ -73,11 +73,15 @@ A compatible UGC recorder Android application that can be used, is available [he
 
 For the demo we used MP4Box of the [GPAC](gpac.io) suite, but other tools (like ffmpeg) should work.
 With MP4Box, an example command to generate the mpd file [1] and the associated 2s-long segments would be [2]: 
-`MP4Box -frag 2000 -dash 2000 -segment-name file_out_seg_ file_in.mp4`
+`MP4Box -dash 2000 -profile live -closest -segment-name file_out_seg_ file_in.mp4` (for live profile - recommended)
+
+`MP4Box -frag 2000 -dash 2000 -segment-name file_out_seg_ file_in.mp4` (for full profile)
 
 
-NOTE: MP4Box does _not_ do any transcoding on the media files. For that, we used ffmpeg. An example command for encoding a video in x264 (audio aac) with framerate = 30 fps and GOP size of 30 frames at 2Mbps bitrate, scaled with height = 1080px would be :
-`ffmpeg.exe -i 20140325_121238.webm -r 30 -preset slow -vf scale=-1:1080 -c:v libx264 -b:v 2000k -movflags +faststart -sc_threshold 0 -keyint_min 30 -g 30 -c:a aac 20140325_121238.mp4`
+NOTE: MP4Box does _not_ do any transcoding on the media files. For that, we used ffmpeg. An example command for encoding a video in x264 (audio aac @ 48kHz sample rate) with framerate = 30 fps and GOP size of 30 frames at 2Mbps bitrate, scaled with height = 1080px would be :
+`ffmpeg.exe -i 20140325_121238.webm -r 30 -preset slow -vf scale=-1:1080 -c:v libx264 -b:v 2000k -movflags +faststart -sc_threshold 0 -keyint_min 30 -g 30 -c:a -ar 48000 aac 20140325_121238.mp4`
+
+To analyze generated files you can use MP4Box as well (e.g. `MP4Box -info 20140325_121238.mp4` or `MP4Box -info 1 20140325_121238.mp4` for info only on the first track)
 
 
 ### Format XML sensor data (compatible with ICoSOLE dataset)
