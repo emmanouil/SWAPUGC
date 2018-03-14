@@ -44,12 +44,16 @@ function fetchAndInitMarkers() {
     window.addEventListener('timeDataReady', function (e) {
         logDEBUG('timeDataReady event fired - calling initMarkers');
         initMarkers();
-    }, { once: true });
+    }, {
+        once: true
+    });
 
     window.addEventListener('spatialDataReady', function (e) {
         logDEBUG('spatialDataReady event fired - calling setMainViewStartTime');
         setMainViewStartTime();
-    }, { once: true });
+    }, {
+        once: true
+    });
 
     loadSpatialData();
 }
@@ -60,7 +64,7 @@ function fetchAndInitMarkers() {
 function initMarkers() {
     logINFO('Initializing markers for reference start time (ms): ' + main_view_startTime);
     /* Setup main view */
-    centerMap(reference_location[0], reference_location[1], 20)
+    centerMap(reference_location[0], reference_location[1], 20);
     analyzeGeospatialData();
     document.getElementById('play_btn').disabled = false;
 }

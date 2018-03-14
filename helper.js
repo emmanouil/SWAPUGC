@@ -1,8 +1,7 @@
-"use strict";
 var globalSetIndex = [];
-var msg_div;    //set in main
+var msg_div; //set in main
 const SHOW_DEBUG = true;
-const LOG_LVL = 4; //0: all, 1: INFO, 2: WARN, 3: ERR, 4: NONE
+const LOG_LVL = 0; //0: all, 1: INFO, 2: WARN, 3: ERR, 4: NONE
 
 function logUI(msg) {
     logINFO(msg);
@@ -11,16 +10,16 @@ function logUI(msg) {
 
 function logERR(msg) {
     if (LOG_LVL > 3) return;
-    if (typeof msg === 'string') {//we have an error message string
+    if (typeof msg === 'string') { //we have an error message string
         console.error("[ERROR] " + msg);
-    } else {//we have an Error
+    } else { //we have an Error
         console.error(msg);
     }
 }
 
 function logWARN(msg) {
     if (LOG_LVL > 2) return;
-    console.warn("[WARNING] " + msg)
+    console.warn("[WARNING] " + msg);
 }
 
 function logINFO(msg) {
@@ -31,7 +30,7 @@ function logINFO(msg) {
 function logDEBUG(msg) {
     if (LOG_LVL > 0) return;
     if (SHOW_DEBUG)
-        console.debug("[DEBUG] " + msg)
+        console.debug("[DEBUG] " + msg);
 }
 
 /**
@@ -56,7 +55,7 @@ function fetch(what, where, resp_type = 'no-type', args) {
     if (resp_type != 'no-type') {
         req.responseType = resp_type;
     }
-    logDEBUG("fetched " + what + " of type " + resp_type + ", for function " + where.name)
+    logDEBUG("fetched " + what + " of type " + resp_type + ", for function " + where.name);
     req.send();
 }
 
@@ -140,7 +139,7 @@ function assert_fetch(response, target, args = 'no-args') {
         logERR("could NOT fetch file " + response.responseURL + " for " + where + "   . Error: " + response.status + " " + response.statusText);
         return false;
     } else {
-        logDEBUG("fetched " + response.responseURL + " of type " + ", for function " + target.name)
+        logDEBUG("fetched " + response.responseURL + " of type " + ", for function " + target.name);
     }
     if (args === 'no-args') {
         target(response.response);
@@ -191,5 +190,7 @@ function getSetByVideoId(id_in) {
 
 function disable_btn_for(btn_name, dur) {
     document.getElementById(btn_name).disabled = true;
-    setTimeout(function () { document.getElementById(btn_name).disabled = false; }, dur);
+    setTimeout(function () {
+        document.getElementById(btn_name).disabled = false;
+    }, dur);
 }
