@@ -1,0 +1,14 @@
+{
+    "esversion": 6,
+    "browser": true,
+    "globals": {
+        "MediaSource": true,
+        "globalSetIndex": true,
+        "fetch_promise": true,
+        "logERR": true,
+        "logUI": true,
+        "logINFO": true,
+        "logWARN": true,
+        "logDEBUG": true
+    }
+}
