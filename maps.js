@@ -18,13 +18,27 @@ var test_icon = {
 	fillOpacity: 1
 };
 
-var roomPoly;	//constructed by roomCoords and roomStyle
-var roomCoords = [
-	{ lat: 53.47266, lng: -2.29929 },
-	{ lat: 53.47279, lng: -2.29904 },
-	{ lat: 53.47263, lng: -2.29879 },
-	{ lat: 53.47251, lng: -2.29904 },
-	{ lat: 53.47266, lng: -2.29929 }
+var roomPoly; //constructed by roomCoords and roomStyle
+var roomCoords = [{
+		lat: 53.47266,
+		lng: -2.29929
+	},
+	{
+		lat: 53.47279,
+		lng: -2.29904
+	},
+	{
+		lat: 53.47263,
+		lng: -2.29879
+	},
+	{
+		lat: 53.47251,
+		lng: -2.29904
+	},
+	{
+		lat: 53.47266,
+		lng: -2.29929
+	}
 ];
 var roomStyle = {
 	paths: roomCoords,
@@ -37,11 +51,19 @@ var roomStyle = {
 	fillOpacity: 0.2
 };
 
-var orchestraPath;	//constructed by orchestraCoords and orchestraStyle
-var orchestraCoords = [
-	{ lat: 53.47274, lng: -2.29904 },
-	{ lat: 53.47272, lng: -2.29898 },
-	{ lat: 53.47269, lng: -2.29894 },
+var orchestraPath; //constructed by orchestraCoords and orchestraStyle
+var orchestraCoords = [{
+		lat: 53.47274,
+		lng: -2.29904
+	},
+	{
+		lat: 53.47272,
+		lng: -2.29898
+	},
+	{
+		lat: 53.47269,
+		lng: -2.29894
+	},
 ];
 var orchestraStyle = {
 	path: orchestraCoords,
@@ -63,7 +85,7 @@ function setControlStyle(control, title) {
 	control.style.marginTop = '1px';
 	control.style.textAlign = 'center';
 	control.title = title;
-};
+}
 
 function setControlTextStyle(control, text) {
 	control.style.color = 'rgb(25,25,25)';
@@ -178,8 +200,8 @@ function initMap() {
 	//endof add custom controls
 
 
-	activateMapEvents();	//in events.js
-	activateUI();	//in events.js
+	activateMapEvents(); //in events.js
+	activateUI(); //in events.js
 }
 
 function centerMap(latitude, longitude, zoom) {
@@ -187,12 +209,15 @@ function centerMap(latitude, longitude, zoom) {
 		logDEBUG("Lat and/or Lng not set");
 		return;
 	} else {
-		map.panTo({ lat: latitude, lng: longitude });
+		map.panTo({
+			lat: latitude,
+			lng: longitude
+		});
 	}
 
 	if (zoom)
 		if (zoom > 0 && zoom < 21)
-			map.setZoom(zoom)
+			map.setZoom(zoom);
 }
 
 function addLiveMarker(lat, lng, index, recording_id, bearing, active = false) {
@@ -206,7 +231,7 @@ function addLiveMarker(lat, lng, index, recording_id, bearing, active = false) {
 	}
 
 	var marker;
-
+	var label = "Marker " + recording_id;
 	/*
 	 * if no bearing information, use default markers
 	 */
@@ -223,7 +248,6 @@ function addLiveMarker(lat, lng, index, recording_id, bearing, active = false) {
 		markers.push(marker1);
 		return;
 	} else if (bearing) {
-		var label = "Marker " + recording_id;
 		var local_icon = test_icon;
 		local_icon.rotation = bearing;
 		if (active) {
@@ -250,7 +274,7 @@ function addLiveMarker(lat, lng, index, recording_id, bearing, active = false) {
 function updateMarkerOrientation(marker_id, orientation = "none") {
 	if (orientation != "none") {
 		updateMarkerByID(marker_id, orientation);
-		logDEBUG("Updated marker orientation to " + orientation)
+		logDEBUG("Updated marker orientation to " + orientation);
 	} else {
 		logWARN("Did not update orientation of marker with id" + marker_id);
 	}
@@ -260,7 +284,7 @@ function updateMarkerOrientation(marker_id, orientation = "none") {
 function updateMarkerLocation(marker_id, loc = "none") {
 	if (loc != "none") {
 		updateMarkerByID(marker_id, "none", loc);
-		logDEBUG("Updated marker position to " + loc)
+		logDEBUG("Updated marker position to " + loc);
 	} else {
 		logWARN("Did not update location of marker with id" + marker_id);
 	}
@@ -269,7 +293,7 @@ function updateMarkerLocation(marker_id, loc = "none") {
 //orientation is just a number (in degrees) - loc should be in the form of {lat: value, lng: value}
 function updateMarkerByID(marker_id, orientation = "none", loc = "none") {
 	for (var m in markers) {
-		if (markers[m].recording_id == marker_id) {
+		if (markers[m].recording_id === marker_id) {
 			if (orientation != "none") {
 				markers[m].icon.rotation = orientation;
 			}
