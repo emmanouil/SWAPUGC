@@ -1,3 +1,4 @@
+"use strict";
 var globalSetIndex = [];
 var msg_div; //set in main
 const SHOW_DEBUG = true;
@@ -34,53 +35,22 @@ function logDEBUG(msg) {
 }
 
 /**
- * Content loading function
- * TODO: replace with fetch_res
- */
-function fetch(what, where, resp_type = 'no-type', args) {
-    logDEBUG("fetching " + what + "   for " + where.name);
-    if (what.length < 2) {
-        logERR("erroneous request");
-    }
-    var req = new XMLHttpRequest();
-    if (typeof args != 'undefined' && arguments.length > 3) {
-        req.addEventListener("load", function () {
-            where(req.response, args);
-        });
-    } else {
-        req.addEventListener("load", where);
-    }
-
-    req.open("GET", what);
-    if (resp_type != 'no-type') {
-        req.responseType = resp_type;
-    }
-    logDEBUG("fetched " + what + " of type " + resp_type + ", for function " + where.name);
-    req.send();
-}
-
-/**
  * Like fetch(), but asserts and returns only the response
  * @param {*} what asset location
  * @param {*} where function to be called with the result
  * @param {*} resp_type default: 'no-type'
  * @param {*} args arguments to be passed to the <where>
  */
-function fetch_res(what, where, resp_type = 'no-type', args) {
+function fetch_res(what, where, resp_type = 'no-type') {
     logDEBUG("fetching " + what + "   for " + where.name);
     if (what.length < 2) {
         logERR("erroneous request");
     }
     var req = new XMLHttpRequest();
-    if (typeof args != 'undefined' && arguments.length > 3) {
-        req.addEventListener("load", function () {
-            assert_fetch(req, where, args);
-        });
-    } else {
-        req.addEventListener("load", function () {
-            assert_fetch(req, where);
-        });
-    }
+    req.addEventListener("load", function () {
+        assert_fetch(req, where);
+    });
+
 
     req.open("GET", what);
     if (resp_type != 'no-type') {
@@ -134,18 +104,14 @@ function fetch_promise(what, resp_type = 'no-type', full_request = false) {
  * Returns true if the file was successufully fetched
  * Return false and prints error message otherwise
  */
-function assert_fetch(response, target, args = 'no-args') {
+function assert_fetch(response, target) {
     if (response.status != 200) {
-        logERR("could NOT fetch file " + response.responseURL + " for " + where + "   . Error: " + response.status + " " + response.statusText);
+        logERR("could NOT fetch file " + response.responseURL + " for " + target + "   . Error: " + response.status + " " + response.statusText);
         return false;
     } else {
         logDEBUG("fetched " + response.responseURL + " of type " + ", for function " + target.name);
     }
-    if (args === 'no-args') {
-        target(response.response);
-    } else {
-        target(response.response, args);
-    }
+    target(response.response);
     return true;
 }
 
