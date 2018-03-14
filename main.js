@@ -1,22 +1,23 @@
 "use strict";
+/* global sourceBuffer */ //in mse.js
 //var globalSetIndex = [];	//in helper.js holds EVERYTHING parsed
 //var map;	//in maps.js holds MAP
 //temporary vars used for testing purposes
 var last_fetched_seg_n = -1;
 var last_fetched_index = -1;
-var last_removed_timerage = -1;	//during resetSourceBuffer or cleanSourceBuffer
+var last_removed_timerage = -1; //during resetSourceBuffer or cleanSourceBuffer
 
 /**
  * Playlist & File Parameters
  */
 //Files and folders
 const PLAYLIST_FILE = 'playlist.txt'; //holds the base names of the recordings
-const PLAYLIST_MAIN_VIEW_INDEX = 0;	//the position in the playlist txt of the recording considered as reference (starting from 0)
-const PARSER_DIR = 'samples/script_out';	//holds the parser output (location, orientation, descriptor) jsons
-const DASH_DIR = 'samples/segmented';	//contains the segments, inits and mpd init of the video files
+const PLAYLIST_MAIN_VIEW_INDEX = 0; //the position in the playlist txt of the recording considered as reference (starting from 0)
+const PARSER_DIR = 'samples/script_out'; //holds the parser output (location, orientation, descriptor) jsons
+const DASH_DIR = 'samples/segmented'; //contains the segments, inits and mpd init of the video files
 
 //extensions, suffixes and prefixes
-const DASH_MPD_SUFFIX = '_dash'	//i.e. NAMEOFRECORDING_dash.mpd
+const DASH_MPD_SUFFIX = '_dash'; //i.e. NAMEOFRECORDING_dash.mpd
 var PL_SENSORS_SUFFIX = '_SENSOR_DATA';
 var PL_SENSORS_EXTENSION = '.xml';
 var PL_VIDEO_SUFFIX = '';
@@ -25,19 +26,19 @@ var PL_VIDEO_EXTENSION = '.webm';
 var PL_LOCATION_SUFFIX = '_LOC';
 var PL_ORIENTATION_SUFFIX = '_ORIENT';
 var PL_DESCRIPTOR_SUFFIX = '_DESCRIPTOR';
-var PORT = '8000'
-var BASE_URL = '';	//set when parse_playlist is called (e.g. 192.0.0.1:8000)
+var PORT = '8000';
+var BASE_URL = ''; //set when parse_playlist is called (e.g. 192.0.0.1:8000)
 
 //pseudo-simulation parameters
-var interval_id = -1;	//timeout id
-const UPDATE_S = 1.7;	//condition (in s) to fetch next segment, relative to the current video time and end of the sourceBuffer
-const MARKER_UPDATE_LIMIT_ON = true;	//enable cue timespan limit
-const MARKER_UPDATE_LIMIT = 600;	// (in ms) limit the timespan between two updates for the same marker (i.e. number of cues)
-const MARKER_LIMIT_BEHAVIOUR = 'discard';	//'discard' or 'average' - not implemented TODO
+var interval_id = -1; //timeout id
+const UPDATE_S = 1.7; //condition (in s) to fetch next segment, relative to the current video time and end of the sourceBuffer
+const MARKER_UPDATE_LIMIT_ON = true; //enable cue timespan limit
+const MARKER_UPDATE_LIMIT = 600; // (in ms) limit the timespan between two updates for the same marker (i.e. number of cues)
+const MARKER_LIMIT_BEHAVIOUR = 'discard'; //'discard' or 'average' - not implemented TODO
 
 //performance parameters
-const INTERVAL_MS = 900;	//check interval (in ms)
-const VTTCUE_DURATION = 400;	//whenever a cuechange event is fired all cues are checked if active (and if so, updated) - recommended value < MARKER_UPDATE_LIMIT
+const INTERVAL_MS = 900; //check interval (in ms)
+const VTTCUE_DURATION = 400; //whenever a cuechange event is fired all cues are checked if active (and if so, updated) - recommended value < MARKER_UPDATE_LIMIT
 
 //selection policy;
 var policies = ['Manual', 'Round-Robin 10s', 'Round-Robin 20s'];
@@ -51,7 +52,8 @@ var roundRobin_interval_id = -1;
 var active_video_id = null;
 var active_video_index = null;
 var mediaSource = new MediaSource();
-var main_view, main_view_tracks = [], main_view_startTime, playlist, items_fetched = 0;
+var main_view, main_view_startTime, playlist, items_fetched = 0,
+	main_view_tracks = [];
 
 /**
  * Entry point
@@ -102,18 +104,19 @@ function init() {
 												globalSetIndex[j].mpd = new MPD(values[i].responseURL);
 												globalSetIndex[j].mpd.fullDocument = mpd_parse(values[i].response);
 												//we have a live profile - generate segment list
+												var t_rep;
 												if (globalSetIndex[j].mpd.document.getAttribute("profiles").indexOf("dash:profile:isoff-live") != -1) {
 													globalSetIndex[j].mpd.isLiveProfile = true;
 													let temp_template = globalSetIndex[j].mpd.document.getElementsByTagName("SegmentTemplate")[0];
 													globalSetIndex[j].mpd.SegmentTemplate = mpd_getRepresentationAttributesByNode(globalSetIndex[j].mpd.document.getElementsByTagName("SegmentTemplate")[0]);
 													globalSetIndex[j].mpd.initSegment = temp_template.getAttribute("initialization");
-													var t_rep = mpd_getRepresentationNodeByID(globalSetIndex[j].mpd.fullDocument, 1);
+													t_rep = mpd_getRepresentationNodeByID(globalSetIndex[j].mpd.fullDocument, 1);
 													globalSetIndex[j].mpd.representations.push(mpd_getRepresentationAttributesByNode(t_rep));
 
 												} else { //we do not have a live profile - parse segment list
 													globalSetIndex[j].mpd.isLiveProfile = false;
 													globalSetIndex[j].mpd.initSegment = mpd_getInitSegURL(globalSetIndex[j].mpd.fullDocument);
-													var t_rep = mpd_getRepresentationNodeByID(globalSetIndex[j].mpd.fullDocument, 1);
+													t_rep = mpd_getRepresentationNodeByID(globalSetIndex[j].mpd.fullDocument, 1);
 													globalSetIndex[j].mpd.representations.push(mpd_getRepresentationByNode(t_rep));
 												}
 												break;
@@ -123,7 +126,7 @@ function init() {
 										logERR('request for ' + values[i].responseURL + ' failed');
 									}
 								}
-								logINFO('done parsing mpds')
+								logINFO('done parsing mpds');
 							}).then(function () {
 								var mimeCodec = globalSetIndex[PLAYLIST_MAIN_VIEW_INDEX].mpd.representations[0].mimeType;
 								if (typeof globalSetIndex[PLAYLIST_MAIN_VIEW_INDEX].mpd.representations[0].codecs != "undefined") {
@@ -131,7 +134,7 @@ function init() {
 								}
 
 								if (MediaSource.isTypeSupported(mimeCodec)) {
-									logDEBUG("mimeCodec :" + mimeCodec + " (from .mpd) is supported")
+									logDEBUG("mimeCodec :" + mimeCodec + " (from .mpd) is supported");
 								} else if (MediaSource.isTypeSupported("video/mp4")) {
 									logINFO("default mimeCodec was not supported, using genering \"video/mp4\" instead");
 									mimeCodec = "video/mp4";
@@ -143,10 +146,14 @@ function init() {
 								}
 
 								//setup MSE
-								if (mediaSource.readyState == "open") {
+								if (mediaSource.readyState === "open") {
 									onSourceOpen(mimeCodec);
 								} else {
-									mediaSource.addEventListener("sourceopen", function () { onSourceOpen(mimeCodec); }, { once: true });
+									mediaSource.addEventListener("sourceopen", function () {
+										onSourceOpen(mimeCodec);
+									}, {
+										once: true
+									});
 								}
 								active_video_id = globalSetIndex[PLAYLIST_MAIN_VIEW_INDEX].id;
 								active_video_index = PLAYLIST_MAIN_VIEW_INDEX;
@@ -156,52 +163,73 @@ function init() {
 									s_i.main_view_tracks_no = main_view_tracks.push(main_view.addTextTrack("metadata", s_i.id)) - 1;
 								}
 								//we want MSE to be ready before calling fetchAndInitMarkers
-								if (mediaSource.readyState == "open") {
-									fetchAndInitMarkers()
+								if (mediaSource.readyState === "open") {
+									fetchAndInitMarkers();
 								} else {
-									mediaSource.addEventListener("sourceopen", function () { fetchAndInitMarkers() }, { once: true });
+									mediaSource.addEventListener("sourceopen", function () {
+										fetchAndInitMarkers();
+									}, {
+										once: true
+									});
 								}
-							}).catch(function (err) { logERR(err); });
-					}).catch(function (err) { logERR('Possible error parsing file ' + PLAYLIST_FILE); logERR(err); });
+							}).catch(function (err) {
+								logERR(err);
+							});
+					}).catch(function (err) {
+					logERR('Possible error parsing file ' + PLAYLIST_FILE);
+					logERR(err);
+				});
 			}).then(function (response) {
-				//we currently do not do anything after parsing playlist, prior to mpds
-				//TODO delete this block if not needed
-			}).catch(function (err) { logWARN('Failed promise - Error log: '); logERR(err); });
-	main_view.addEventListener("playing", function () { interval_id = setInterval(check_status, INTERVAL_MS); }, { once: true });
+			//we currently do not do anything after parsing playlist, prior to mpds
+			//TODO delete this block if not needed
+		}).catch(function (err) {
+			logWARN('Failed promise - Error log: ');
+			logERR(err);
+		});
+	main_view.addEventListener("playing", function () {
+		interval_id = setInterval(check_status, INTERVAL_MS);
+	}, {
+		once: true
+	});
 }
 
 function parse_playlist(request) {
-	BASE_URL = request.responseURL.slice(0, request.responseURL.indexOf(PORT) + PORT.length)
+	BASE_URL = request.responseURL.slice(0, request.responseURL.indexOf(PORT) + PORT.length);
 	playlist = request.responseText.split(/\r\n|\r|\n/); //split on break-line
 	var req_status = request.status;
-	if (req_status == 200 && playlist.length > 0) {
+	if (req_status === 200 && playlist.length > 0) {
 		Promise.resolve();
-	} else if (req_status == 200) {
+	} else if (req_status === 200) {
 		logWARN("Fetching " + PLAYLIST_FILE + " returned with an empty file");
 		Promise.reject('Empty playlist');
 	} else {
 		logWARN("Fetching " + PLAYLIST_FILE + " unsuccessful");
-		Promise.reject('No Playlist found')
+		Promise.reject('No Playlist found');
 	}
 }
 
 function parse_pl_descriptor(req) {
-	if (req.status == 200) {
-		let tmp_obj = addVideoToIndex(req);	//add to globalSetIndex
-		if (tmp_obj.id == reference_recordingID) {
+	if (req.status === 200) {
+		let tmp_obj = addVideoToIndex(req); //add to globalSetIndex
+		if (tmp_obj.id === reference_recordingID) {
 			logINFO('We got our main view with ID ' + tmp_obj.id + ', skipping dropdown');
 		}
-		addOption(tmp_obj.id);	//add option to the dropdown
+		addOption(tmp_obj.id); //add option to the dropdown
 	}
-	logINFO(req)
-	items_fetched++;	//count playlist entries fetched
-	if (items_fetched == playlist.length) {	//when everything's loaded go to first video
+	logINFO(req);
+	items_fetched++; //count playlist entries fetched
+	if (items_fetched === playlist.length) { //when everything's loaded go to first video
 		goToVideo(0);
 	}
 }
 
 //called at regular intervals to check if the stream has changed, or if we have buffer starvation
 function check_status() {
+	if (main_view.readyState === HTMLMediaElement.HAVE_CURRENT_DATA) {
+		logUI('Your internet connection might not adequate to support this demo');
+	}
+
+
 
 	//first we check if the video is rolling //TODO later, add support for updating buffer *and* switching videos at paused state
 	if (main_view.paused) {
@@ -218,14 +246,14 @@ function check_status() {
 	let end_time = getSourceBufferEnd();
 
 	if (getSourceBufferTimeRangeNumber() > 2) {
-		logDEBUG('sourceBuffer contains more than 2 time ranges. resetting...')
+		logDEBUG('sourceBuffer contains more than 2 time ranges. resetting...');
 		resetSourceBuffer();
 		return;
-	} else if (getSourceBufferTimeRangeNumber() == 2) {
-		logDEBUG('sourceBuffer contains 2 time ranges. cleaning up contents...')
+	} else if (getSourceBufferTimeRangeNumber() === 2) {
+		logDEBUG('sourceBuffer contains 2 time ranges. cleaning up contents...');
 		cleanSourceBuffer();
 		return;
-	} else if (end_time - main_view.currentTime > UPDATE_S || getSourceBufferTimeRangeNumber == 0) {
+	} else if (end_time - main_view.currentTime > UPDATE_S || getSourceBufferTimeRangeNumber === 0) {
 		return;
 	}
 
@@ -235,9 +263,9 @@ function check_status() {
 	} else {
 		seg_n = mpd_getSegmentIndexAtTime(globalSetIndex[active_video_index].mpd.representations[0], end_time - globalSetIndex[active_video_index].descriptor.tDiffwReferenceMs / 1000);
 	}
-	seg_n++;	//in this case we need the next segment
+	seg_n++; //in this case we need the next segment
 
-	if (seg_n == last_fetched_seg_n && active_video_index == active_video_index) {
+	if (seg_n === last_fetched_seg_n && active_video_index === active_video_index) {
 		logWARN('previously fetched seg had same number, incrementing by 1');
 		seg_n++;
 	}
@@ -259,7 +287,7 @@ function check_status() {
 //returns recording id
 function addVideoToIndex(XMLHttpRequest_in) {
 	var tmp_req = XMLHttpRequest_in;
-	var loc_obj = new Object();
+	var loc_obj ={};
 	loc_obj.descriptor = tmp_req.response;
 	loc_obj.index = globalSetIndex.length;
 	loc_obj.id = tmp_req.response.recordingID;
@@ -269,7 +297,7 @@ function addVideoToIndex(XMLHttpRequest_in) {
 	//	loc_obj.set = XMLHttpRequest_in.response;
 	globalSetIndex.push(loc_obj);
 	//we check if it is our main view
-	if (loc_obj.id == reference_recordingID) {
+	if (loc_obj.id === reference_recordingID) {
 		reference_recording_set = globalSetIndex[globalSetIndex.length - 1];
 	}
 	return loc_obj;
@@ -288,21 +316,29 @@ function loadSpatialData() {
 		for (var i = 0; i < values.length; i++) {
 			loadCoords(values[i]);
 		}
-	}).catch(function (err) { logERR('Error parsing location files'); logERR(err) });
+	}).catch(function (err) {
+		logERR('Error parsing location files');
+		logERR(err);
+	});
 
 	Promise.all(orient_promises).then(function (values) {
 		for (var i = 0; i < values.length; i++) {
 			loadLocs(values[i]);
 		}
 	}).then(function () {
-		window.dispatchEvent(new CustomEvent('spatialDataReady', { detail: 'done' }));
-	}).catch(function (err) { logERR('Error parsing orientation files'); logERR(err) });
+		window.dispatchEvent(new CustomEvent('spatialDataReady', {
+			detail: 'done'
+		}));
+	}).catch(function (err) {
+		logERR('Error parsing orientation files');
+		logERR(err);
+	});
 }
 
 /* Called from fetchAndInitMarkers and calculates relative time between views */
 function setMainViewStartTime() {
 	let tmp_time = globalSetIndex[PLAYLIST_MAIN_VIEW_INDEX].descriptor.startTimeMs - reference_recording_set.descriptor.startTimeMs;
-	if (tmp_time) {//should be 0
+	if (tmp_time) { //should be 0
 		logWARN('timing on PLAYLIST_MAIN_VIEW_INDEX and reference_recording_set does NOT match');
 	}
 	for (let i = 0; i < globalSetIndex.length; i++) {
@@ -315,23 +351,33 @@ function setMainViewStartTime() {
 
 	let index;
 	if (globalSetIndex[0].mpd.isLiveProfile) {
-		index = mpd_getSegmentIndexAtTime4Live(globalSetIndex[0].mpd.SegmentTemplate, (tmp_time / 1000)) + 2;	//TODO fix this +1
+		index = mpd_getSegmentIndexAtTime4Live(globalSetIndex[0].mpd.SegmentTemplate, (tmp_time / 1000)) + 2; //TODO fix this +1
 		fetch_promise(DASH_DIR + '/' + globalSetIndex[0].mpd.SegmentTemplate.media.replace("$Number$", index), "arraybuffer", false)
 			.then(function (response) {
 				addSegment(response);
-				main_view.currentTime = main_view_startTime = reference_start_time = (tmp_time / 1000);	//in seconds
+				main_view.currentTime = main_view_startTime = reference_start_time = (tmp_time / 1000); //in seconds
 				//TODO (#33) for now we use an event to signal timing info is ready
-				window.dispatchEvent(new CustomEvent('timeDataReady', { detail: 'done' }));
-			}).catch(function (err) { logWARN('Failed promise - Error log: '); logERR(err); });
+				window.dispatchEvent(new CustomEvent('timeDataReady', {
+					detail: 'done'
+				}));
+			}).catch(function (err) {
+				logWARN('Failed promise - Error log: ');
+				logERR(err);
+			});
 	} else {
 		index = mpd_getSegmentIndexAtTime(globalSetIndex[0].mpd.representations[0], (tmp_time / 1000)) + 1; //TODO fix this +1
 		fetch_promise(DASH_DIR + '/' + globalSetIndex[0].mpd.representations[0].SegmentList.Segments[index], "arraybuffer", false)
 			.then(function (response) {
 				addSegment(response);
-				main_view.currentTime = main_view_startTime = reference_start_time = (tmp_time / 1000);	//in seconds
+				main_view.currentTime = main_view_startTime = reference_start_time = (tmp_time / 1000); //in seconds
 				//TODO (#33) for now we use an event to signal timing info is ready
-				window.dispatchEvent(new CustomEvent('timeDataReady', { detail: 'done' }));
-			}).catch(function (err) { logWARN('Failed promise - Error log: '); logERR(err); });
+				window.dispatchEvent(new CustomEvent('timeDataReady', {
+					detail: 'done'
+				}));
+			}).catch(function (err) {
+				logWARN('Failed promise - Error log: ');
+				logERR(err);
+			});
 	}
 
 }
@@ -340,7 +386,7 @@ function setMainViewStartTime() {
 function setMainViewEndTime() {
 	let end_time = Infinity;
 	for (let i = 0; i < globalSetIndex.length; i++) {
-		if (globalSetIndex[i].id == reference_recordingID) {
+		if (globalSetIndex[i].id === reference_recordingID) {
 			continue;
 		}
 		if (globalSetIndex[i].descriptor.durationMs / 1000 + reference_start_time < end_time) {
@@ -351,9 +397,9 @@ function setMainViewEndTime() {
 
 	//we add the end time event at the textTrack of reference view
 	let vtc = new VTTCue(reference_end_time - 1.0, reference_end_time + VTTCUE_DURATION / 1000, "{ \"Event\": \"video_end\" }");
-	vtc.size = 0;	//TODO: hack, size 0 indicating an event
+	vtc.size = 0; //TODO: hack, size 0 indicating an event
 	for (let i = 0; i < main_view_tracks.length; i++) {
-		if (main_view_tracks[i].label == reference_recordingID) {
+		if (main_view_tracks[i].label === reference_recordingID) {
 			main_view_tracks[i].addCue(vtc);
 			return;
 		}
@@ -363,17 +409,17 @@ function setMainViewEndTime() {
 
 
 function loadCoords(req_in) {
-	loadAssets('_LOC', req_in)
+	loadAssets('_LOC', req_in);
 }
 
 function loadLocs(req_in) {
-	loadAssets('_ORIENT', req_in)
+	loadAssets('_ORIENT', req_in);
 }
 
 function loadAssets(type, Xreq_target) {
 	var tmp_name = Xreq_target.responseURL.split('/').pop().split('.')[0];
 	for (var i = 0; i < globalSetIndex.length; i++) {
-		if (globalSetIndex[i].descriptor.recordingID + type == tmp_name) {
+		if (globalSetIndex[i].descriptor.recordingID + type === tmp_name) {
 			switch (type) {
 				case '_LOC':
 					globalSetIndex[i].coordSet = Xreq_target.response;
@@ -401,7 +447,7 @@ function analyzeGeospatialData() {
 	for (let i = 0; i < globalSetIndex.length; i++) {
 		let s = globalSetIndex[i];
 		let is_active = false;
-		if (s.coordSet.length > 3) {	//we consider a recording to be mobile if it has more than 2 updates
+		if (s.coordSet.length > 3) { //we consider a recording to be mobile if it has more than 2 updates
 			s.descriptor.is_mobile = true;
 		} else {
 			s.descriptor.is_mobile = false;
@@ -409,8 +455,8 @@ function analyzeGeospatialData() {
 		addLiveMarker(s.coordSet[0].Latitude, s.coordSet[0].Longitude,
 			s.index, s.id, s.orientSet[0].X, s.descriptor.is_mobile);
 
-		if (s.id == reference_recordingID) {
-			highlightMarker(s.marker, true);	//we start by the current marker selected
+		if (s.id === reference_recordingID) {
+			highlightMarker(s.marker, true); //we start by the current marker selected
 		}
 	}
 
@@ -424,15 +470,15 @@ function analyzeGeospatialData() {
 		globalSetIndex[i].main_view_tracks_no = i;
 		main_view_tracks[i].oncuechange = function () {
 			for (let i = 0; i < this.activeCues.length; i++) {
-				if (this.activeCues[i].size == 1) {
+				if (this.activeCues[i].size === 1) {
 					updateMarkerOrientation(this.activeCues[i].track.label, Number(this.activeCues[i].text));
-				} else if (this.activeCues[i].size == 2) {
+				} else if (this.activeCues[i].size === 2) {
 					updateMarkerLocation(this.activeCues[i].track.label, JSON.parse(this.activeCues[i].text));
-				} else if (this.activeCues[i].size == 0) {
+				} else if (this.activeCues[i].size === 0) {
 					handleEvent(this.activeCues[i].track.label, JSON.parse(this.activeCues[i].text));
 				}
 			}
-		}
+		};
 	}
 
 
@@ -450,7 +496,7 @@ function addMarkerUpdates(set_in, tmp_index) {
 	/* use as main (a.k.a. reference) view */
 	var tmp_start = set_in.descriptor.startTimeMs;
 	var t_diff = tmp_start - reference_recording_set.descriptor.startTimeMs;
-	if (reference_start_time == 0) {
+	if (reference_start_time === 0) {
 		reference_start_time = t_diff / 1000;
 		main_view.currentTime = reference_start_time;
 	}
@@ -469,7 +515,7 @@ function addMarkerUpdates(set_in, tmp_index) {
 		cur_t = tmp_orient.PresentationTime;
 		//TODO handle cues according to main vid time (not relevant to the take time)
 		let vtc = new VTTCue((t_diff + cur_t) / 1000, (t_diff + cur_t + VTTCUE_DURATION) / 1000, String(tmp_orient.X));
-		vtc.size = 1;	//we set size 1 since we only set orientation
+		vtc.size = 1; //we set size 1 since we only set orientation
 		tmp_track.addCue(vtc);
 	}
 
@@ -486,7 +532,7 @@ function addMarkerUpdates(set_in, tmp_index) {
 		cur_t = tmp_loc.PresentationTime;
 		//TODO handle cues according to main vid time (not relevant to the take time)
 		let vtc = new VTTCue((t_diff + cur_t) / 1000, (t_diff + cur_t + VTTCUE_DURATION) / 1000, "{\"lat\":" + tmp_loc.Latitude + ", \"lng\":" + tmp_loc.Longitude + "}");
-		vtc.size = 2;	//we set size 1 since we set lat and lng
+		vtc.size = 2; //we set size 1 since we set lat and lng
 		tmp_track.addCue(vtc);
 	}
 }
@@ -519,7 +565,7 @@ function switchToStream(set_index, recordingID) {
 		}
 	*/
 	highlightMarker(new_set.marker, true); //highlight new marker
-	highlightMarker(globalSetIndex[active_video_index].marker, false)	//de-hihglight old marker
+	highlightMarker(globalSetIndex[active_video_index].marker, false); //de-hihglight old marker
 
 	active_video_id = recordingID;
 	active_video_index = set_index;
@@ -533,7 +579,7 @@ function switchToStream(set_index, recordingID) {
 	} else {
 		seg_n = mpd_getSegmentIndexAtTime(globalSetIndex[set_index].mpd.representations[0], end_time - globalSetIndex[set_index].descriptor.tDiffwReferenceMs / 1000);
 	}
-	seg_n++;	//because we are switching we need the segment after the end of the currently playing
+	seg_n++; //because we are switching we need the segment after the end of the currently playing
 	mse_initAndAdd(set_index, seg_n);
 }
 
@@ -546,7 +592,9 @@ function resetSourceBuffer() {
 	if (sourceBuffer.updating) {
 		sourceBuffer.addEventListener('updateend', function () {
 			resetSourceBuffer();
-		}, { once: true });
+		}, {
+			once: true
+		});
 		logINFO('sourceBuffer is updating, reset will commence when the update is over');
 		return;
 	}
@@ -563,7 +611,9 @@ function resetSourceBuffer() {
 	if (sourceBuffer.updating) {
 		sourceBuffer.addEventListener('updateend', function () {
 			mse_initAndAdd(active_video_index, seg_n);
-		}, { once: true });
+		}, {
+			once: true
+		});
 	} else {
 		mse_initAndAdd(active_video_index, seg_n);
 	}
@@ -584,20 +634,22 @@ function cleanSourceBuffer() {
 	if (sourceBuffer.updating) {
 		sourceBuffer.addEventListener('updateend', function () {
 			cleanSourceBuffer();
-		}, { once: true });
+		}, {
+			once: true
+		});
 		logINFO('sourceBuffer is updating, cleanup will commence when the update is over');
 		return;
 	}
 
-	if (sourceBuffer.buffered.end(0) < main_view.currentTime) {	//if the early source buffer ends before the current time
-		if (last_removed_timerage == sourceBuffer.buffered.end(0)) {	//check that we did not get into a loophole (usually when the diff is less than the dur of a frame)
+	if (sourceBuffer.buffered.end(0) < main_view.currentTime) { //if the early source buffer ends before the current time
+		if (last_removed_timerage === sourceBuffer.buffered.end(0)) { //check that we did not get into a loophole (usually when the diff is less than the dur of a frame)
 			resetSourceBuffer();
 			return;
 		}
 		last_removed_timerage = sourceBuffer.buffered.end(0);
 		sourceBuffer.remove(sourceBuffer.buffered.start(0), sourceBuffer.buffered.end(0));
-	} else if (sourceBuffer.buffered.start(1) > main_view.currentTime && ((sourceBuffer.buffered.end(0) + globalSetIndex[0].mpd.representations[0].frameRate / 1000) < sourceBuffer.buffered.start(1))) {//or the late start after the current time
-		if (last_removed_timerage == sourceBuffer.buffered.start(1)) {//check that we did not get into a loophole (usually when the diff is less than the dur of a frame)
+	} else if (sourceBuffer.buffered.start(1) > main_view.currentTime && ((sourceBuffer.buffered.end(0) + globalSetIndex[0].mpd.representations[0].frameRate / 1000) < sourceBuffer.buffered.start(1))) { //or the late start after the current time
+		if (last_removed_timerage === sourceBuffer.buffered.start(1)) { //check that we did not get into a loophole (usually when the diff is less than the dur of a frame)
 			resetSourceBuffer();
 			return;
 		}
@@ -629,8 +681,13 @@ function mse_initAndAdd(stream_index, segment_n) {
 						.then(function (response) {
 							addSegment(response);
 						})
-						.catch(function (err) { logWARN('Failed promise - Error log: '); logERR(err); });
-				}, { once: true });
+						.catch(function (err) {
+							logWARN('Failed promise - Error log: ');
+							logERR(err);
+						});
+				}, {
+					once: true
+				});
 
 			} else {
 				sourceBuffer.addEventListener('updateend', function () {
@@ -638,11 +695,19 @@ function mse_initAndAdd(stream_index, segment_n) {
 						.then(function (response) {
 							addSegment(response);
 						})
-						.catch(function (err) { logWARN('Failed promise - Error log: '); logERR(err); });
-				}, { once: true });
+						.catch(function (err) {
+							logWARN('Failed promise - Error log: ');
+							logERR(err);
+						});
+				}, {
+					once: true
+				});
 			}
 
-		}).catch(function (err) { logWARN('Failed promise - Error log: '); logERR(err); });
+		}).catch(function (err) {
+			logWARN('Failed promise - Error log: ');
+			logERR(err);
+		});
 }
 
 function killInterval() {
@@ -663,18 +728,9 @@ function resetInterval() {
 	startInterval();
 }
 
-
-function printBufferStatus() {
-	console.log('Current video time: ' + main_view.currentTime);
-	for (let i = 0; i < getSourceBufferTimeRangeNumber(); i++) {
-		console.log('buffer with index ' + i + ' starts at ' + sourceBuffer.buffered.start(i))
-		console.log('buffer with index ' + i + ' ends at ' + sourceBuffer.buffered.end(i))
-	}
-}
-
 function nextStream() {
 	let next_index = -1;
-	if (active_video_index == globalSetIndex.length - 1) {
+	if (active_video_index === globalSetIndex.length - 1) {
 		next_index = 0;
 	} else {
 		next_index = active_video_index + 1;
@@ -743,7 +799,7 @@ function activate_policies() {
 }
 
 function handleEvent(marker_id, obj_in) {
-	if (obj_in.Event == 'video_end') {
+	if (obj_in.Event === 'video_end') {
 		video_end();
 	}
 }
