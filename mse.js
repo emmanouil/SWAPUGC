@@ -24,22 +24,28 @@ function onSourceOpen(mime_codec) {
     sourceBuffer.addEventListener('onerror', function (e) {
         logERR('Error on sourceBuffer');
         logERR(e);
-    }, { once: false });
+    }, {
+        once: false
+    });
 
 
     sourceBuffer.addEventListener('onabort', function (e) {
         logWARN('Abort ofsourceBuffer');
         logWARN(e);
-    }, { once: false });
+    }, {
+        once: false
+    });
 
 
     //We also add the init element
     if (sourceBuffer.updating) {
         sourceBuffer.addEventListener('updateend', function () {
             fetch_res(DASH_DIR + '/' + globalSetIndex[PLAYLIST_MAIN_VIEW_INDEX].mpd.init_seg, addSegment, "arraybuffer");
-        }, { once: true });
+        }, {
+            once: true
+        });
     } else {
-        fetch_res(DASH_DIR + '/' + globalSetIndex[PLAYLIST_MAIN_VIEW_INDEX].mpd.init_seg, addSegment, "arraybuffer")
+        fetch_res(DASH_DIR + '/' + globalSetIndex[PLAYLIST_MAIN_VIEW_INDEX].mpd.init_seg, addSegment, "arraybuffer");
     }
 }
 
@@ -51,14 +57,14 @@ function addSegment(seg_in) {
     }
     if (seg_in == null) {
         // Error fetching the initialization segment. Signal end of stream with an error.
-        logERR("[ERROR] endofstream?")
+        logERR("[ERROR] endofstream?");
         mediaSource.endOfStream("network");
         return;
     }
     try {
         sourceBuffer.appendBuffer(seg_in);
     } catch (e) {
-        console.error(e);
+        logERR(e);
         resetSourceBuffer();
     }
     //    playlistPosition++;
@@ -72,7 +78,7 @@ function getSourceBufferTimeRangeNumber() {
 
 //Return the end time (in sec) of the SourceBuffer contents
 function getSourceBufferEnd() {
-    if (sourceBuffer.buffered.length == 0) {
+    if (sourceBuffer.buffered.length === 0) {
         logWARN("SourceBuffer is empty (contains no TimeRanges");
         return -1;
     } else if (sourceBuffer.buffered.length > 1) {
@@ -85,6 +91,7 @@ function getSourceBufferEnd() {
 function getTimeStampOffset() {
     return sourceBuffer.timestampOffset;
 }
+
 function setTimeStampOffset(t_in) {
     sourceBuffer.timestampOffset = t_in;
 }

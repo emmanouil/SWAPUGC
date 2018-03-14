@@ -21,7 +21,7 @@ var MARKER_UPDATES_IN_MAIN_VIEW = false;
 /* Show/hide concert hall estimation */
 var SHOW_ROOM = true;
 /* reference view location coordinates - only used for map-centering */
-var reference_location = [53.472667, -2.299053]
+var reference_location = [53.472667, -2.299053];
 /* main/reference view recording ID */
 var reference_recordingID = 'A002C001_140325E3';
 /* main/reference parsed recording data set (samples) */

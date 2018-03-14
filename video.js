@@ -1,4 +1,4 @@
-"use strict"
+"use strict";
 var isPlaying = false;
 
 //TODO depricated - not used currently
@@ -34,8 +34,4 @@ function initVideo() {
 					 console.log( "seek - seekend");
 		 }, false);
 		 */
-}
-
-function emptyEvent(ev) {
-	console.log(eve)
 }
