@@ -52,11 +52,11 @@ When the client is launched it does the following, in the corresponding order:
 
 ## Demo
 
-An online demo is available at [https://emmanouil.github.io/SWAPUGC/](https://emmanouil.github.io/SWAPUGC/). 
+An online demo is available at [https://emmanouil.github.io/SWAPUGC/](https://emmanouil.github.io/SWAPUGC/). All the sample videos are encoded using H264, in 1080p at 2000kbps with 2s-long segments. Because we are simulating live scenario with dynamic switching, the buffer size is one segment, thus a stable high-speed connection is required; if such is not available, try running the demo locally.
 
 To run a local demo:
 1. [Download](https://github.com/emmanouil/SWAPUGC/archive/master.zip) and extract, or Clone (`git clone https://github.com/emmanouil/SWAPUGC.git`) the repository
-2. Start an http server on the top dir of your local repository copy (e.g. download, copy and run [Mongoose](https://cesanta.com/binary.html) in the `SWAPUGC` folder)
+2. Start an http server on the top dir of your local repository copy (e.g. download, copy and run [Mongoose](https://cesanta.com/binary.html), or `python -m http.server 8080` in the `SWAPUGC` folder)
 3. Open your browser, and navigate to the location of `index.html` (e.g. http://localhost:8080/index.html - for port = 8080)
 
 To run a remote demo, repeat the same process at your server, by replacing `localhost` with your server IP.
