@@ -5,12 +5,12 @@
 
 ## About
 
-SWAPUGC is a browser-based platform for bulding applications that use accompanying geospatial data to dynamically select streams for watching a spatiotemporal reference point from multiple User-Generated Content (UGC) videos. The platform takes as inputs video files and their accompanying recorded Orientation and Location traces and utilizes them for multi-view spatial-aware playback.
+SWAPUGC is a browser-based platform for bulding applications that use accompanying geospatial data to dynamically select streams for watching a spatiotemporal reference point from multiple User-Generated Content (UGC) videos. The platform takes as input video files and their accompanying recorded Orientation and Location traces and utilizes them for multi-view spatial-aware playback.
 
 So... **What _is_ SWAPUGC**
 
 * An adaptation engine front-end. First and foremost, SWAPUGC can be modified to test adaptation policies, either to geospatial, temporal, video or system critera. This is why it comes with an MPD parser (for multiple video qualities descriptions), and Geospatial data parser.
-* A multiview player. SWAPUGC comes with a player implemented for demo applications.
+* A multiview player. SWAPUGC comes with a player implemented (with MPEG-DASH support) for demo applications.
 * A geospatial events engine. Triggers for orientation / location updates are part of the afforementioned player.
 
 
