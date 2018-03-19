@@ -11,4 +11,4 @@ tools/python_script.log
 __pycache__
 
 #test files
-player.js
+test_functions.js

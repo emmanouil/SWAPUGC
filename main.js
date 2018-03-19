@@ -1,6 +1,9 @@
 "use strict";
 /* global sourceBuffer */ //in mse.js
-//var globalSetIndex = [];	//in helper.js holds EVERYTHING parsed
+/* global p:true */ //in helper.js
+/* global Player */ //in player.js
+/* global globalSetIndex */ //in helper.js holds EVERYTHING parsed
+
 //var map;	//in maps.js holds MAP
 //temporary vars used for testing purposes
 var last_fetched_seg_n = -1;
@@ -51,7 +54,6 @@ var roundRobin_interval_id = -1;
  */
 var active_video_id = null;
 var active_video_index = null;
-var mediaSource = new MediaSource();
 var main_view, main_view_startTime, playlist, items_fetched = 0,
 	main_view_tracks = [];
 
@@ -66,10 +68,9 @@ window.onload = init;
  */
 function init() {
 
-	main_view = document.getElementById('v_main');
-	main_view.ms = mediaSource;
-	mediaSource.video = main_view;
-	main_view.src = window.URL.createObjectURL(mediaSource);
+	p = new Player(document.getElementById('v_main'), new MediaSource());
+	p.v.src = window.URL.createObjectURL(p.ms);
+
 	msg_div = document.getElementById('messages_div');
 	activate_policies();
 
@@ -146,10 +147,10 @@ function init() {
 								}
 
 								//setup MSE
-								if (mediaSource.readyState === "open") {
+								if (p.ms.readyState === "open") {
 									onSourceOpen(mimeCodec);
 								} else {
-									mediaSource.addEventListener("sourceopen", function () {
+									p.ms.addEventListener("sourceopen", function () {
 										onSourceOpen(mimeCodec);
 									}, {
 										once: true
@@ -160,13 +161,13 @@ function init() {
 								logINFO('active_video_id set to ' + active_video_id);
 								//prepare the textTracks
 								for (let s_i of globalSetIndex) {
-									s_i.main_view_tracks_no = main_view_tracks.push(main_view.addTextTrack("metadata", s_i.id)) - 1;
+									s_i.main_view_tracks_no = main_view_tracks.push(p.v.addTextTrack("metadata", s_i.id)) - 1;
 								}
 								//we want MSE to be ready before calling fetchAndInitMarkers
-								if (mediaSource.readyState === "open") {
+								if (p.ms.readyState === "open") {
 									fetchAndInitMarkers();
 								} else {
-									mediaSource.addEventListener("sourceopen", function () {
+									p.ms.addEventListener("sourceopen", function () {
 										fetchAndInitMarkers();
 									}, {
 										once: true
@@ -186,7 +187,7 @@ function init() {
 			logWARN('Failed promise - Error log: ');
 			logERR(err);
 		});
-	main_view.addEventListener("playing", function () {
+	p.v.addEventListener("playing", function () {
 		interval_id = setInterval(check_status, INTERVAL_MS);
 	}, {
 		once: true
@@ -225,20 +226,20 @@ function parse_pl_descriptor(req) {
 
 //called at regular intervals to check if the stream has changed, or if we have buffer starvation
 function check_status() {
-	if (main_view.readyState === HTMLMediaElement.HAVE_CURRENT_DATA) {
+	if (p.v.readyState === HTMLMediaElement.HAVE_CURRENT_DATA) {
 		logUI('Your internet connection might not adequate to support this demo');
 	}
 
 
 
 	//first we check if the video is rolling //TODO later, add support for updating buffer *and* switching videos at paused state
-	if (main_view.paused) {
+	if (p.v.paused) {
 		logDEBUG('check_status called with main view paused - skipping check');
 		return;
 	}
 
 	//we check if the media source is available
-	if (sourceBuffer.updating || mediaSource.readyState != "open") {
+	if (sourceBuffer.updating || p.ms.readyState != "open") {
 		logWARN("MSE or sourceBuffer not available");
 		return;
 	}
@@ -253,7 +254,7 @@ function check_status() {
 		logDEBUG('sourceBuffer contains 2 time ranges. cleaning up contents...');
 		cleanSourceBuffer();
 		return;
-	} else if (end_time - main_view.currentTime > UPDATE_S || getSourceBufferTimeRangeNumber === 0) {
+	} else if (end_time - p.v.currentTime > UPDATE_S || getSourceBufferTimeRangeNumber === 0) {
 		return;
 	}
 
@@ -287,7 +288,7 @@ function check_status() {
 //returns recording id
 function addVideoToIndex(XMLHttpRequest_in) {
 	var tmp_req = XMLHttpRequest_in;
-	var loc_obj ={};
+	var loc_obj = {};
 	loc_obj.descriptor = tmp_req.response;
 	loc_obj.index = globalSetIndex.length;
 	loc_obj.id = tmp_req.response.recordingID;
@@ -355,7 +356,7 @@ function setMainViewStartTime() {
 		fetch_promise(DASH_DIR + '/' + globalSetIndex[0].mpd.SegmentTemplate.media.replace("$Number$", index), "arraybuffer", false)
 			.then(function (response) {
 				addSegment(response);
-				main_view.currentTime = main_view_startTime = reference_start_time = (tmp_time / 1000); //in seconds
+				p.v.currentTime = main_view_startTime = reference_start_time = (tmp_time / 1000); //in seconds
 				//TODO (#33) for now we use an event to signal timing info is ready
 				window.dispatchEvent(new CustomEvent('timeDataReady', {
 					detail: 'done'
@@ -369,7 +370,7 @@ function setMainViewStartTime() {
 		fetch_promise(DASH_DIR + '/' + globalSetIndex[0].mpd.representations[0].SegmentList.Segments[index], "arraybuffer", false)
 			.then(function (response) {
 				addSegment(response);
-				main_view.currentTime = main_view_startTime = reference_start_time = (tmp_time / 1000); //in seconds
+				p.v.currentTime = main_view_startTime = reference_start_time = (tmp_time / 1000); //in seconds
 				//TODO (#33) for now we use an event to signal timing info is ready
 				window.dispatchEvent(new CustomEvent('timeDataReady', {
 					detail: 'done'
@@ -498,7 +499,7 @@ function addMarkerUpdates(set_in, tmp_index) {
 	var t_diff = tmp_start - reference_recording_set.descriptor.startTimeMs;
 	if (reference_start_time === 0) {
 		reference_start_time = t_diff / 1000;
-		main_view.currentTime = reference_start_time;
+		p.v.currentTime = reference_start_time;
 	}
 	let cur_t;
 
@@ -539,12 +540,12 @@ function addMarkerUpdates(set_in, tmp_index) {
 
 //called when the play button is pressed
 function startPlayback() {
-	main_view.play();
+	p.v.play();
 }
 
 //called when marker is clicked
 function switchToStream(set_index, recordingID) {
-	if (main_view.paused) {
+	if (p.v.paused) {
 		logUI("Ignoring switch - main view paused");
 		return;
 	}
@@ -555,11 +556,11 @@ function switchToStream(set_index, recordingID) {
 		logUI("Switching to stream with ID: " + recordingID);
 	}
 	let new_set = getSetByVideoId(recordingID);
-	let end_time = main_view.currentTime;
+	let end_time = p.v.currentTime;
 	/*
 		let end_time = getSourceBufferEnd();
 	
-		if(Math.abs(end_time - main_view.currentTime) < 0.2){
+		if(Math.abs(end_time - p.v.currentTime) < 0.2){
 			logDEBUG('safety check for time diff between buffer and video end');
 			end_time -= 0.2;
 		}
@@ -603,9 +604,9 @@ function resetSourceBuffer() {
 	let seg_n;
 
 	if (globalSetIndex[active_video_index].mpd.isLiveProfile) {
-		seg_n = mpd_getSegmentNumAtTime4Live(globalSetIndex[active_video_index].mpd.SegmentTemplate, main_view.currentTime - (globalSetIndex[active_video_index].descriptor.tDiffwReferenceMs / 1000));
+		seg_n = mpd_getSegmentNumAtTime4Live(globalSetIndex[active_video_index].mpd.SegmentTemplate, p.v.currentTime - (globalSetIndex[active_video_index].descriptor.tDiffwReferenceMs / 1000));
 	} else {
-		seg_n = mpd_getSegmentIndexAtTime(globalSetIndex[active_video_index].mpd.representations[0], main_view.currentTime - (globalSetIndex[active_video_index].descriptor.tDiffwReferenceMs / 1000));
+		seg_n = mpd_getSegmentIndexAtTime(globalSetIndex[active_video_index].mpd.representations[0], p.v.currentTime - (globalSetIndex[active_video_index].descriptor.tDiffwReferenceMs / 1000));
 	}
 
 	if (sourceBuffer.updating) {
@@ -619,7 +620,7 @@ function resetSourceBuffer() {
 	}
 	//TODO workaround because Chrome does not auto-play (nor auto-pauses) after reset
 	if (navigator.userAgent.indexOf("Chrome") != -1) {
-		main_view.currentTime += 0.001;
+		p.v.currentTime += 0.001;
 	}
 	startInterval();
 }
@@ -641,14 +642,14 @@ function cleanSourceBuffer() {
 		return;
 	}
 
-	if (sourceBuffer.buffered.end(0) < main_view.currentTime) { //if the early source buffer ends before the current time
+	if (sourceBuffer.buffered.end(0) < p.v.currentTime) { //if the early source buffer ends before the current time
 		if (last_removed_timerage === sourceBuffer.buffered.end(0)) { //check that we did not get into a loophole (usually when the diff is less than the dur of a frame)
 			resetSourceBuffer();
 			return;
 		}
 		last_removed_timerage = sourceBuffer.buffered.end(0);
 		sourceBuffer.remove(sourceBuffer.buffered.start(0), sourceBuffer.buffered.end(0));
-	} else if (sourceBuffer.buffered.start(1) > main_view.currentTime && ((sourceBuffer.buffered.end(0) + globalSetIndex[0].mpd.representations[0].frameRate / 1000) < sourceBuffer.buffered.start(1))) { //or the late start after the current time
+	} else if (sourceBuffer.buffered.start(1) > p.v.currentTime && ((sourceBuffer.buffered.end(0) + globalSetIndex[0].mpd.representations[0].frameRate / 1000) < sourceBuffer.buffered.start(1))) { //or the late start after the current time
 		if (last_removed_timerage === sourceBuffer.buffered.start(1)) { //check that we did not get into a loophole (usually when the diff is less than the dur of a frame)
 			resetSourceBuffer();
 			return;
@@ -806,7 +807,7 @@ function handleEvent(marker_id, obj_in) {
 
 function video_end() {
 	killInterval();
-	main_view.load();
+	p.v.load();
 	deactivateUIselection();
 	stopRoundRobin();
 	deactivateUIselection();

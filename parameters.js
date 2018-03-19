@@ -65,10 +65,8 @@ var reference_end_time = Infinity;
  *
  *  active_video_id (String)    The id of selected file
  *  active_video_index (int)    Index (in globalSetIndex) of the selected file
- *  mediaSource                 Not used for now
  *  playlist        (Array of Strings)  Holds IDs
- *  video           (Element)   The video
- *  main_view       (Element)   The main view video
+ *  p.v       (Element)   The main view video
  *  items_fetched   (int)       Number of playlist elements fetched
  *
  * File-in related vars:

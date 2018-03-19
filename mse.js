@@ -1,25 +1,25 @@
 "use strict";
 /*
     This file contains MSE-related functions
-    It assumes that a MediaSource has been created (mediaSource) and assigned a .video with a compatible .src
+    It assumes that a MediaSource has been created (p.ms) and assigned a .v video element with a compatible .src
 */
 var sourceBuffer;
 
 
-//Adds a sourceBuffer when the mediaSource is ready for the first time
+//Adds a sourceBuffer when the p.ms is ready for the first time
 function onSourceOpen(mime_codec) {
 
-    if (mediaSource.video.canPlayType(mime_codec) == "") {
+    if (p.v.canPlayType(mime_codec) == "") {
         logERR('Mime codec ' + mime_codec + ' is not supported. SourceBuffer will not be added to MSE');
     }
 
-    if (mediaSource.sourceBuffers.length > 0) {
-        logWARN('onSourceOpen called with mediaSource.sourceBuffers.length > 0');
+    if (p.ms.sourceBuffers.length > 0) {
+        logWARN('onSourceOpen called with p.ms.sourceBuffers.length > 0');
         return;
     }
 
-    sourceBuffer = mediaSource.addSourceBuffer(mime_codec);
-    sourceBuffer.ms = mediaSource;
+    sourceBuffer = p.ms.addSourceBuffer(mime_codec);
+    sourceBuffer.ms = p.ms;
 
     sourceBuffer.addEventListener('onerror', function (e) {
         logERR('Error on sourceBuffer');
@@ -58,7 +58,7 @@ function addSegment(seg_in) {
     if (seg_in == null) {
         // Error fetching the initialization segment. Signal end of stream with an error.
         logERR("[ERROR] endofstream?");
-        mediaSource.endOfStream("network");
+        p.ms.endOfStream("network");
         return;
     }
     try {

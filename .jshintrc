@@ -2,6 +2,7 @@
     "esversion": 6,
     "browser": true,
     "globals": {
+        "p": true,
         "MediaSource": true,
         "globalSetIndex": true,
         "fetch_promise": true,
