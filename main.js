@@ -54,7 +54,7 @@ var roundRobin_interval_id = -1;
  */
 var active_video_id = null;
 var active_video_index = null;
-var main_view, main_view_startTime, playlist, items_fetched = 0,
+var main_view_startTime, playlist, items_fetched = 0,
 	main_view_tracks = [];
 
 /**
@@ -71,7 +71,6 @@ function init() {
 	p = new Player(document.getElementById('v_main'), new MediaSource());
 	p.v.src = window.URL.createObjectURL(p.ms);
 
-	msg_div = document.getElementById('messages_div');
 	activate_policies();
 
 	//fetch playlist and parse elements (IDs) in 'playlist' array

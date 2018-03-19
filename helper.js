@@ -1,7 +1,7 @@
 "use strict";
 var globalSetIndex = [];
 var p = {};
-var msg_div; //set in main
+var msg_div = document.getElementById('messages_div');
 const SHOW_DEBUG = true;
 const LOG_LVL = 0; //0: all, 1: INFO, 2: WARN, 3: ERR, 4: NONE
 
