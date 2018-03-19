@@ -226,7 +226,7 @@ function parse_pl_descriptor(req) {
 //called at regular intervals to check if the stream has changed, or if we have buffer starvation
 function check_status() {
 	if (p.v.readyState === HTMLMediaElement.HAVE_CURRENT_DATA) {
-		logUI('Buffer empty - Internet connection might not support this demo');
+		logUI('Buffer empty - If video is frozen your internet connection might not support this demo');
 	}
 
 
