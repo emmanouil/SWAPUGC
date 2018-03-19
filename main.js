@@ -226,7 +226,7 @@ function parse_pl_descriptor(req) {
 //called at regular intervals to check if the stream has changed, or if we have buffer starvation
 function check_status() {
 	if (p.v.readyState === HTMLMediaElement.HAVE_CURRENT_DATA) {
-		logUI('Your internet connection might not adequate to support this demo');
+		logUI('Buffer empty - Internet connection might not support this demo');
 	}
 
 
@@ -393,10 +393,10 @@ function setMainViewEndTime() {
 			end_time = globalSetIndex[i].descriptor.durationMs / 1000 + p.t_videoStart;
 		}
 	}
-	reference_end_time = end_time;
+	p.t_videoEnd = end_time;
 
 	//we add the end time event at the textTrack of reference view
-	let vtc = new VTTCue(reference_end_time - 1.0, reference_end_time + VTTCUE_DURATION / 1000, "{ \"Event\": \"video_end\" }");
+	let vtc = new VTTCue(p.t_videoEnd - 1.0, p.t_videoEnd + VTTCUE_DURATION / 1000, "{ \"Event\": \"video_end\" }");
 	vtc.size = 0; //TODO: hack, size 0 indicating an event
 	for (let i = 0; i < main_view_tracks.length; i++) {
 		if (main_view_tracks[i].label === reference_recordingID) {

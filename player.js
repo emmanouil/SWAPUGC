@@ -8,6 +8,7 @@ function Player(video_element, media_source) {
     this.v = video_element;
     this.ms = media_source;
     this.v.startTime = 0;
+    this.v.endTime = Infinity;
     this.active_set_id = -1;
 }
 
@@ -17,5 +18,11 @@ Player.prototype = {
     },
     set t_videoStart(t) {
         this.v.startTime = t;
+    },
+    get t_videoEnd() {
+        return this.v.endTime;
+    },
+    set t_videoEnd(t) {
+        this.v.endTime = t;
     }
 };

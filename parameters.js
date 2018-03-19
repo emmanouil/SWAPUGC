@@ -26,8 +26,6 @@ var reference_location = [53.472667, -2.299053];
 var reference_recordingID = 'A002C001_140325E3';
 /* main/reference parsed recording data set (samples) */
 var reference_recording_set;
-//time at which an end event is fired
-var reference_end_time = Infinity;
 
 
 
