@@ -62,7 +62,7 @@ function fetchAndInitMarkers() {
  * Called when timeDataReady event is fired
  */
 function initMarkers() {
-    logINFO('Initializing markers for reference start time (ms): ' + p.v_startTime);
+    logINFO('Initializing markers for reference start time (ms): ' + p.t_videoStart);
     /* Setup main view */
     centerMap(reference_location[0], reference_location[1], 20);
     analyzeGeospatialData();
@@ -77,7 +77,7 @@ function initMarkers() {
  */
 function goToAndPlay(e) {
     document.getElementById('play_btn').disabled = true;
-    logINFO('starting playback from (ms): ' + p.v_startTime);
+    logINFO('starting playback from (ms): ' + p.t_videoStart);
     startPlayback();
     document.getElementById('reset_btn').disabled = false;
     document.getElementById('next_btn').disabled = false;

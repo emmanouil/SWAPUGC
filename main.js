@@ -54,7 +54,7 @@ var roundRobin_interval_id = -1;
  */
 var active_video_id = null;
 var active_video_index = null;
-var main_view_startTime, playlist, items_fetched = 0,
+var playlist, items_fetched = 0,
 	main_view_tracks = [];
 
 /**
@@ -355,7 +355,7 @@ function setMainViewStartTime() {
 		fetch_promise(DASH_DIR + '/' + globalSetIndex[0].mpd.SegmentTemplate.media.replace("$Number$", index), "arraybuffer", false)
 			.then(function (response) {
 				addSegment(response);
-				p.v.currentTime = main_view_startTime = reference_start_time = (tmp_time / 1000); //in seconds
+				p.v.currentTime = p.t_videoStart = (tmp_time / 1000); //in seconds
 				//TODO (#33) for now we use an event to signal timing info is ready
 				window.dispatchEvent(new CustomEvent('timeDataReady', {
 					detail: 'done'
@@ -369,7 +369,7 @@ function setMainViewStartTime() {
 		fetch_promise(DASH_DIR + '/' + globalSetIndex[0].mpd.representations[0].SegmentList.Segments[index], "arraybuffer", false)
 			.then(function (response) {
 				addSegment(response);
-				p.v.currentTime = main_view_startTime = reference_start_time = (tmp_time / 1000); //in seconds
+				p.v.currentTime = p.t_videoStart = (tmp_time / 1000); //in seconds
 				//TODO (#33) for now we use an event to signal timing info is ready
 				window.dispatchEvent(new CustomEvent('timeDataReady', {
 					detail: 'done'
@@ -389,8 +389,8 @@ function setMainViewEndTime() {
 		if (globalSetIndex[i].id === reference_recordingID) {
 			continue;
 		}
-		if (globalSetIndex[i].descriptor.durationMs / 1000 + reference_start_time < end_time) {
-			end_time = globalSetIndex[i].descriptor.durationMs / 1000 + reference_start_time;
+		if (globalSetIndex[i].descriptor.durationMs / 1000 + p.t_videoStart < end_time) {
+			end_time = globalSetIndex[i].descriptor.durationMs / 1000 + p.t_videoStart;
 		}
 	}
 	reference_end_time = end_time;
@@ -482,7 +482,7 @@ function analyzeGeospatialData() {
 	}
 
 
-	//TODO after we move set reference_start_time out of addMarkerUpdates, move this out of here
+	//TODO after we move set p.t_videoStart out of addMarkerUpdates, move this out of here
 	setMainViewEndTime();
 
 }
@@ -496,9 +496,9 @@ function addMarkerUpdates(set_in, tmp_index) {
 	/* use as main (a.k.a. reference) view */
 	var tmp_start = set_in.descriptor.startTimeMs;
 	var t_diff = tmp_start - reference_recording_set.descriptor.startTimeMs;
-	if (reference_start_time === 0) {
-		reference_start_time = t_diff / 1000;
-		p.v.currentTime = reference_start_time;
+	if (p.t_videoStart === 0) {
+		p.t_videoStart = t_diff / 1000;
+		p.v.currentTime = p.t_videoStart;
 	}
 	let cur_t;
 
