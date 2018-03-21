@@ -1,6 +1,7 @@
 "use strict";
+/* global VTTCue:true */ //standard supported by Firefox and Chrome (not IE)
 /* global sourceBuffer */ //in mse.js
-/* global p:true */ //in helper.js
+/* global Marker:true */ //in maps.js
 /* global Player */ //in player.js
 /* global globalSetIndex */ //in helper.js holds EVERYTHING parsed
 
@@ -452,8 +453,12 @@ function analyzeGeospatialData() {
 		} else {
 			s.descriptor.is_mobile = false;
 		}
-		addLiveMarker(s.coordSet[0].Latitude, s.coordSet[0].Longitude,
+		s.marker = new Marker();
+		s.marker.init(s.coordSet[0].Latitude, s.coordSet[0].Longitude,
 			s.index, s.id, s.orientSet[0].X, s.descriptor.is_mobile);
+		//addLiveMarker(s.coordSet[0].Latitude, s.coordSet[0].Longitude,
+		//	s.index, s.id, s.orientSet[0].X, s.descriptor.is_mobile);
+
 
 		if (s.id === reference_recordingID) {
 			highlightMarker(s.marker, true); //we start by the current marker selected

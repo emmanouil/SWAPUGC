@@ -62,6 +62,7 @@ function fetchAndInitMarkers() {
  * Called when timeDataReady event is fired
  */
 function initMarkers() {
+    createMarkerProto(); //for Marker objects (we need the maps API to be already loaded, this is why it is placed here)
     logINFO('Initializing markers for reference start time (ms): ' + p.t_videoStart);
     /* Setup main view */
     centerMap(reference_location[0], reference_location[1], 20);

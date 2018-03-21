@@ -85,6 +85,11 @@ function createMarkerProto() {
 	Marker.prototype.constructor = Marker;
 
 	//custom functions
+	Marker.prototype.init = function (lat, lng, index, recording_id, bearing, active = false) {
+		this.ok = true;
+		initMarker(this, lat, lng, index, recording_id, bearing, active);
+	}
+
 
 }
 
@@ -232,6 +237,46 @@ function centerMap(latitude, longitude, zoom) {
 	if (zoom)
 		if (zoom > 0 && zoom < 21)
 			map.setZoom(zoom);
+}
+
+function initMarker(marker, lat, lng, index, recording_id, bearing, active = false) {
+
+	/*
+	 * if no coordinates, or recording info, skip the marker
+	 */
+	if (!lat || !lng || typeof recording_id === 'undefined') {
+		logINFO('Marker was not placed on map (check lat, lng, index and recording_id args');
+		return;
+	}
+
+	marker.title = "Marker " + recording_id;
+	marker.index = index;
+	marker.recording_id = recording_id;
+	
+	/*
+	 * if no bearing information, use default markers
+	 */
+	if (bearing) {
+		var local_icon = test_icon;
+		local_icon.rotation = bearing;
+		if (active) {
+			local_icon.fillColor = 'green';
+		}
+		marker.setIcon(local_icon);
+	} else if (USE_DEFAULT_MARKERS || (typeof bearing === 'undefined' && USE_NO_BEARING_MARKERS)) {
+		logINFO('Initialized default marker (no bearing)');
+	} else {
+		logERROR('could not initialize ' + marker.title + 'aborting ');
+		return;
+	}
+	marker.setPosition(new google.maps.LatLng(lat, lng));
+	marker.setMap(map);
+	marker.addListener('click', function () {
+		logDEBUG('clicked on marker with title: ' + marker.title + 'of ID: ' + marker.recording_id);
+		switchToStream(index, recording_id);
+	});
+	markers.push(marker);
+	globalSetIndex[index].marker = marker;
 }
 
 function addLiveMarker(lat, lng, index, recording_id, bearing, active = false) {
