@@ -89,8 +89,15 @@ function createMarkerProto() {
 		this.ok = true;
 		initMarker(this, lat, lng, index, recording_id, bearing, active);
 	}
-
-
+	Marker.prototype.highlightMarker = function (h_in) {
+		highlightMarker(this, h_in);
+	}
+	Marker.prototype.updateOrientation = function (ort) {
+		updateMarkerOrientation(this, ort);
+	}
+	Marker.prototype.updateLocation = function (loc) {
+		updateMarkerLocation(this, loc);
+	}
 }
 
 function setControlStyle(control, title) {
@@ -252,7 +259,7 @@ function initMarker(marker, lat, lng, index, recording_id, bearing, active = fal
 	marker.title = "Marker " + recording_id;
 	marker.index = index;
 	marker.recording_id = recording_id;
-	
+
 	/*
 	 * if no bearing information, use default markers
 	 */

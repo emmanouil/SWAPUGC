@@ -4,6 +4,8 @@
 /* global Marker:true */ //in maps.js
 /* global Player */ //in player.js
 /* global globalSetIndex */ //in helper.js holds EVERYTHING parsed
+/* global updateMarkerOrientation:true */ //in maps.js
+/* global updateMarkerLocation:true */ //in maps.js
 
 //var map;	//in maps.js holds MAP
 //temporary vars used for testing purposes
@@ -569,13 +571,13 @@ function switchToStream(set_index, recordingID) {
 			end_time -= 0.2;
 		}
 	*/
-	highlightMarker(new_set.marker, true); //highlight new marker
-	highlightMarker(globalSetIndex[active_video_index].marker, false); //de-hihglight old marker
+	new_set.marker.highlightMarker(true); //highlight new marker
+	globalSetIndex[active_video_index].marker.highlightMarker(false); //de-hihglight old marker
 
 	active_video_id = recordingID;
 	active_video_index = set_index;
 
-	setTimeStampOffset(globalSetIndex[set_index].descriptor.tDiffwReferenceMs / 1000);
+	p.ms.sourceBuffers[0].timestampOffset = globalSetIndex[set_index].descriptor.tDiffwReferenceMs / 1000;
 
 
 	let seg_n = 0;
@@ -661,8 +663,7 @@ function cleanSourceBuffer() {
 		last_removed_timerage = sourceBuffer.buffered.start(1);
 		sourceBuffer.remove(sourceBuffer.buffered.start(1), sourceBuffer.buffered.end(1));
 	} else {
-		logWARN("cleanSourceBuffer FAILED, printing buffer status");
-		printBufferStatus();
+		logWARN("cleanSourceBuffer FAILED, check buffer contents (printBufferStatus())");
 	}
 	startInterval();
 }
