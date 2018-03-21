@@ -74,6 +74,20 @@ var orchestraStyle = {
 	strokeWeight: 10
 };
 
+var Marker;
+
+function createMarkerProto() {
+	//constructor + prototype from maps api
+	Marker = function () {
+		google.maps.Marker.apply(this, arguments);
+	}
+	Marker.prototype = google.maps.Marker.prototype;
+	Marker.prototype.constructor = Marker;
+
+	//custom functions
+
+}
+
 function setControlStyle(control, title) {
 	control.style.backgroundColor = '#fff';
 	control.style.border = '1px solid grey';
