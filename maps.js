@@ -1,4 +1,5 @@
 "use strict";
+/* global google:true */ //in mse.js
 var map;
 var markers = [];
 var marker_icon = 'assets/icon_48px.svg';
@@ -88,16 +89,22 @@ function createMarkerProto() {
 	Marker.prototype.init = function (lat, lng, index, recording_id, bearing, active = false) {
 		this.ok = true;
 		initMarker(this, lat, lng, index, recording_id, bearing, active);
-	}
+	};
 	Marker.prototype.highlightMarker = function (h_in) {
 		highlightMarker(this, h_in);
-	}
+	};
+	Marker.prototype.deactivateClick = function () {
+		deactivateMarkerClick(this);
+	};
+	Marker.prototype.activateClick = function () {
+		activateMarkerClick(this);
+	};
 	Marker.prototype.updateOrientation = function (ort) {
 		updateMarkerOrientation(this, ort);
-	}
+	};
 	Marker.prototype.updateLocation = function (loc) {
 		updateMarkerLocation(this, loc);
-	}
+	};
 }
 
 function setControlStyle(control, title) {

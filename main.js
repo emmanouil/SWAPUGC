@@ -1,11 +1,6 @@
 "use strict";
 /* global VTTCue:true */ //standard supported by Firefox and Chrome (not IE)
 /* global sourceBuffer */ //in mse.js
-/* global Marker:true */ //in maps.js
-/* global Player */ //in player.js
-/* global globalSetIndex */ //in helper.js holds EVERYTHING parsed
-/* global updateMarkerOrientation:true */ //in maps.js
-/* global updateMarkerLocation:true */ //in maps.js
 
 //var map;	//in maps.js holds MAP
 //temporary vars used for testing purposes
@@ -768,7 +763,7 @@ function selectPolicy(p_in) {
 
 function deactivateUIselection() {
 	for (let i = 0; i < markers.length; i++) {
-		deactivateMarkerClick(markers[i]);
+		markers[i].deactivateMarkerClick();
 	}
 	document.getElementById('next_btn').disabled = true;
 	document.getElementById('selector').disabled = true;
@@ -776,7 +771,7 @@ function deactivateUIselection() {
 
 function activateUIselection() {
 	for (let i = 0; i < markers.length; i++) {
-		activateMarkerClick(markers[i]);
+		markers[i].activateClick();
 	}
 	document.getElementById('next_btn').disabled = false;
 	document.getElementById('selector').disabled = false;
