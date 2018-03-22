@@ -382,24 +382,40 @@ function updateMarkerByID(marker_id, orientation = "none", loc = "none") {
 
 function highlightMarker(marker_in, highlight = true) {
 	let ic = marker_in.icon;
-	if (highlight) {
-		ic.strokeWeight = 2;
-		ic.strokeColor = 'red';
+	if (ic) {
+		if (highlight) {
+			ic.strokeWeight = 2;
+			ic.strokeColor = 'red';
+		} else {
+			ic.strokeWeight = 1;
+			ic.strokeColor = 'black';
+		}
+		marker_in.setMap(map);
 	} else {
-		ic.strokeWeight = 1;
-		ic.strokeColor = 'black';
+		if (highlight) {
+			marker_in.setLabel('A');
+		} else {
+			marker_in.setLabel();
+		}
 	}
-	marker_in.setMap(map);
 }
 
 function deactivateMarkerClick(marker_in) {
 	marker_in.setClickable(false);
+	if (!marker_in.icon) {
+		marker_in.setOpacity(0.5);
+		return;
+	}
 	marker_in.icon.fillColor = 'gray';
 	marker_in.setMap(map);
 }
 
 function activateMarkerClick(marker_in) {
 	marker_in.setClickable(true);
+	if (!marker_in.icon) {
+		marker_in.setOpacity(1);
+		return;
+	}
 	if (globalSetIndex[marker_in.index].descriptor.is_mobile) {
 		marker_in.icon.fillColor = 'green';
 	} else {
