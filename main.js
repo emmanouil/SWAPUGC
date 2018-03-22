@@ -763,7 +763,7 @@ function selectPolicy(p_in) {
 
 function deactivateUIselection() {
 	for (let i = 0; i < markers.length; i++) {
-		markers[i].deactivateMarkerClick();
+		markers[i].deactivateClick();
 	}
 	document.getElementById('next_btn').disabled = true;
 	document.getElementById('selector').disabled = true;

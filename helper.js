@@ -3,7 +3,7 @@ var globalSetIndex = [];
 var p = {};
 var msg_div = document.getElementById('messages_div');
 const SHOW_DEBUG = true;
-const LOG_LVL = 0; //0: all, 1: INFO, 2: WARN, 3: ERR, 4: NONE
+const LOG_LVL = 4; //0: all, 1: INFO, 2: WARN, 3: ERR, 4: NONE
 
 function logUI(msg) {
     logINFO(msg);
