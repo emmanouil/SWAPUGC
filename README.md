@@ -102,7 +102,7 @@ File `parser_single_file` located inside the `tool` dir will generate files, fro
 ### Platform-specific data used
 
 #### Global Pairs Holder
-global variable name: ```globalSetIndex```
+global variable name: ```globalSetIndex```   
 decription: an Array of recordings - the Location/Sensor Pair Objects of each recording are stored in the ```set``` field)
 ```javascript
     {
@@ -114,6 +114,10 @@ decription: an Array of recordings - the Location/Sensor Pair Objects of each re
         videoFile: "OUT_1234567_12345.mp4"
     }
 ```
+Other globals:  
+```p``` - player information and settings  
+```map``` map Object, created using the external API  
+```markers``` references to the marker objects (when orientation available)  
 
 
 #### Location and Sensor Pairs
@@ -142,6 +146,7 @@ decription: An Object holding Orientation and Location information for a POI
         }
     }
 ```
+SWAPUGC should work without orientation data, receiving just the location updates. This feature is implemented (incl. in the demo), but not actively tested.
 
 
 ## Known Issues
