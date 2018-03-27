@@ -27,7 +27,7 @@ Because there are not any other tools with similar features currently out. There
 
 And... **_How_ did it start**
 
-The original idea came from the client of _"Extended Video Streams for Spatiotemporal Video Navigation"_, presented at The Graphical Web 2016 ([slides](https://emmanouil.wp.imt.fr/files/2017/03/Extended-Video-Streams-for-Spatiotemporal-Navigation.pdf) & [video](https://www.youtube.com/watch?v=iUhGZV9SSiM)), part of the project _"Streaming And Presentation Architectures for Extended Video Streams"_ ([short-paper](https://www.researchgate.net/publication/317593679_Streaming_and_Presentation_Architectures_for_Extended_Video_Streams)) showcased at the TVX '17. 
+The original idea came from the [client application](https://github.com/emmanouil/Spatiotemporal-Navigation) of _"Extended Video Streams for Spatiotemporal Video Navigation"_, presented at The Graphical Web 2016 ([slides](https://emmanouil.wp.imt.fr/files/2017/03/Extended-Video-Streams-for-Spatiotemporal-Navigation.pdf) & [video](https://www.youtube.com/watch?v=iUhGZV9SSiM)), part of the project _"Streaming And Presentation Architectures for Extended Video Streams"_ ([short-paper](https://www.researchgate.net/publication/317593679_Streaming_and_Presentation_Architectures_for_Extended_Video_Streams)) showcased at the TVX '17. 
 This web application allowed for users to navigate on a map according to the currently displayed frame, or seek in video according to the location. However, there was no concept of common timeline between different recordings, neither live streaming capabilities, nor support for adaptation policies. But, adding those feature would repurpose the platform, thus instead of extending it, we built upon it and SWAPUGC was born.
 
 
