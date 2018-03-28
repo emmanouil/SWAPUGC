@@ -19,15 +19,18 @@ const DASH_DIR = 'samples/segmented'; //contains the segments, inits and mpd ini
 
 //extensions, suffixes and prefixes
 const DASH_MPD_SUFFIX = '_dash'; //i.e. NAMEOFRECORDING_dash.mpd
-var PL_SENSORS_SUFFIX = '_SENSOR_DATA';
-var PL_SENSORS_EXTENSION = '.xml';
-var PL_VIDEO_SUFFIX = '';
-//var PL_VIDEO_EXTENSION = '.mp4';
-var PL_VIDEO_EXTENSION = '.webm';
-var PL_LOCATION_SUFFIX = '_LOC';
-var PL_ORIENTATION_SUFFIX = '_ORIENT';
-var PL_DESCRIPTOR_SUFFIX = '_DESCRIPTOR';
-var PORT = '8000';
+//not implemented or obsolete constants
+/*
+const PL_SENSORS_SUFFIX = '_SENSOR_DATA';
+const PL_SENSORS_EXTENSION = '.xml';
+const PL_VIDEO_SUFFIX = '';
+*/
+
+const PL_VIDEO_EXTENSION = '.webm';
+const PL_LOCATION_SUFFIX = '_LOC';
+const PL_ORIENTATION_SUFFIX = '_ORIENT';
+const PL_DESCRIPTOR_SUFFIX = '_DESCRIPTOR';
+const PORT = '8000';
 var BASE_URL = ''; //set when parse_playlist is called (e.g. 192.0.0.1:8000)
 
 //pseudo-simulation parameters
@@ -290,7 +293,6 @@ function addVideoToIndex(XMLHttpRequest_in) {
 	loc_obj.index = globalSetIndex.length;
 	loc_obj.id = tmp_req.response.recordingID;
 	loc_obj.videoFile = loc_obj.id + PL_VIDEO_EXTENSION;
-	loc_obj.videoFile = loc_obj.id + PL_VIDEO_EXTENSION;
 	//this used to hold the coords/orient in previous version
 	//	loc_obj.set = XMLHttpRequest_in.response;
 	globalSetIndex.push(loc_obj);
@@ -407,11 +409,11 @@ function setMainViewEndTime() {
 
 
 function loadCoords(req_in) {
-	loadAssets('_LOC', req_in);
+	loadAssets(PL_LOCATION_SUFFIX, req_in);
 }
 
 function loadLocs(req_in) {
-	loadAssets('_ORIENT', req_in);
+	loadAssets(PL_ORIENTATION_SUFFIX, req_in);
 }
 
 function loadAssets(type, Xreq_target) {
@@ -419,10 +421,10 @@ function loadAssets(type, Xreq_target) {
 	for (var i = 0; i < globalSetIndex.length; i++) {
 		if (globalSetIndex[i].descriptor.recordingID + type === tmp_name) {
 			switch (type) {
-				case '_LOC':
+				case PL_LOCATION_SUFFIX:
 					globalSetIndex[i].coordSet = Xreq_target.response;
 					break;
-				case '_ORIENT':
+				case PL_ORIENTATION_SUFFIX:
 					globalSetIndex[i].orientSet = Xreq_target.response;
 					break;
 				default:
