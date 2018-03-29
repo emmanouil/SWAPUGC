@@ -146,7 +146,16 @@ decription: An Object holding Orientation and Location information for a POI
         }
     }
 ```
-SWAPUGC should work without orientation data, receiving just the location updates. This feature is implemented (incl. in the demo), but not actively tested.
+SWAPUGC should work without orientation data, receiving just the location updates. For example, when setting the markers, the default icon is used. This feature is implemented (incl. in the demo), but not actively tested.
+
+
+#### Events implemented
+
+We are using VTTCue for new events (e.g. location updates). VTTCue is part of [`WebVTT`](https://w3c.github.io/webvtt/) and is an extension of the [`text track cue`](https://html.spec.whatwg.org/multipage/media.html#text-track-cue). We set the event type by specifying the `size` attribute. We currently implemented three types:
+ * size = 0 **Generic Event** (e.g. video end) 
+ * size = 1 **Orientation Update** (currently using the X axis)
+ * size = 2 **Location Update**
+
 
 
 ## Known Issues
