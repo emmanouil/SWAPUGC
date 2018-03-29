@@ -8,6 +8,12 @@ var last_fetched_seg_n = -1;
 var last_fetched_index = -1;
 var last_removed_timerage = -1; //during resetSourceBuffer or cleanSourceBuffer
 
+/* VTT id types
+ * "Event"
+ * "OrientationUpdate"
+ * "LocationUpdate"
+ */
+
 /**
  * Playlist & File Parameters
  */
@@ -397,7 +403,7 @@ function setMainViewEndTime() {
 
 	//we add the end time event at the textTrack of reference view
 	let vtc = new VTTCue(p.t_videoEnd - 1.0, p.t_videoEnd + VTTCUE_DURATION / 1000, "{ \"Event\": \"video_end\" }");
-	vtc.size = 0; //TODO: hack, size 0 indicating an event
+	vtc.id = "Event";
 	for (let i = 0; i < main_view_tracks.length; i++) {
 		if (main_view_tracks[i].label === reference_recordingID) {
 			main_view_tracks[i].addCue(vtc);
@@ -474,11 +480,11 @@ function analyzeGeospatialData() {
 		globalSetIndex[i].main_view_tracks_no = i;
 		main_view_tracks[i].oncuechange = function () {
 			for (let i = 0; i < this.activeCues.length; i++) {
-				if (this.activeCues[i].size === 1) {
+				if (this.activeCues[i].id === "OrientationUpdate") {
 					updateMarkerOrientation(this.activeCues[i].track.label, Number(this.activeCues[i].text));
-				} else if (this.activeCues[i].size === 2) {
+				} else if (this.activeCues[i].id === "LocationUpdate") {
 					updateMarkerLocation(this.activeCues[i].track.label, JSON.parse(this.activeCues[i].text));
-				} else if (this.activeCues[i].size === 0) {
+				} else if (this.activeCues[i].id === "Event") {
 					handleEvent(this.activeCues[i].track.label, JSON.parse(this.activeCues[i].text));
 				}
 			}
@@ -519,7 +525,7 @@ function addMarkerUpdates(set_in, tmp_index) {
 		cur_t = tmp_orient.PresentationTime;
 		//TODO handle cues according to main vid time (not relevant to the take time)
 		let vtc = new VTTCue((t_diff + cur_t) / 1000, (t_diff + cur_t + VTTCUE_DURATION) / 1000, String(tmp_orient.X));
-		vtc.size = 1; //we set size 1 since we only set orientation
+		vtc.id = "OrientationUpdate";
 		tmp_track.addCue(vtc);
 	}
 
@@ -536,7 +542,7 @@ function addMarkerUpdates(set_in, tmp_index) {
 		cur_t = tmp_loc.PresentationTime;
 		//TODO handle cues according to main vid time (not relevant to the take time)
 		let vtc = new VTTCue((t_diff + cur_t) / 1000, (t_diff + cur_t + VTTCUE_DURATION) / 1000, "{\"lat\":" + tmp_loc.Latitude + ", \"lng\":" + tmp_loc.Longitude + "}");
-		vtc.size = 2; //we set size 1 since we set lat and lng
+		vtc.id = "LocationUpdate";
 		tmp_track.addCue(vtc);
 	}
 }

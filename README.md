@@ -151,10 +151,10 @@ SWAPUGC should work without orientation data, receiving just the location update
 
 #### Events implemented
 
-We are using VTTCue for new events (e.g. location updates). VTTCue is part of [`WebVTT`](https://w3c.github.io/webvtt/) and is an extension of the [`text track cue`](https://html.spec.whatwg.org/multipage/media.html#text-track-cue). We set the event type by specifying the `size` attribute. We currently implemented three types:
- * size = 0 **Generic Event** (e.g. video end) 
- * size = 1 **Orientation Update** (currently using the X axis)
- * size = 2 **Location Update**
+We are using VTTCue for new events (e.g. location updates). VTTCue is part of [`WebVTT`](https://w3c.github.io/webvtt/) and is an extension of the [`text track cue`](https://html.spec.whatwg.org/multipage/media.html#text-track-cue). We set the event type by specifying the `id` attribute. We currently implemented three types:
+ * `Event` **Generic Event** (e.g. video end) 
+ * `OrientationUpdate` **Orientation Update** (currently using the X axis)
+ * `LocationUpdate` **Location Update** (with the format `{"lat": 123, "lng": 123}`)
 
 
 
