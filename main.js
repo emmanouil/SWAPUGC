@@ -481,7 +481,7 @@ function analyzeGeospatialData() {
 		main_view_tracks[i].oncuechange = function () {
 			for (let i = 0; i < this.activeCues.length; i++) {
 				if (this.activeCues[i].id === "OrientationUpdate") {
-					updateMarkerOrientation(this.activeCues[i].track.label, Number(this.activeCues[i].text));
+					updateMarkerOrientation(this.activeCues[i].track.label, JSON.parse(this.activeCues[i].text).X); //we only use X for display
 				} else if (this.activeCues[i].id === "LocationUpdate") {
 					updateMarkerLocation(this.activeCues[i].track.label, JSON.parse(this.activeCues[i].text));
 				} else if (this.activeCues[i].id === "Event") {
@@ -524,7 +524,7 @@ function addMarkerUpdates(set_in, tmp_index) {
 		}
 		cur_t = tmp_orient.PresentationTime;
 		//TODO handle cues according to main vid time (not relevant to the take time)
-		let vtc = new VTTCue((t_diff + cur_t) / 1000, (t_diff + cur_t + VTTCUE_DURATION) / 1000, String(tmp_orient.X));
+		let vtc = new VTTCue((t_diff + cur_t) / 1000, (t_diff + cur_t + VTTCUE_DURATION) / 1000, JSON.stringify(tmp_orient));
 		vtc.id = "OrientationUpdate";
 		tmp_track.addCue(vtc);
 	}
