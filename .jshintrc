@@ -1,6 +1,7 @@
 {
     "esversion": 6,
     "browser": true,
+    "devel": true,
     "globalstrict": true,
     "globals": {
         "p": true,

@@ -186,10 +186,7 @@ function init() {
 					logERR('Possible error parsing file ' + PLAYLIST_FILE);
 					logERR(err);
 				});
-			}).then(function (response) {
-			//we currently do not do anything after parsing playlist, prior to mpds
-			//TODO delete this block if not needed
-		}).catch(function (err) {
+			}).catch(function (err) {
 			logWARN('Failed promise - Error log: ');
 			logERR(err);
 		});
