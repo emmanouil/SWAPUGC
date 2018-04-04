@@ -79,7 +79,7 @@ With MP4Box, an example command to generate the mpd file [1] and the associated 
 
 
 NOTE: MP4Box does _not_ do any transcoding on the media files. For that, we used ffmpeg. An example command for encoding a video in x264 (audio aac @ 48kHz sample rate) with framerate = 30 fps and GOP size of 30 frames at 2Mbps bitrate, scaled with height = 1080px would be :
-`ffmpeg.exe -i 20140325_121238.webm -r 30 -preset slow -vf scale=-1:1080 -c:v libx264 -b:v 2000k -movflags +faststart -sc_threshold 0 -keyint_min 30 -g 30 -c:a -ar 48000 aac 20140325_121238.mp4`
+`ffmpeg.exe -i 20140325_121238.webm -r 30 -preset slow -vf scale=-1:1080 -c:v libx264 -b:v 2000k -movflags +faststart -sc_threshold 0 -keyint_min 30 -g 30 -c:a aac -ar 48000 20140325_121238.mp4`
 
 To analyze generated files you can use MP4Box as well (e.g. `MP4Box -info 20140325_121238.mp4` or `MP4Box -info 1 20140325_121238.mp4` for info only on the first track)
 
