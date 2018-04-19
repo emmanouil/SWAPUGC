@@ -313,7 +313,7 @@ function addLiveMarker(lat, lng, index, recording_id, bearing, active = false) {
 		});
 		marker1.setMap(map);
 		marker1.addListener('click', function () {
-			console.log("click to no bearing marker");
+			logDEBUG("click to no bearing marker");
 			switchToStream(index, recording_id);
 		});
 		markers.push(marker1);

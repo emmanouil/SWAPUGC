@@ -93,7 +93,6 @@ function init() {
 						promises.push(fetch_promise(PARSER_DIR + '/' + playlist[i] + PL_DESCRIPTOR_SUFFIX + '.json', 'json', true).catch(function (err_) {
 							logERR('Error in parsing playlist element. Skipping item');
 							logERR(err_);
-							console.log(err_)
 						}));
 					} else {
 						logDEBUG('Element of playlist at index ' + i + ', with value' + playlist[i] + ' not found');
