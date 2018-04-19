@@ -51,7 +51,7 @@ function logDEBUG(msg) {
  */
 function ajax_url_exists(url) {
     let req = new XMLHttpRequest();
-    req.open('HEAD', url, false);
+    req.open('HEAD', url);
     req.send();
     return req.status != 404;
 }
