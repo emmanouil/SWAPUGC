@@ -87,11 +87,27 @@ function init() {
 			function (response, mpd) {
 				parse_playlist(response);
 				var promises = [];
+				var to_delete = [];
 				for (var i = 0; i < playlist.length; i++) {
-					promises.push(fetch_promise(PARSER_DIR + '/' + playlist[i] + PL_DESCRIPTOR_SUFFIX + '.json', 'json', true));
+					if (ajax_url_exists(PARSER_DIR + '/' + playlist[i] + PL_DESCRIPTOR_SUFFIX + '.json')) {
+						promises.push(fetch_promise(PARSER_DIR + '/' + playlist[i] + PL_DESCRIPTOR_SUFFIX + '.json', 'json', true).catch(function (err_) {
+							logERR('Error in parsing playlist element. Skipping item');
+							logERR(err_);
+							console.log(err_)
+						}));
+					} else {
+						logDEBUG('Element of playlist at index ' + i + ', with value' + playlist[i] + ' not found');
+						to_delete.push(playlist[i]);
+					}
 				}
+				for (let i = 0; i < to_delete.length; i++) {
+					logDEBUG('Removing item ' + to_delete[i] + ' from playlist');
+					playlist.clean(to_delete[i]);
+				}
+
 				//load descriptors and update globalSetIndex
 				Promise.all(promises).then(function (values) {
+					values.clean(undefined); //remove failed promises results - i.e. not-found playlist entries
 					for (var i = 0; i < values.length; i++) {
 						parse_pl_descriptor(values[i]);
 					}
@@ -182,10 +198,7 @@ function init() {
 							}).catch(function (err) {
 								logERR(err);
 							});
-					}).catch(function (err) {
-					logERR('Possible error parsing file ' + PLAYLIST_FILE);
-					logERR(err);
-				});
+					}).catch();
 			}).catch(function (err) {
 			logWARN('Failed promise - Error log: ');
 			logERR(err);
