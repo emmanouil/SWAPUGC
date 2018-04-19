@@ -46,6 +46,17 @@ function logDEBUG(msg) {
 }
 
 /**
+ * check if a file exists without actually fetching it
+ * @param {*} url url to check if it exists 
+ */
+function ajax_url_exists(url) {
+    let req = new XMLHttpRequest();
+    req.open('HEAD', url, false);
+    req.send();
+    return req.status != 404;
+}
+
+/**
  * Like fetch(), but asserts and returns only the response
  * @param {*} what asset location
  * @param {*} where function to be called with the result
