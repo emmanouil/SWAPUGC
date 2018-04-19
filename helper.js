@@ -4,6 +4,16 @@ var p = {};
 var msg_div = document.getElementById('messages_div');
 const SHOW_DEBUG = true;
 const LOG_LVL = 4; //0: all, 1: INFO, 2: WARN, 3: ERR, 4: NONE
+//extend Array prototype to remove 'deleteValue' (call with undefined to keep only defined elements)
+Array.prototype.clean = function (deleteValue) {
+    for (var i = 0; i < this.length; i++) {
+        if (this[i] == deleteValue) {
+            this.splice(i, 1);
+            i--;
+        }
+    }
+    return this;
+};
 
 function logUI(msg) {
     logINFO(msg);
