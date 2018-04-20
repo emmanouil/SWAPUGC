@@ -51,7 +51,7 @@ function logDEBUG(msg) {
  */
 function ajax_url_exists(url) {
     let req = new XMLHttpRequest();
-    req.open('HEAD', url);
+    req.open('HEAD', url, false);   //TODO: async XHR is deprecated, update this
     req.send();
     return req.status != 404;
 }
