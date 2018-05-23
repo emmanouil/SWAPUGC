@@ -21,7 +21,7 @@ var last_removed_timerage = -1; //during resetSourceBuffer or cleanSourceBuffer
 const PLAYLIST_FILE = 'playlist.txt'; //holds the base names of the recordings
 const PLAYLIST_MAIN_VIEW_INDEX = 0; //the position in the playlist txt of the recording considered as reference (starting from 0)
 const PARSER_DIR = 'samples/script_out'; //holds the parser output (location, orientation, descriptor) jsons
-const DASH_DIR = 'samples/segmented'; //contains the segments, inits and mpd init of the video files
+const DASH_DIR = 'samples/multi-res'; //contains the segments, inits and mpd init of the video files [for demo use 'samples/multi-res' for the multiple representations, 'samples/segmented' for single bitstream]
 
 //extensions, suffixes and prefixes
 const DASH_MPD_SUFFIX = '_dash'; //i.e. NAMEOFRECORDING_dash.mpd
@@ -125,21 +125,39 @@ function init() {
 											if (values[i].responseURL.search(globalSetIndex[j].id) > -1) {
 												globalSetIndex[j].mpd = new MPD(values[i].responseURL);
 												globalSetIndex[j].mpd.fullDocument = mpd_parse(values[i].response);
-												//we have a live profile - generate segment list
-												var t_rep;
-												if (globalSetIndex[j].mpd.document.getAttribute("profiles").indexOf("dash:profile:isoff-live") != -1) {
-													globalSetIndex[j].mpd.isLiveProfile = true;
-													let temp_template = globalSetIndex[j].mpd.document.getElementsByTagName("SegmentTemplate")[0];
-													globalSetIndex[j].mpd.SegmentTemplate = mpd_getRepresentationAttributesByNode(globalSetIndex[j].mpd.document.getElementsByTagName("SegmentTemplate")[0]);
-													globalSetIndex[j].mpd.initSegment = temp_template.getAttribute("initialization");
-													t_rep = mpd_getRepresentationNodeByID(globalSetIndex[j].mpd.fullDocument, 1);
-													globalSetIndex[j].mpd.representations.push(mpd_getRepresentationAttributesByNode(t_rep));
+												globalSetIndex[j].mpd.fullRepresentations = globalSetIndex[j].mpd.fullDocument.getElementsByTagName("Representation");
 
-												} else { //we do not have a live profile - parse segment list
-													globalSetIndex[j].mpd.isLiveProfile = false;
-													globalSetIndex[j].mpd.initSegment = mpd_getInitSegURL(globalSetIndex[j].mpd.fullDocument);
-													t_rep = mpd_getRepresentationNodeByID(globalSetIndex[j].mpd.fullDocument, 1);
-													globalSetIndex[j].mpd.representations.push(mpd_getRepresentationByNode(t_rep));
+
+												let rep_n = globalSetIndex[j].mpd.fullRepresentations.length;
+												//we have multiple representations (we assume one period, one adaptation set and live profile for now TODO)
+												if (rep_n > 1) {
+													globalSetIndex[j].mpd.isLiveProfile = true;
+													globalSetIndex[j].mpd.fullAdaptationSet = globalSetIndex[j].mpd.fullDocument.getElementsByTagName("Period")[0].getElementsByTagName("AdaptationSet")[0];
+													globalSetIndex[j].mpd.initSegment = find_attribute_in_children(globalSetIndex[j].mpd.fullAdaptationSet, "initialization");
+													for (let i = 0; i < rep_n; i++) {
+														globalSetIndex[j].mpd.representations.push(mpd_getRepresentationAttributesByNode(globalSetIndex[j].mpd.fullRepresentations[i]));
+														globalSetIndex[j].mpd.representations[i].SegmentTemplate = mpd_getRepresentationAttributesByNode(globalSetIndex[j].mpd.fullRepresentations[i].getElementsByTagName("SegmentTemplate")[0]);
+													}
+													globalSetIndex.representation_index = 0;
+												} else if (rep_n == 1) { //TODO merge with multiple representations
+													//we have a live profile - generate segment list
+													var t_rep;
+													if (globalSetIndex[j].mpd.document.getAttribute("profiles").indexOf("dash:profile:isoff-live") != -1) {
+														globalSetIndex[j].mpd.isLiveProfile = true;
+														let temp_template = globalSetIndex[j].mpd.document.getElementsByTagName("SegmentTemplate")[0];
+														globalSetIndex[j].mpd.SegmentTemplate = mpd_getRepresentationAttributesByNode(globalSetIndex[j].mpd.document.getElementsByTagName("SegmentTemplate")[0]);
+														globalSetIndex[j].mpd.initSegment = temp_template.getAttribute("initialization");
+														t_rep = mpd_getRepresentationNodeByID(globalSetIndex[j].mpd.fullDocument, 1);
+														globalSetIndex[j].mpd.representations.push(mpd_getRepresentationAttributesByNode(t_rep));
+
+													} else { //we do not have a live profile - parse segment list
+														globalSetIndex[j].mpd.isLiveProfile = false;
+														globalSetIndex[j].mpd.initSegment = mpd_getInitSegURL(globalSetIndex[j].mpd.fullDocument);
+														t_rep = mpd_getRepresentationNodeByID(globalSetIndex[j].mpd.fullDocument, 1);
+														globalSetIndex[j].mpd.representations.push(mpd_getRepresentationByNode(t_rep));
+													}
+												} else {
+													logERR("No representations found for " + globalSetIndex[j].id);
 												}
 												break;
 											}
@@ -275,7 +293,11 @@ function check_status() {
 
 	let seg_n = 0;
 	if (globalSetIndex[active_video_index].mpd.isLiveProfile) {
-		seg_n = mpd_getSegmentNumAtTime4Live(globalSetIndex[active_video_index].mpd.SegmentTemplate, end_time - globalSetIndex[active_video_index].descriptor.tDiffwReferenceMs / 1000);
+		if (globalSetIndex[0].mpd.representationCount > 1) {
+			seg_n = mpd_getSegmentNumAtTime4Live(globalSetIndex[active_video_index].mpd.representations[globalSetIndex.representation_index].SegmentTemplate, end_time - globalSetIndex[active_video_index].descriptor.tDiffwReferenceMs / 1000);
+		} else {
+			seg_n = mpd_getSegmentNumAtTime4Live(globalSetIndex[active_video_index].mpd.SegmentTemplate, end_time - globalSetIndex[active_video_index].descriptor.tDiffwReferenceMs / 1000);
+		}
 	} else {
 		seg_n = mpd_getSegmentIndexAtTime(globalSetIndex[active_video_index].mpd.representations[0], end_time - globalSetIndex[active_video_index].descriptor.tDiffwReferenceMs / 1000);
 	}
@@ -288,7 +310,11 @@ function check_status() {
 	last_fetched_seg_n = seg_n;
 	last_fetched_index = active_video_index;
 	if (globalSetIndex[active_video_index].mpd.isLiveProfile) {
-		fetch_res(DASH_DIR + '/' + globalSetIndex[active_video_index].mpd.SegmentTemplate.media.replace("$Number$", seg_n), addSegment, "arraybuffer");
+		if (globalSetIndex[0].mpd.representationCount > 1) {
+			fetch_res(DASH_DIR + '/' + globalSetIndex[active_video_index].mpd.representations[globalSetIndex.representation_index].SegmentTemplate.media.replace("$Number$", seg_n), addSegment, "arraybuffer");
+		} else {
+			fetch_res(DASH_DIR + '/' + globalSetIndex[active_video_index].mpd.SegmentTemplate.media.replace("$Number$", seg_n), addSegment, "arraybuffer");
+		}
 	} else {
 		fetch_res(DASH_DIR + '/' + globalSetIndex[active_video_index].mpd.representations[0].SegmentList.Segments[seg_n], addSegment, "arraybuffer");
 	}
@@ -364,10 +390,16 @@ function setMainViewStartTime() {
 	}
 
 
-	let index;
+	let index, tmp_template;
 	if (globalSetIndex[0].mpd.isLiveProfile) {
-		index = mpd_getSegmentIndexAtTime4Live(globalSetIndex[0].mpd.SegmentTemplate, (tmp_time / 1000)) + 2; //TODO fix this +1
-		fetch_promise(DASH_DIR + '/' + globalSetIndex[0].mpd.SegmentTemplate.media.replace("$Number$", index), "arraybuffer", false)
+
+		if (globalSetIndex[0].mpd.representationCount > 1) {
+			tmp_template = globalSetIndex[0].mpd.representations[globalSetIndex.representation_index].SegmentTemplate;
+		} else {
+			tmp_template = globalSetIndex[0].mpd.SegmentTemplate;
+		}
+		index = mpd_getSegmentIndexAtTime4Live(tmp_template, (tmp_time / 1000)) + 2; //TODO fix this +1
+		fetch_promise(DASH_DIR + '/' + tmp_template.media.replace("$Number$", index), "arraybuffer", false)
 			.then(function (response) {
 				addSegment(response);
 				p.v.currentTime = p.t_videoStart = (tmp_time / 1000); //in seconds
@@ -594,7 +626,13 @@ function switchToStream(set_index, recordingID) {
 
 	let seg_n = 0;
 	if (globalSetIndex[set_index].mpd.isLiveProfile) {
-		seg_n = mpd_getSegmentNumAtTime4Live(globalSetIndex[set_index].mpd.SegmentTemplate, end_time - globalSetIndex[set_index].descriptor.tDiffwReferenceMs / 1000);
+		let tmp_template;
+		if (globalSetIndex[0].mpd.representationCount > 1) {
+			tmp_template = globalSetIndex[set_index].mpd.representations[globalSetIndex.representation_index].SegmentTemplate;
+		} else {
+			tmp_template = globalSetIndex[set_index].mpd.SegmentTemplate;
+		}
+		seg_n = mpd_getSegmentNumAtTime4Live(tmp_template, end_time - globalSetIndex[set_index].descriptor.tDiffwReferenceMs / 1000);
 	} else {
 		seg_n = mpd_getSegmentIndexAtTime(globalSetIndex[set_index].mpd.representations[0], end_time - globalSetIndex[set_index].descriptor.tDiffwReferenceMs / 1000);
 	}
@@ -622,7 +660,13 @@ function resetSourceBuffer() {
 	let seg_n;
 
 	if (globalSetIndex[active_video_index].mpd.isLiveProfile) {
-		seg_n = mpd_getSegmentNumAtTime4Live(globalSetIndex[active_video_index].mpd.SegmentTemplate, p.v.currentTime - (globalSetIndex[active_video_index].descriptor.tDiffwReferenceMs / 1000));
+		let tmp_template;
+		if (globalSetIndex[0].mpd.representationCount > 1) {
+			tmp_template = globalSetIndex[active_video_index].mpd.representations[globalSetIndex.representation_index].SegmentTemplate;
+		} else {
+			tmp_template = globalSetIndex[active_video_index].mpd.SegmentTemplate;
+		}
+		seg_n = mpd_getSegmentNumAtTime4Live(tmp_template, p.v.currentTime - (globalSetIndex[active_video_index].descriptor.tDiffwReferenceMs / 1000));
 	} else {
 		seg_n = mpd_getSegmentIndexAtTime(globalSetIndex[active_video_index].mpd.representations[0], p.v.currentTime - (globalSetIndex[active_video_index].descriptor.tDiffwReferenceMs / 1000));
 	}
