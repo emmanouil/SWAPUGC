@@ -184,7 +184,32 @@ function disable_btn_for(btn_name, dur) {
     }, dur);
 }
 
+/**
+ * Returns the first occurance of the attribute found in children
+ * @param {*} parent 
+ * @param {*} atr 
+ */
 function find_attribute_in_children(parent, atr) {
+    let bob = [];
+    let a_i = parent.getAttribute("initialization");
+    if (a_i) {
+        return a_i;
+    }
+    for (let i = 0; i < parent.children.length; i++) {
+        let c_i = find_attribute_in_children(parent.children[i], atr);
+        if (c_i) {
+            return c_i;
+        }
+    }
+}
+
+
+/**
+ * Returns all occurances of the attribute found in children
+ * @param {*} parent 
+ * @param {*} atr 
+ */
+function find_attributes_in_children(parent, atr) {
     let bob = [];
     let a_i = parent.getAttribute("initialization");
     if (a_i) {
