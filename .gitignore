@@ -12,3 +12,7 @@ __pycache__
 
 #test files
 test_functions.js
+
+#to be included later
+samples/multi-res
+samples/audio

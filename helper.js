@@ -3,7 +3,8 @@ var globalSetIndex = [];
 var p = {};
 var msg_div = document.getElementById('messages_div');
 const SHOW_DEBUG = true;
-const LOG_LVL = 4; //0: all, 1: INFO, 2: WARN, 3: ERR, 4: NONE
+const LOG_LVL = 0; //0: all, 1: INFO, 2: WARN, 3: ERR, 4: NONE
+
 //extend Array prototype to remove 'deleteValue' (call with undefined to keep only defined elements)
 Array.prototype.clean = function (deleteValue) {
     for (var i = 0; i < this.length; i++) {
@@ -51,7 +52,7 @@ function logDEBUG(msg) {
  */
 function ajax_url_exists(url) {
     let req = new XMLHttpRequest();
-    req.open('HEAD', url, false);   //TODO: async XHR is deprecated, update this
+    req.open('HEAD', url, false); //TODO: async XHR is deprecated, update this
     req.send();
     return req.status != 404;
 }
@@ -181,4 +182,21 @@ function disable_btn_for(btn_name, dur) {
     setTimeout(function () {
         document.getElementById(btn_name).disabled = false;
     }, dur);
+}
+
+function find_attribute_in_children(parent, atr) {
+    let bob = [];
+    let a_i = parent.getAttribute("initialization");
+    if (a_i) {
+        bob.push(a_i);
+    }
+    for (let i = 0; i < parent.children.length; i++) {
+        let c_i = find_attribute_in_children(parent.children[i], atr);
+        if (c_i) {
+            bob.push(c_i);
+        }
+    }
+    if (bob.length > 0) {
+        return bob;
+    }
 }
