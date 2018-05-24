@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>SWAPUGC Demo Player</title>
+    <meta charset="UTF-8">
+    <meta name="description" content="A demo implementation of the SWAPUGC: Software for Adaptive Playback of UGC video platform. SWAPUGC is an experimental platform to synchronously play User-Generated Content consisting of video and geospatial data. It supports seamless view switching and adaptive streaming integration.">
+    <meta name="keywords" content="UGC, MPEG, DASH, Adaptive, Streaming, MediaSource Extensions">
+    <link rel="stylesheet" type="text/css" href="assets/style_min.css">
+</head>
+
+<body>
+    <div id="title_div">
+        SWAPUGC: Software for Adaptive Playback of UGC videos - Demo
+    </div>
+
+    <svg id="user-svg">
+        <circle cx="32" cy="32" r="30" stroke="black" stroke-width="3" fill="red" fill-opacity="0.4" />
+    </svg>
+
+    <script src="parameters.js"></script>
+    <script src="events.js" defer></script>
+    <script src="maps.js"></script>
+    <!-- For asynchronous load (non-blocking) -->
+    <!--<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB90QIExwNn50gJayF-NozhHWvhjhO0A88&callback=initMap" async defer></script>-->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB90QIExwNn50gJayF-NozhHWvhjhO0A88&callback=initMap" defer></script>
+    <script src="helper.js" defer></script>
+    <script src="mpd_tools.js"></script>
+    <script src="mse.js"></script>
+    <script src="player.js"></script>
+    <script src="main.js" defer></script>
+    <div id="body_div">
+        <div id="map">
+            As long as you see this text, the map is still loading...
+            <br/>
+            <br/> NOTE: this demo uses the Google Maps API. If the map is not loading, make sure that the Google Maps service
+            is online and that it is not blocked by your firewall/proxy
+
+        </div>
+
+        <div id="container">
+            <div id="video_container">
+                <video id="v_main" width="960" height="540" poster="assets/v_poster.png"></video>
+            </div>
+            <div id="menu">
+                <button id="play_btn" onclick="goToAndPlay(this);" disabled>Play</button>
+                <!--<button id="pause_btn" onclick="pausePlayback(this);" disabled title="When paused, view does not update">Pause</button>-->
+                <button id="mute_btn" style="width: 5em;" onclick="p.v.muted = !p.v.muted; if(this.innerText ==='Mute'){this.innerText ='Unmute'}else{this.innerText ='Mute'};">Mute</button>
+                <button id="test_btn" onclick="printBufferStatus();" disabled hidden>print Buffer Status</button>
+                <button id="next_btn" onclick="nextStream(); disable_btn_for('next_btn', 2000); disable_btn_for('selector', 2000);disable_btn_for('policy_slk', 2000);"
+                    disabled>Switch</button>
+                <select id="selector" hidden disabled onchange="selectFile(this.selectedIndex, this.selectedOptions[0].value); disable_btn_for('selector', 2000);">
+                </select>
+                Select Switching Policy:
+                <select id="policy_slk" disabled onchange="selectPolicy(this.selectedOptions[0].value); disable_btn_for('policy_slk', 2000);">
+                </select>
+                <br/>
+                <div id="bottom_line">
+                    <button id="reset_btn" onclick="resetSourceBuffer(); logUI('Manually reseting sourceBuffer'); disable_btn_for('reset_btn', 2000);"
+                        disabled>Reset MSE</button>
+                    <span id="messages_div" style="text-align: justify; font-size:small; font-family: 'Roboto', sans-serif;">What is
+                        <a href="https://github.com/emmanouil/SWAPUGC#swapugc" target="_blank" style="color:black;">SWAPUGC</a>?</span>
+                </div>
+            </div>
+        </div>
+        <br/>
+    </div>
+    <!--
+    <div id="about">
+        <p>The demo plays a segmented mp4 file (generated using MP4Box of
+            <a href="http://www.gpac.io" target="_blank">GPAC</a>). The entire movie is 'streamed' to a video element by appending each segment using the
+            <a href="https://dvcs.w3.org/hg/html-media/raw-file/tip/media-source/media-source.html" target="_blank">MediaSource API</a>.
+        </p>
+    </div>
+-->
+
+</body>
+
+</html>

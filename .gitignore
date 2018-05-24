@@ -16,3 +16,7 @@ test_functions.js
 #to be included later
 samples/multi-res
 samples/audio
+
+#to be deleted from the repo - used for quality testing
+#index-stripped.html
+#assets/style_min.css

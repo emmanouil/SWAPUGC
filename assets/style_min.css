@@ -1,0 +1,137 @@
+html, body {
+	height: auto;
+	width: 1280px;
+	margin: auto;
+/*	background-color: rgb(220, 250, 220)*/
+}
+
+@font-face{
+	font-family: "Roboto";
+	src: url("fonts/Roboto/Roboto-Regular.ttf");
+}
+
+@font-face{
+	font-family: "Roboto";
+	src: url("fonts/Roboto/Roboto-Bold.ttf");
+	font-weight: bold;
+}
+
+@font-face{
+	font-family: "Roboto";
+	src: url("fonts/Roboto/Roboto-Light.ttf");
+	font-weight: lighter;
+}
+
+@font-face{
+	font-family: "Roboto";
+	src: url("fonts/Roboto/Roboto-Italic.ttf");
+	font-style: italic;
+}
+@font-face{
+	font-family: "Raleway";
+	src: url("fonts/Raleway/Raleway-Regular.ttf");
+}
+
+@font-face{
+	font-family: "Raleway";
+	src: url("fonts/Raleway/Raleway-Bold.ttf");
+	font-weight: bold;
+}
+
+@font-face{
+	font-family: "Raleway";
+	src: url("fonts/Raleway/Raleway-Light.ttf");
+	font-weight: lighter;
+}
+
+@font-face{
+	font-family: "Raleway";
+	src: url("fonts/Raleway/Raleway-Italic.ttf");
+	font-style: italic;
+}
+#title_div{
+	margin:none;
+	 font-family: 'Roboto', sans-serif;
+	  text-align: center;
+	  font-size: 16px;
+	  font-weight: bold;
+	  margin: 2px;
+}
+#body_div{
+	height: 768px;
+	width: 1280px;
+	margin: auto;
+	display: grid;
+	grid-template-columns: 320px 640px;
+	grid-template-rows: 768px;
+	grid-gap: 10px;
+	grid-auto-rows: 1fr;
+}
+
+#d_view {
+	grid-column: 1;
+	grid-row: 1;
+	height: 100%;
+	width: 302px;
+	z-index: 80;
+	margin-left: none;
+	margin-right: none;
+	padding: 4px;
+	background-color: rgb(220, 250, 220);
+}
+
+#container{
+	grid-column: 2;
+	grid-row: 1;
+	width: 640px;
+	top: auto;
+	/* text-align: center; */
+	margin-left: auto;
+	margin-right: auto;
+}
+
+#d_rep {
+	grid-column: 3;
+	grid-row: 1;
+	height: 100%;
+	width: 302px;
+	z-index: 80;
+	margin-left: none;
+	margin-right: none;
+	padding: 4px;
+	background-color: rgb(220, 250, 220);
+}
+
+#map {
+	height: 320px;
+	width: 320px;
+	z-index: 53;
+	margin-left: auto;
+	margin-right: auto;
+	margin-bottom: 2px;
+}
+
+#user-svg{
+	visibility: hidden;
+	position: absolute;
+	z-index: 55;
+	margin: 0;
+	padding: 0;
+	top: 50%;
+	left: 50%;
+	transform: translateY(-32px) translateX(-16px);
+}
+
+#about{
+	width: 640px;
+	top: auto;
+	/* text-align: center; */
+	margin-left: auto;
+	margin-right: auto;
+}
+
+#menu{
+	margin: none;
+	padding: 0.5em;
+	line-height: 25px;
+}
