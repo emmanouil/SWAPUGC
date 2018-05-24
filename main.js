@@ -742,8 +742,16 @@ function mse_initAndAdd(stream_index, segment_n) {
 			addSegment(response);
 
 			if (globalSetIndex[stream_index].mpd.isLiveProfile) {
+				let tmp_template;
+
+				if (globalSetIndex[stream_index].mpd.representationCount > 1) {
+					tmp_template = globalSetIndex[stream_index].mpd.representations[globalSetIndex.representation_index].SegmentTemplate;
+				} else {
+					tmp_template = globalSetIndex[stream_index].mpd.SegmentTemplate;
+				}
+
 				sourceBuffer.addEventListener('updateend', function () {
-					fetch_promise(DASH_DIR + '/' + globalSetIndex[stream_index].mpd.SegmentTemplate.media.replace("$Number$", segment_n), "arraybuffer", false)
+					fetch_promise(DASH_DIR + '/' + tmp_template.media.replace("$Number$", segment_n), "arraybuffer", false)
 						.then(function (response) {
 							addSegment(response);
 						})
