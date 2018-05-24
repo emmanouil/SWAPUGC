@@ -402,7 +402,11 @@ function setMainViewStartTime() {
 		fetch_promise(DASH_DIR + '/' + tmp_template.media.replace("$Number$", index), "arraybuffer", false)
 			.then(function (response) {
 				addSegment(response);
-				p.v.currentTime = p.t_videoStart = (tmp_time / 1000); //in seconds
+				sourceBuffer.addEventListener('updateend', function () {
+					p.v.currentTime = p.t_videoStart = (tmp_time / 1000); //in seconds
+				}, {
+					once: true
+				});
 				//TODO (#33) for now we use an event to signal timing info is ready
 				window.dispatchEvent(new CustomEvent('timeDataReady', {
 					detail: 'done'
