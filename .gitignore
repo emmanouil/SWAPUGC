@@ -14,6 +14,7 @@ __pycache__
 test_functions.js
 
 #to be included later
+samples/tri-res
 samples/multi-res
 samples/audio
 

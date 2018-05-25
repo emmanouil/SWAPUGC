@@ -138,7 +138,7 @@ function init() {
 														globalSetIndex[j].mpd.representations.push(mpd_getRepresentationAttributesByNode(globalSetIndex[j].mpd.fullRepresentations[i]));
 														globalSetIndex[j].mpd.representations[i].SegmentTemplate = mpd_getRepresentationAttributesByNode(globalSetIndex[j].mpd.fullRepresentations[i].getElementsByTagName("SegmentTemplate")[0]);
 													}
-													globalSetIndex.representation_index = 0;
+													globalSetIndex[j].active_representation = 0;
 												} else if (rep_n == 1) { //TODO merge with multiple representations
 													//we have a live profile - generate segment list
 													var t_rep;
@@ -294,7 +294,7 @@ function check_status() {
 	let seg_n = 0;
 	if (globalSetIndex[active_video_index].mpd.isLiveProfile) {
 		if (globalSetIndex[0].mpd.representationCount > 1) {
-			seg_n = mpd_getSegmentNumAtTime4Live(globalSetIndex[active_video_index].mpd.representations[globalSetIndex.representation_index].SegmentTemplate, end_time - globalSetIndex[active_video_index].descriptor.tDiffwReferenceMs / 1000);
+			seg_n = mpd_getSegmentNumAtTime4Live(globalSetIndex[active_video_index].mpd.representations[globalSetIndex[active_video_index].active_representation].SegmentTemplate, end_time - globalSetIndex[active_video_index].descriptor.tDiffwReferenceMs / 1000);
 		} else {
 			seg_n = mpd_getSegmentNumAtTime4Live(globalSetIndex[active_video_index].mpd.SegmentTemplate, end_time - globalSetIndex[active_video_index].descriptor.tDiffwReferenceMs / 1000);
 		}
@@ -311,7 +311,7 @@ function check_status() {
 	last_fetched_index = active_video_index;
 	if (globalSetIndex[active_video_index].mpd.isLiveProfile) {
 		if (globalSetIndex[0].mpd.representationCount > 1) {
-			fetch_res(DASH_DIR + '/' + globalSetIndex[active_video_index].mpd.representations[globalSetIndex.representation_index].SegmentTemplate.media.replace("$Number$", seg_n), addSegment, "arraybuffer");
+			fetch_res(DASH_DIR + '/' + globalSetIndex[active_video_index].mpd.representations[globalSetIndex[active_video_index].active_representation].SegmentTemplate.media.replace("$Number$", seg_n), addSegment, "arraybuffer");
 		} else {
 			fetch_res(DASH_DIR + '/' + globalSetIndex[active_video_index].mpd.SegmentTemplate.media.replace("$Number$", seg_n), addSegment, "arraybuffer");
 		}
@@ -394,7 +394,7 @@ function setMainViewStartTime() {
 	if (globalSetIndex[0].mpd.isLiveProfile) {
 
 		if (globalSetIndex[0].mpd.representationCount > 1) {
-			tmp_template = globalSetIndex[0].mpd.representations[globalSetIndex.representation_index].SegmentTemplate;
+			tmp_template = globalSetIndex[0].mpd.representations[globalSetIndex[0].active_representation].SegmentTemplate;
 		} else {
 			tmp_template = globalSetIndex[0].mpd.SegmentTemplate;
 		}
@@ -632,7 +632,7 @@ function switchToStream(set_index, recordingID) {
 	if (globalSetIndex[set_index].mpd.isLiveProfile) {
 		let tmp_template;
 		if (globalSetIndex[0].mpd.representationCount > 1) {
-			tmp_template = globalSetIndex[set_index].mpd.representations[globalSetIndex.representation_index].SegmentTemplate;
+			tmp_template = globalSetIndex[set_index].mpd.representations[globalSetIndex[set_index].active_representation].SegmentTemplate;
 		} else {
 			tmp_template = globalSetIndex[set_index].mpd.SegmentTemplate;
 		}
@@ -666,7 +666,7 @@ function resetSourceBuffer() {
 	if (globalSetIndex[active_video_index].mpd.isLiveProfile) {
 		let tmp_template;
 		if (globalSetIndex[0].mpd.representationCount > 1) {
-			tmp_template = globalSetIndex[active_video_index].mpd.representations[globalSetIndex.representation_index].SegmentTemplate;
+			tmp_template = globalSetIndex[active_video_index].mpd.representations[globalSetIndex[active_video_index].active_representation].SegmentTemplate;
 		} else {
 			tmp_template = globalSetIndex[active_video_index].mpd.SegmentTemplate;
 		}
@@ -745,7 +745,7 @@ function mse_initAndAdd(stream_index, segment_n) {
 				let tmp_template;
 
 				if (globalSetIndex[stream_index].mpd.representationCount > 1) {
-					tmp_template = globalSetIndex[stream_index].mpd.representations[globalSetIndex.representation_index].SegmentTemplate;
+					tmp_template = globalSetIndex[stream_index].mpd.representations[globalSetIndex[stream_index].active_representation].SegmentTemplate;
 				} else {
 					tmp_template = globalSetIndex[stream_index].mpd.SegmentTemplate;
 				}
