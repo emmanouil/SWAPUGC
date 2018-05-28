@@ -51,8 +51,11 @@
                     disabled>Switch</button>
                 <select id="selector" hidden disabled onchange="selectFile(this.selectedIndex, this.selectedOptions[0].value); disable_btn_for('selector', 2000);">
                 </select>
-                Select Switching Policy:
+                Switching Policy:
                 <select id="policy_slk" disabled onchange="selectPolicy(this.selectedOptions[0].value); disable_btn_for('policy_slk', 2000);">
+                </select>
+                Quality:
+                <select id="quality_slk" disabled onchange="selectQuality(this.selectedOptions[0].value); disable_btn_for('quality_slk', 2000);">
                 </select>
                 <br/>
                 <div id="bottom_line">
