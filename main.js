@@ -437,8 +437,9 @@ function setMainViewStartTime() {
 
 }
 
-function setQualitySelector(set_index){
+function setQualitySelector(set_index) {
 	quality_slk.innerHTML = globalSetIndex[set_index].qSelector.innerHTML;
+	quality_slk[globalSetIndex[set_index].active_representation].selected = true;
 }
 /* Called from fetchAndInitMarkers and sets an event to fire when the shortest video is over */
 function setMainViewEndTime() {
@@ -746,9 +747,9 @@ function addOption(file_id) {
 	selector.add(option);
 }
 
-function createRepresentationOption(rep_index, height, bandwidth){
+function createRepresentationOption(rep_index, height, bandwidth) {
 	let option = document.createElement("option");
-	option.text = height+"p - "+Math.trunc(bandwidth/1000)+"kbps";
+	option.text = height + "p - " + Math.trunc(bandwidth / 1000) + "kbps";
 	option.value = rep_index;
 	return option;
 }
@@ -851,8 +852,8 @@ function selectPolicy(p_in) {
 	}
 }
 
-function selectQuality(p_in){
-	logDEBUG('Switching to representation index '+p_in);
+function selectQuality(p_in) {
+	logDEBUG('Switching to representation index ' + p_in);
 	globalSetIndex[active_video_index].active_representation = p_in;
 }
 
