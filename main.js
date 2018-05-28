@@ -21,7 +21,7 @@ var last_removed_timerage = -1; //during resetSourceBuffer or cleanSourceBuffer
 const PLAYLIST_FILE = 'playlist.txt'; //holds the base names of the recordings
 const PLAYLIST_MAIN_VIEW_INDEX = 0; //the position in the playlist txt of the recording considered as reference (starting from 0)
 const PARSER_DIR = 'samples/script_out'; //holds the parser output (location, orientation, descriptor) jsons
-const DASH_DIR = 'samples/multi-res'; //contains the segments, inits and mpd init of the video files [for demo use 'samples/multi-res' for the multiple representations, 'samples/segmented' for single bitstream]
+const DASH_DIR = 'samples/tri-res'; //contains the segments, inits and mpd init of the video files [for demo use 'samples/multi-res' for the multiple representations, 'samples/segmented' for single bitstream]
 
 //extensions, suffixes and prefixes
 const DASH_MPD_SUFFIX = '_dash'; //i.e. NAMEOFRECORDING_dash.mpd
@@ -134,9 +134,11 @@ function init() {
 													globalSetIndex[j].mpd.isLiveProfile = true;
 													globalSetIndex[j].mpd.fullAdaptationSet = globalSetIndex[j].mpd.fullDocument.getElementsByTagName("Period")[0].getElementsByTagName("AdaptationSet")[0];
 													globalSetIndex[j].mpd.initSegment = find_attribute_in_children(globalSetIndex[j].mpd.fullAdaptationSet, "initialization");
+													globalSetIndex[j].qSelector = document.createElement("select");
 													for (let i = 0; i < rep_n; i++) {
 														globalSetIndex[j].mpd.representations.push(mpd_getRepresentationAttributesByNode(globalSetIndex[j].mpd.fullRepresentations[i]));
 														globalSetIndex[j].mpd.representations[i].SegmentTemplate = mpd_getRepresentationAttributesByNode(globalSetIndex[j].mpd.fullRepresentations[i].getElementsByTagName("SegmentTemplate")[0]);
+														globalSetIndex[j].qSelector.add(createRepresentationOption(i, globalSetIndex[j].mpd.representations[i].height, globalSetIndex[j].mpd.representations[i].bandwidth));
 													}
 													globalSetIndex[j].active_representation = 0;
 												} else if (rep_n == 1) { //TODO merge with multiple representations
@@ -198,6 +200,8 @@ function init() {
 								active_video_id = globalSetIndex[PLAYLIST_MAIN_VIEW_INDEX].id;
 								active_video_index = PLAYLIST_MAIN_VIEW_INDEX;
 								logINFO('active_video_id set to ' + active_video_id);
+								//display the available representations
+								setQualitySelector(PLAYLIST_MAIN_VIEW_INDEX);
 								//prepare the textTracks
 								for (let s_i of globalSetIndex) {
 									s_i.main_view_tracks_no = main_view_tracks.push(p.v.addTextTrack("metadata", s_i.id)) - 1;
@@ -433,6 +437,9 @@ function setMainViewStartTime() {
 
 }
 
+function setQualitySelector(set_index){
+	quality_slk.innerHTML = globalSetIndex[set_index].qSelector.innerHTML;
+}
 /* Called from fetchAndInitMarkers and sets an event to fire when the shortest video is over */
 function setMainViewEndTime() {
 	let end_time = Infinity;
@@ -625,6 +632,9 @@ function switchToStream(set_index, recordingID) {
 	active_video_id = recordingID;
 	active_video_index = set_index;
 
+	//display available representations
+	setQualitySelector(set_index);
+
 	p.ms.sourceBuffers[0].timestampOffset = globalSetIndex[set_index].descriptor.tDiffwReferenceMs / 1000;
 
 
@@ -736,6 +746,13 @@ function addOption(file_id) {
 	selector.add(option);
 }
 
+function createRepresentationOption(rep_index, height, bandwidth){
+	let option = document.createElement("option");
+	option.text = height+"p - "+Math.trunc(bandwidth/1000)+"kbps";
+	option.value = rep_index;
+	return option;
+}
+
 function mse_initAndAdd(stream_index, segment_n) {
 	fetch_promise(DASH_DIR + '/' + globalSetIndex[stream_index].mpd.init_seg, "arraybuffer", false)
 		.then(function (response) {
@@ -832,6 +849,11 @@ function selectPolicy(p_in) {
 			logWARN('Policy ' + p_in + ' unknown');
 			break;
 	}
+}
+
+function selectQuality(p_in){
+	logDEBUG('Switching to representation index '+p_in);
+	globalSetIndex[active_video_index].active_representation = p_in;
 }
 
 function deactivateUIselection() {

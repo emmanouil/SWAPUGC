@@ -1,6 +1,6 @@
 "use strict";
 var zoomLvl, tmpZoom, initiated = false;
-var selector, policy_slk;
+var selector, policy_slk, quality_slk;
 
 function activateMapEvents() {
 
@@ -16,6 +16,7 @@ function activateMapEvents() {
 function activateUI() {
     selector = document.getElementById('selector');
     policy_slk = document.getElementById('policy_slk');
+    quality_slk = document.getElementById('quality_slk');
 }
 
 //called when file is selected from the dropdown
@@ -84,4 +85,5 @@ function goToAndPlay(e) {
     document.getElementById('next_btn').disabled = false;
     document.getElementById('selector').disabled = false;
     document.getElementById('policy_slk').disabled = false;
+    document.getElementById('quality_slk').disabled = false;
 }
