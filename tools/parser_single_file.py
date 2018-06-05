@@ -13,7 +13,7 @@ TIMING_FILE_EXTENSION = '.xml'
 TIMINIG_XML_SUFFIX = '_EbuCore'
 SENSOR_FILE_EXTENSION = '.xml'
 SENSOR_XML_SUFFIX = '_SENSORDATA'
-VIDEO_FILE_EXTENSION = '.webm'
+VIDEO_FILE_EXTENSION = '.mp4'
 ORIENTATION_FIELD = '4'
 OVERWRITE_LOCATION = False    #checks if there is a location in the output dir and if so skips the generation of it
 IN_RAD = False
@@ -281,7 +281,7 @@ def main():
             flush_json_to_file_out(recordingID+'_LOC.json', locations)
         else:
             try:
-                file_out_loc = open(os.getcwd()+'/'+OUTPUTDIR+'/'+recordingID+'_LOC.json', 'r')
+                file_out_loc = open(os.getcwd()+'/'+OUTPUTDIR+'/'+recordingID+'_LOC.json', 'w')
             except:
                 log('location file not found - creating location output file', LOG_LVL_INFO)
                 file_out_loc.close()
