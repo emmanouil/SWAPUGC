@@ -78,6 +78,10 @@ With MP4Box, an example command to generate the mpd file [1] and the associated 
 `MP4Box -frag 2000 -dash 2000 -segment-name file_out_seg_ file_in.mp4` (for full profile)
 
 
+SWAPUGC also supports multiple representations that can be generated as following (example with three qualities):
+`MP4Box -dash 2000 -profile live -closest -segment-name %s_seg_ file_in_720p_1800k.mp4 file_in_480p_800k.mp4 file_in_240p_400k.mp4`
+
+
 NOTE: MP4Box does _not_ do any transcoding on the media files. For that, we used ffmpeg. An example command for encoding a video in x264 (audio aac @ 48kHz sample rate) with framerate = 30 fps and GOP size of 30 frames at 2Mbps bitrate, scaled with height = 1080px would be :
 `ffmpeg.exe -i 20140325_121238.webm -r 30 -preset slow -vf scale=-1:1080 -c:v libx264 -b:v 2000k -movflags +faststart -sc_threshold 0 -keyint_min 30 -g 30 -c:a aac -ar 48000 20140325_121238.mp4`
 (hint: if ffmpeg throws a scaling error you can use `scale=-2:1080`)
