@@ -89,17 +89,22 @@ function init() {
 				var promises = [];
 				var to_delete = [];
 				for (var i = 0; i < playlist.length; i++) {
-					if(playlist[i].startsWith('#') || playlist[i].startsWith(' ')){
+					if (playlist[i].startsWith('#') || playlist[i].startsWith(' ')) {
 						to_delete.push(playlist[i]);
 						continue;
 					}
 					if (ajax_url_exists(PARSER_DIR + '/' + playlist[i] + PL_DESCRIPTOR_SUFFIX + '.json')) {
-						promises.push(fetch_promise(PARSER_DIR + '/' + playlist[i] + PL_DESCRIPTOR_SUFFIX + '.json', 'json', true).catch(function (err_) {
-							logERR('Error in parsing playlist element. Skipping item');
-							logERR(err_);
-						}));
+						if (! (ajax_url_exists(DASH_DIR + '/' + playlist[i] + DASH_MPD_SUFFIX + '.mpd'))) {
+							logDEBUG('MPD of element of playlist at index ' + i + ', with value' + playlist[i] + ' not found - skipping');
+							to_delete.push(playlist[i]);
+						} else {
+							promises.push(fetch_promise(PARSER_DIR + '/' + playlist[i] + PL_DESCRIPTOR_SUFFIX + '.json', 'json', true).catch(function (err_) {
+								logERR('Error in parsing playlist element. Skipping item');
+								logERR(err_);
+							}));
+						}
 					} else {
-						logDEBUG('Element of playlist at index ' + i + ', with value' + playlist[i] + ' not found');
+						logDEBUG('DESCRIPTOR of element of playlist at index ' + i + ', with value' + playlist[i] + ' not found - skipping');
 						to_delete.push(playlist[i]);
 					}
 				}
