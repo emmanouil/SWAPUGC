@@ -89,6 +89,10 @@ function init() {
 				var promises = [];
 				var to_delete = [];
 				for (var i = 0; i < playlist.length; i++) {
+					if(playlist[i].startsWith('#') || playlist[i].startsWith(' ')){
+						to_delete.push(playlist[i]);
+						continue;
+					}
 					if (ajax_url_exists(PARSER_DIR + '/' + playlist[i] + PL_DESCRIPTOR_SUFFIX + '.json')) {
 						promises.push(fetch_promise(PARSER_DIR + '/' + playlist[i] + PL_DESCRIPTOR_SUFFIX + '.json', 'json', true).catch(function (err_) {
 							logERR('Error in parsing playlist element. Skipping item');

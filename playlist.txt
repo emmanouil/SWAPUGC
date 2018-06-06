@@ -1,3 +1,5 @@
+#lines starting with '#'
+ or the space character, are ignored
 A002C001_140325E3
 20140325_121238
 Take5_Nexus5
