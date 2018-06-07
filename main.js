@@ -94,7 +94,7 @@ function init() {
 						continue;
 					}
 					if (ajax_url_exists(PARSER_DIR + '/' + playlist[i] + PL_DESCRIPTOR_SUFFIX + '.json')) {
-						if (! (ajax_url_exists(DASH_DIR + '/' + playlist[i] + DASH_MPD_SUFFIX + '.mpd'))) {
+						if (!(ajax_url_exists(DASH_DIR + '/' + playlist[i] + DASH_MPD_SUFFIX + '.mpd'))) {
 							logDEBUG('MPD of element of playlist at index ' + i + ', with value' + playlist[i] + ' not found - skipping');
 							to_delete.push(playlist[i]);
 						} else {
@@ -109,7 +109,7 @@ function init() {
 					}
 				}
 				for (let i = 0; i < to_delete.length; i++) {
-					logDEBUG('Removing item ' + to_delete[i] + ' from playlist');
+					logINFO('Removing item ' + to_delete[i] + ' from playlist');
 					playlist.clean(to_delete[i]);
 				}
 
@@ -412,11 +412,23 @@ function setMainViewStartTime() {
 			tmp_template = globalSetIndex[0].mpd.SegmentTemplate;
 		}
 		index = mpd_getSegmentIndexAtTime4Live(tmp_template, (tmp_time / 1000)) + 2; //TODO fix this +1
+		logDEBUG('first segment is ' + index + ' for start time ' + tmp_time / 1000 + 's');
 		fetch_promise(DASH_DIR + '/' + tmp_template.media.replace("$Number$", index), "arraybuffer", false)
 			.then(function (response) {
 				addSegment(response);
 				sourceBuffer.addEventListener('updateend', function () {
 					p.v.currentTime = p.t_videoStart = (tmp_time / 1000); //in seconds
+
+					//TODO from here
+					if (sourceBuffer.buffered.start(0) > p.v.currentTime) {
+						logDEBUG('buffered starts at t = ' + sourceBuffer.buffered.start(0) + 's and current video time at ' + p.v.currentTime + 's. fetching next segment');
+						fetch_promise(DASH_DIR + '/' + tmp_template.media.replace("$Number$", index - 1), "arraybuffer", false)
+							.then(function (response) {
+								addSegment(response);
+							})
+					}
+					//till here is a safety patch for bordeline cases of first seg 
+
 				}, {
 					once: true
 				});
