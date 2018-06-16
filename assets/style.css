@@ -111,17 +111,6 @@ html, body {
 	margin-bottom: 2px;
 }
 
-#user-svg{
-	visibility: hidden;
-	position: absolute;
-	z-index: 55;
-	margin: 0;
-	padding: 0;
-	top: 50%;
-	left: 50%;
-	transform: translateY(-32px) translateX(-16px);
-}
-
 #about{
 	width: 640px;
 	top: auto;

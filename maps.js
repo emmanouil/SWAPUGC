@@ -192,13 +192,6 @@ function initMap() {
 
 
 	map = new google.maps.Map(document.getElementById('map'), mapOptions);
-	if (ENABLE_HIGHLIGHTER) {
-		document.getElementById('user-svg').style.visibility = "visible";
-		map.getDiv().appendChild(document.getElementById('user-svg'));
-	} else {
-		document.getElementById('user-svg').style.visibility = "hidden";
-	}
-
 
 	//we build the overlay anyway, and if SHOW_ROOM is enabled, we render it
 	roomPoly = new google.maps.Polygon(roomStyle);
