@@ -1,0 +1,3 @@
+parser_ICoSOLE.py can be used to format one file, from the XML-based format used in the ICoSOLE dataset ( http://icosole.lab.vrt.be/ ) to SWAPUGC-compatible
+
+parser_SNR.py can be used to format one file, from the JSON-based format used when recording with the Spatiotemporal Navigation Recorder ( git.io/SNR ) to SWAPUGC-compatible
