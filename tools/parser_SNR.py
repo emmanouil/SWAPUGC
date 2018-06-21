@@ -7,12 +7,11 @@ import re
 LOGFILE = 'python_script.log'
 OUTPUTDIR = 'script_out'
 PLAYLIST = 'playlist.txt'
-USE_ORIENTATION_AVERAGE = True    #else use latest orientation
 USE_FULL_FILENAME_IN_PLAYLIST = False    #otherwise use only ID (without the OUT_ and .txt)
 LOG_STATISTICS = True
 CLEAR_LOG = True    #When init log - delete previous logfile
-SPLIT_OUT_FILES = True    #split files to location (_LOC), orientation (_ORIENT), descriptor (_DESCRIPTOR) - SWAPUGC format
 
+IN_FILE_EXTENTION = '.txt'
 OUT_FILE_EXTENTION = 'json'
 OUT_FILE_PREFIX = ''
 
@@ -288,15 +287,16 @@ def main():
 	#check this instead: https://docs.python.org/3/library/fileinput.html#module-fileinput
 	if (len(sys.argv) > 1):
 		file_in = open(sys.argv[1], 'r')
-		file_name = get_file_name(file_in, '.txt')
+		file_name = get_file_name(file_in, IN_FILE_EXTENTION)
 		if file_name is None:
-			exit('Wrong file extension (' + file_ext + ') for file ' + file_full_name[0] + file_full_name[1] + '   :  expected .txt')
+			exit('Wrong file extension (' + file_ext + ') for file ' + file_full_name[0] + file_full_name[1] + '   :  expected ' +
+			     IN_FILE_EXTENTION)
 		else:
-			process_file(file_name + '.txt')
+			process_file(file_name + IN_FILE_EXTENTION)
 		file_in.close()
 	#default case when check for every file in current folder with .txt extension
 	else:
-		file_list = get_file_list('.txt')
+		file_list = get_file_list(IN_FILE_EXTENTION)
 		for file_name in file_list:
 			process_file(file_name)
 
