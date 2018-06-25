@@ -15,6 +15,8 @@ CLEAR_LOG = True    #When init log - delete previous logfile
 IN_FILE_EXTENTION = '.txt'
 OUT_FILE_EXTENTION = 'json'
 OUT_FILE_PREFIX = ''
+OUT_FILE_LOC_SUFFIX = '_LOC'
+OUT_FILE_ORIENT_SUFFIX = '_ORIENT'
 
 orient_count = 0
 orient_start = 0
@@ -132,7 +134,6 @@ def flush_json_to_file_out(filename, data):
 		print(os.mkdir(OUTPUTDIR))
 	with open(os.getcwd() + '/' + OUTPUTDIR + '/' + filename, 'w+') as f:
 		json.dump(data, f)
-#		f.write(json.dumps(data))
 	if USE_FULL_FILENAME_IN_PLAYLIST:
 		append_to_playlist(filename)
 	else:
@@ -213,7 +214,8 @@ def process_file(filename):
 	latestOrient = None
 	latestLoc = None
 	json_out = {}
-	json_full = []
+	orient_full = []
+	loc_full = []
 	id = 0
 	flushed = True
 	global orient_obj
@@ -228,18 +230,19 @@ def process_file(filename):
 			if 'Type' in json_line:
 				if json_line['Type'] == "ORIENTATION":
 					latestOrient = return_orient(json_line)
-					json_full.append(copy.copy(latestOrient))
+					orient_full.append(copy.copy(latestOrient))
 					latestOrient = None
 				else:
 					log('Uknown type: ' + json_line['Type'] + '- skipping', 0)
 			elif 'Provider' in json_line:
 				if LOG_STATISTICS:
 					log_location(json_line)
-				json_full.append(json_line)
+				loc_full.append(json_line)
 				latestLoc = None
 			else:
 				log('Not Found - skipping', 0)
-		flush_json_to_file_out(OUT_FILE_PREFIX + filename_stripped + '.' + OUT_FILE_EXTENTION, json_full)
+		flush_json_to_file_out(OUT_FILE_PREFIX + filename_stripped + OUT_FILE_ORIENT_SUFFIX + '.' + OUT_FILE_EXTENTION, orient_full)
+		flush_json_to_file_out(OUT_FILE_PREFIX + filename_stripped + OUT_FILE_LOC_SUFFIX + '.' + OUT_FILE_EXTENTION, loc_full)
 		json_full = []
 		if LOG_STATISTICS:
 			log_location_flush()
