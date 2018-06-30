@@ -4,6 +4,7 @@ import os
 import datetime
 import re
 import copy
+import math
 
 LOGFILE = 'python_script.log'
 OUTPUTDIR = 'script_out'
@@ -18,13 +19,13 @@ OUT_FILE_PREFIX = ''
 OUT_FILE_LOC_SUFFIX = '_LOC'
 OUT_FILE_ORIENT_SUFFIX = '_ORIENT'
 
+IS_IN_RAD = True    #convert to degrees
+
 orient_count = 0
 orient_start = 0
 orient_dur = 0
 orient_dur_tot = 0
 orient_obj = None
-
-#TODO: clarify w,w/o extension & file , filestring
 
 
 ##	Log
@@ -198,9 +199,14 @@ def return_orient(orientation):
 		orient_dur = 0
 	else:
 		orient_dur = orientation['LocalTimestamp'] - orient_start
-	orient_obj['Z'] = orientation['Z']
-	orient_obj['X'] = orientation['X']
-	orient_obj['Y'] = orientation['Y']
+	if IS_IN_RAD:
+		orient_obj['Z'] = math.degrees(orientation['Z'])
+		orient_obj['X'] = math.degrees(orientation['X'])
+		orient_obj['Y'] = math.degrees(orientation['Y'])
+	else:
+		orient_obj['Z'] = orientation['Z']
+		orient_obj['X'] = orientation['X']
+		orient_obj['Y'] = orientation['Y']
 	orient_obj['LocalTimestamp'] = orientation['LocalTimestamp']
 	orient_obj['PresentationTime'] = orient_dur
 	return orient_obj
@@ -230,7 +236,8 @@ def process_file(filename):
 			if 'Type' in json_line:
 				if json_line['Type'] == "ORIENTATION":
 					latestOrient = return_orient(json_line)
-					orient_full.append(copy.copy(latestOrient))
+					if latestOrient['PresentationTime'] > 0:
+						orient_full.append(copy.copy(latestOrient))
 					latestOrient = None
 				else:
 					log('Uknown type: ' + json_line['Type'] + '- skipping', 0)
