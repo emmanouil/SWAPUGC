@@ -56,8 +56,9 @@ An online demo is available at [https://emmanouil.github.io/SWAPUGC/](https://em
 
 To run a local demo:
 1. [Download](https://github.com/emmanouil/SWAPUGC/archive/master.zip) and extract, or Clone (`git clone https://github.com/emmanouil/SWAPUGC.git`) the repository
-2. Start an http server on the top dir of your local repository copy (e.g. download, copy and run [Mongoose](https://cesanta.com/binary.html), or `python -m http.server 8080` in the `SWAPUGC` folder)
-3. Open your browser, and navigate to the location of `index.html` (e.g. http://localhost:8080/index.html - for port = 8080)
+2. Add the appropriate video and spatial files in `samples\video` and `samples\spatial` folders respectively. An example dataset provided by the ICoSOLE project can be found [here](https://tinyurl.com/SWAPUGC-videos). Instructions on how to generate compatible files at the section [Generate Compatible Files](##Generate-Compatible-Files)
+3. Start an http server on the top dir of your local repository copy (e.g. download, copy and run [Mongoose](https://cesanta.com/binary.html), or `python -m http.server 8080` in the `SWAPUGC` folder)
+4. Open your browser, and navigate to the location of `index.html` (e.g. http://localhost:8080/index.html - for port = 8080)
 
 To run a remote demo, repeat the same process at your server, by replacing `localhost` with your server IP.
 
@@ -67,7 +68,7 @@ The demo is working better with Chrome, was tested and works with Firefox [3], a
 
 ### UGC recorder (video + sensors)
 
-A compatible UGC recorder Android application that can be used, is available [here](https://github.com/emmanouil/Spatiotemporal-Navigation-Recorder)
+A compatible UGC recorder Android application that can be used, is [Spatiotemporal Navigation Recorder](git.io/SNR)
 
 ### Generate DASH-compatible Segmented Video Files
 
