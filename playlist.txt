@@ -1,5 +1,8 @@
-#lines starting with '#'
- or the space character, are ignored
 A002C001_140325E3
 20140325_121238
 Take5_Nexus5
+20140325_121245
+#20140325_131253    #ommited due to extremely bad quality of video
+IMG_0367
+VID_20140325_131247
+VID_20140325_131249
