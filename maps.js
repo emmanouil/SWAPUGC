@@ -208,7 +208,7 @@ function initMap() {
 	var centerControlDiv = document.createElement('div');
 	//	var centerControl = new CenterControl(centerControlDiv, map);
 	var centerControl = new CustomControl(centerControlDiv, map, 'Click to recenter the map', 'Center Map', function () {
-		centerMap(reference_location[0], reference_location[1]);
+		centerMap(reference_view_centering_location[0], reference_view_centering_location[1]);
 	});
 
 	centerControlDiv.index = 1;
