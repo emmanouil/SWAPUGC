@@ -138,13 +138,23 @@ function assert_fetch(response, target) {
     return true;
 }
 
+/**
+ * 
+ * @param {Number} lat1 Longtitute of Pa
+ * @param {Number} lng1 Latitude of Pa
+ * @param {Number} lat2 Longtitute of Pn
+ * @param {Number} lng2 Latitude of Pb 
+ */
 function calcBearing(lat1, lng1, lat2, lng2) {
-    var y = Math.sin(lat2 - lat1) * Math.cos(lng2);
-    var x = Math.cos(lng1) * Math.sin(lng2) -
-        Math.sin(lng1) * Math.cos(lng2) * Math.cos(lat2 - lat1);
-    var brng = Math.atan2(y, x); //in rad
-    var brngDgr = brng / (Math.PI / 180);
-    return brngDgr;
+    lat1 = radToDeg(lat1);
+    lng1 = radToDeg(lng1);
+    lat2 = radToDeg(lat2);
+    lng2 = radToDeg(lng2);
+    let x = Math.sin(lng2 - lng1) * Math.cos(lat2);
+    let y = Math.cos(lat1) * Math.sin(lat2) -
+        Math.sin(lat1) * Math.cos(lat2) * Math.cos(lng2 - lng1);
+    let brng = Math.atan2(x, y); //in radians
+    return radToDeg(brng);
 }
 
 function calcDistanceBetweenCoords(lat1, lng1, lat2, lng2) {
