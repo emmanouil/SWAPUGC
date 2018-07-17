@@ -535,9 +535,6 @@ function analyzeGeospatialData() {
 		s.marker = new Marker();
 		s.marker.init(s.coordSet[0].Latitude, s.coordSet[0].Longitude,
 			s.index, s.id, s.orientSet[0].X, s.descriptor.is_mobile);
-		//addLiveMarker(s.coordSet[0].Latitude, s.coordSet[0].Longitude,
-		//	s.index, s.id, s.orientSet[0].X, s.descriptor.is_mobile);
-
 
 		if (s.id === reference_recordingID) {
 			highlightMarker(s.marker, true); //we start by the current marker selected

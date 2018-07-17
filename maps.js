@@ -284,57 +284,6 @@ function initMarker(marker, lat, lng, index, recording_id, bearing, active = fal
 	globalSetIndex[index].marker = marker;
 }
 
-function addLiveMarker(lat, lng, index, recording_id, bearing, active = false) {
-
-	/*
-	 * if no coordinates, or recording info, skip the marker
-	 */
-	if (!lat || !lng || typeof recording_id === 'undefined') {
-		logINFO('Marker was not placed on map (check lat, lng, index and recording_id args');
-		return;
-	}
-
-	var marker;
-	var label = "Marker " + recording_id;
-	/*
-	 * if no bearing information, use default markers
-	 */
-	if (USE_DEFAULT_MARKERS || (typeof bearing === 'undefined' && USE_NO_BEARING_MARKERS)) {
-		var marker1 = new google.maps.Marker({
-			position: new google.maps.LatLng(lat, lng),
-			title: label
-		});
-		marker1.setMap(map);
-		marker1.addListener('click', function () {
-			logDEBUG("click to no bearing marker");
-			switchToStream(index, recording_id);
-		});
-		markers.push(marker1);
-		return;
-	} else if (bearing) {
-		var local_icon = test_icon;
-		local_icon.rotation = bearing;
-		if (active) {
-			local_icon.fillColor = 'green';
-		}
-		marker = new google.maps.Marker({
-			position: new google.maps.LatLng(lat, lng),
-			title: label,
-			icon: local_icon
-		});
-	}
-
-	marker.setMap(map);
-	marker.index = index;
-	marker.recording_id = recording_id;
-	marker.addListener('click', function () {
-		logDEBUG('clicked on marker with title: ' + marker.title + 'of ID: ' + marker.recording_id);
-		switchToStream(index, recording_id);
-	});
-	markers.push(marker);
-	globalSetIndex[index].marker = marker;
-}
-
 function updateMarkerOrientation(marker_id, orientation = "none") {
 	if (orientation != "none") {
 		updateMarkerByID(marker_id, orientation);
