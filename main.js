@@ -562,6 +562,16 @@ function analyzeGeospatialData() {
 		};
 	}
 
+	/**
+	 * Add initial Location and Orientation references
+	 */
+
+	for (let i = 0; i < globalSetIndex.length; i++) {
+		globalSetIndex[i].lastLocation = globalSetIndex[i].coordSet[0];
+		globalSetIndex[i].lastLocation.v_t = p.v.currentTime;
+		globalSetIndex[i].lastOrientation = globalSetIndex[i].orientSet[0];
+		globalSetIndex[i].lastOrientation.v_t = p.v.currentTime;
+	}	
 
 	//TODO after we move set p.t_videoStart out of addMarkerUpdates, move this out of here
 	setMainViewEndTime();
@@ -770,6 +780,17 @@ function createRepresentationOption(rep_index, height, bandwidth) {
 	option.text = height + "p - " + Math.trunc(bandwidth / 1000) + "kbps";
 	option.value = rep_index;
 	return option;
+}
+
+
+function updateLastOrientation(set_in, orient, v_t){
+	set_in.lastOrientation = orient;
+	set_in.lastOrientation.v_t = v_t;
+}
+
+function updateLastLocation(set_in, loc, v_t){
+	set_in.lastLocation = loc;
+	set_in.lastLocation.v_t = v_t;
 }
 
 function mse_initAndAdd(stream_index, segment_n) {
