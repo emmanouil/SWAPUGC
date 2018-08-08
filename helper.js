@@ -172,6 +172,14 @@ function calcDistanceBetweenCoords(lat1, lng1, lat2, lng2) {
     return earthRadiusM * c;
 }
 
+function getBearing(set_in){
+    return calcBearing(set_in.lastLocation.Latitude, set_in.lastLocation.Longitude, reference_orchestra_center_location[0], reference_orchestra_center_location[1]);
+}
+
+function getDistance(set_in){
+    return calcDistanceBetweenCoords(set_in.lastLocation.Latitude, set_in.lastLocation.Longitude, reference_orchestra_center_location[0], reference_orchestra_center_location[1]);
+}
+
 function radToDeg(rad_in) {
     return rad_in / (Math.PI / 180);
 }
