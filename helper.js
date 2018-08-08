@@ -142,7 +142,7 @@ function assert_fetch(response, target) {
  * 
  * @param {Number} lat1 Longtitute of Pa
  * @param {Number} lng1 Latitude of Pa
- * @param {Number} lat2 Longtitute of Pn
+ * @param {Number} lat2 Longtitute of Pb
  * @param {Number} lng2 Latitude of Pb 
  */
 function calcBearing(lat1, lng1, lat2, lng2) {
@@ -154,7 +154,7 @@ function calcBearing(lat1, lng1, lat2, lng2) {
     let y = Math.cos(lat1) * Math.sin(lat2) -
         Math.sin(lat1) * Math.cos(lat2) * Math.cos(lng2 - lng1);
     let brng = Math.atan2(x, y); //in radians
-    return radToDeg(brng);
+    return radToDeg(brng);  //in degrees
 }
 
 function calcDistanceBetweenCoords(lat1, lng1, lat2, lng2) {

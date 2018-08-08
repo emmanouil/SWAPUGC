@@ -296,7 +296,11 @@ function updateMarkerOrientation(marker_id, orientation = "none") {
 //loc should be in the form of {lat: value, lng: value}
 function updateMarkerLocation(marker_id, loc = "none") {
 	if (loc != "none") {
-		updateMarkerByID(marker_id, "none", loc);
+		var tmploc = {
+			lat: loc.Latitude,
+			lng: loc.Longitude
+		};
+		updateMarkerByID(marker_id, "none", tmploc);
 		logDEBUG("Updated marker position to " + loc);
 	} else {
 		logWARN("Did not update location of marker with id" + marker_id);

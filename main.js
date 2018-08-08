@@ -622,7 +622,7 @@ function addMarkerUpdates(set_in, tmp_index) {
 		}
 		cur_t = tmp_loc.PresentationTime;
 		//TODO handle cues according to main vid time (not relevant to the take time)
-		let vtc = new VTTCue((t_diff + cur_t) / 1000, (t_diff + cur_t + VTTCUE_DURATION) / 1000, "{\"lat\":" + tmp_loc.Latitude + ", \"lng\":" + tmp_loc.Longitude + "}");
+		let vtc = new VTTCue((t_diff + cur_t) / 1000, (t_diff + cur_t + VTTCUE_DURATION) / 1000, "{\"Latitude\":" + tmp_loc.Latitude + ", \"Longitude\":" + tmp_loc.Longitude + "}");
 		vtc.id = "LocationUpdate";
 		tmp_track.addCue(vtc);
 	}
@@ -783,12 +783,12 @@ function createRepresentationOption(rep_index, height, bandwidth) {
 }
 
 
-function updateLastOrientation(set_in, orient, v_t){
+function updateLastOrientation(set_in, orient, v_t) {
 	set_in.lastOrientation = orient;
 	set_in.lastOrientation.v_t = v_t;
 }
 
-function updateLastLocation(set_in, loc, v_t){
+function updateLastLocation(set_in, loc, v_t) {
 	set_in.lastLocation = loc;
 	set_in.lastLocation.v_t = v_t;
 }
