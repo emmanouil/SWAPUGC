@@ -550,13 +550,16 @@ function analyzeGeospatialData() {
 		addMarkerUpdates(s, i);
 		globalSetIndex[i].main_view_tracks_no = i;
 		main_view_tracks[i].oncuechange = function () {
-			for (let i = 0; i < this.activeCues.length; i++) {
-				if (this.activeCues[i].id === "OrientationUpdate") {
-					updateMarkerOrientation(this.activeCues[i].track.label, JSON.parse(this.activeCues[i].text).X); //we only use X for display
-				} else if (this.activeCues[i].id === "LocationUpdate") {
-					updateMarkerLocation(this.activeCues[i].track.label, JSON.parse(this.activeCues[i].text));
-				} else if (this.activeCues[i].id === "Event") {
-					handleEvent(this.activeCues[i].track.label, JSON.parse(this.activeCues[i].text));
+			for (let j = 0; j < this.activeCues.length; j++) {
+				if (this.activeCues[j].id === "OrientationUpdate") {
+					updateLastOrientation(this.setReference, JSON.parse(this.activeCues[j].text), this.activeCues[j].startTime);
+					updateMarkerOrientation(this.activeCues[j].track.label, JSON.parse(this.activeCues[j].text).X); //we only use X for display
+				} else if (this.activeCues[j].id === "LocationUpdate") {
+					console.log('cue: ' + (this.activeCues[j].text))
+					updateLastLocation(this.setReference, JSON.parse(this.activeCues[j].text), this.activeCues[j].startTime);
+					updateMarkerLocation(this.activeCues[j].track.label, JSON.parse(this.activeCues[j].text));
+				} else if (this.activeCues[j].id === "Event") {
+					handleEvent(this.activeCues[j].track.label, JSON.parse(this.activeCues[j].text));
 				}
 			}
 		};
@@ -571,7 +574,7 @@ function analyzeGeospatialData() {
 		globalSetIndex[i].lastLocation.v_t = p.v.currentTime;
 		globalSetIndex[i].lastOrientation = globalSetIndex[i].orientSet[0];
 		globalSetIndex[i].lastOrientation.v_t = p.v.currentTime;
-	}	
+	}
 
 	//TODO after we move set p.t_videoStart out of addMarkerUpdates, move this out of here
 	setMainViewEndTime();
