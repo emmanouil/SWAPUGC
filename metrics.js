@@ -10,11 +10,11 @@ function Metrics() {
     this.brightness = 0;
     //Sensor-based
     this.shakiness = 0;
-    this.FOV.orientation =0;
-    this.FOV.tilt =0;
+    this.FOV.orientation = 0;
+    this.FOV.tilt = 0;
     //proposed
     this.facing = 0;
     //Characteristics
     this.bitrate = 0;
-    this.resolution =0;
+    this.resolution = 0;
 }

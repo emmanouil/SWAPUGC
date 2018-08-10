@@ -214,6 +214,7 @@ function init() {
 								//prepare the textTracks
 								for (let s_i of globalSetIndex) {
 									s_i.main_view_tracks_no = main_view_tracks.push(p.v.addTextTrack("metadata", s_i.id)) - 1;
+									main_view_tracks[main_view_tracks.length - 1].setReference = s_i;
 								}
 								//we want MSE to be ready before calling fetchAndInitMarkers
 								if (p.ms.readyState === "open") {
