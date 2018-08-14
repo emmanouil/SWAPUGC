@@ -5,24 +5,18 @@ import sys
 import os
 
 
-def test():
-
-	print(os.getcwd())
-
-
 def get_blur_metric(src):
 
-	#read B&W image (for color remove last argument)
-	img = cv2.imread('src', 0)
+    #read B&W image (for color remove last argument)
+    img = cv2.imread(src, 0)
+    if img is None:
+        print('Image ' + src + ' not found')
+        return None
 
-	if img is None:
-		print('Image not found')
-		return None
+    laplacian = cv2.Laplacian(img, cv2.CV_64F)
 
-	laplacian = cv2.Laplacian(img, cv2.CV_64F)
-
-	blur = laplacian.var()
-	return blur
+    blur = laplacian.var()
+    return blur
 
 
 #alternative to laplacian - not implemented
