@@ -16,12 +16,13 @@ def get_blur_metric(src):
 	img = cv2.imread('src', 0)
 
 	if img is None:
-		exit('Image not found')
+		print('Image not found')
+		return None
 
 	laplacian = cv2.Laplacian(img, cv2.CV_64F)
 
 	blur = laplacian.var()
-	print(blur)
+	return blur
 
 
 #alternative to laplacian - not implemented
