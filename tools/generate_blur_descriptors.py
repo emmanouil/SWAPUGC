@@ -1,4 +1,4 @@
-from measure_blur import get_blur_metric
+from measure_blur import get_blur_by_filename
 import copy
 import os
 import json
@@ -24,7 +24,7 @@ def get_em(filename):
     blurs = []
     blur = dict()
     for i in range(start_n, end_n):
-        blur_v = get_blur_metric(subdir + '/' + filename + separator + format(i, formater) + extension)
+        blur_v = get_blur_by_filename(subdir + '/' + filename + separator + format(i, formater) + extension)
         if blur_v is None:
             print('Done at ' + (filename + separator + format(i, formater) + extension))
             return blurs
