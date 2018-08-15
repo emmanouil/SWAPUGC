@@ -13,11 +13,17 @@ start_n = 0
 end_n = 999
 formater = '03d'
 extension = '.bmp'
-subdir = 'test'
+subdir = 'frames'
 
 #output parameters
 OUTPUTDIR = 'test'
 file_out_suffix = '_BLUR'
+
+#logging
+log_file = 'blur_measurements.json'
+min_blur = 9999
+max_blur = -9999
+frames_n = 0
 
 
 def get_em(filename):
@@ -42,10 +48,26 @@ def flush_json_to_file_out(filename, data):
         print('written at ' + os.getcwd() + '/' + OUTPUTDIR + '/' + filename)
 
 
+def get_minmax(dict_list, key):
+    seq = [x[key] for x in dict_list]
+    min_ = min(seq)
+    max_ = max(seq)
+    return min_, max_
+
+
 def main():
+    log = []
     for filename in filenames:
         blur = get_em(filename)
-        flush_json_to_file_out(filename + file_out_suffix + '.json', blur)
+        if not blur:
+            print('No blur metrics returned for ' + filename)
+        else:
+            min_, max_ = get_minmax(blur, 'Blur')
+            log.append({'File': filename, 'MinBlurValue': min_, 'MaxBlurValue': max_})
+            print('max:  ' + str(max_))
+            print('min:  ' + str(min_))
+            flush_json_to_file_out(filename + file_out_suffix + '.json', blur)
+    flush_json_to_file_out(log_file, log)
     input('continue?')
     #That's All Folks!
     exit(0)
