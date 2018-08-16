@@ -20,7 +20,7 @@ var last_removed_timerage = -1; //during resetSourceBuffer or cleanSourceBuffer
 //Files and folders
 const PLAYLIST_FILE = 'playlist.txt'; //holds the base names of the recordings
 const PLAYLIST_MAIN_VIEW_INDEX = 0; //the position in the playlist txt of the recording considered as reference (starting from 0)
-const PARSER_DIR = 'samples/spatial'; //holds the parser output (location, orientation, descriptor) jsons
+const PARSER_DIR = 'samples/descriptors'; //holds the parser output (location, orientation, descriptor) jsons
 const DASH_DIR = 'samples/video'; //contains the segments, inits and mpd init of the video files [for demo use 'samples/multi-res' for the multiple representations, 'samples/segmented' for single bitstream]
 
 //extensions, suffixes and prefixes
