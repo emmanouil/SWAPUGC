@@ -45,7 +45,6 @@ var interval_id = -1; //timeout id
 const UPDATE_S = 1.7; //condition (in s) to fetch next segment, relative to the current video time and end of the sourceBuffer
 const MARKER_UPDATE_LIMIT_ON = true; //enable cue timespan limit
 const MARKER_UPDATE_LIMIT = 600; // (in ms) limit the timespan between two updates for the same marker (i.e. number of cues)
-const MARKER_LIMIT_BEHAVIOUR = 'discard'; //'discard' or 'average' - not implemented TODO
 
 //performance parameters
 const INTERVAL_MS = 900; //check interval (in ms)
@@ -280,7 +279,8 @@ function check_status() {
 
 
 
-	//first we check if the video is rolling //TODO later, add support for updating buffer *and* switching videos at paused state
+	//first we check if the video is rolling
+	//TODO later, add support for updating buffer *and* switching videos at paused state
 	if (p.v.paused) {
 		logDEBUG('check_status called with main view paused - skipping check');
 		return;
@@ -338,7 +338,7 @@ function check_status() {
 
 /**
  * Revised version of the function - only for video files
- * TODO: we handle a lot of stuff here, refacture
+ * TODO: we handle a lot of stuff here, refactor
  * @param {*Object} XMLHttpRequest_in
  */
 //returns recording id
@@ -516,7 +516,7 @@ function loadLocs(req_in) {
 	loadAssets(PL_ORIENTATION_SUFFIX, req_in);
 }
 
-function loadImageQ(req_in){
+function loadImageQ(req_in) {
 	loadAssets(PL_BLUR_SUFFIX, req_in);
 }
 
@@ -545,7 +545,7 @@ function loadAssets(type, Xreq_target) {
 }
 
 /**
- * NOTE: It adds INITIAL markers (not all markers - TODO)
+ * NOTE: It adds INITIAL markers
  */
 function analyzeGeospatialData() {
 	/**
@@ -608,8 +608,8 @@ function analyzeGeospatialData() {
 
 }
 
+//TODO refactor
 function addMarkerUpdates(set_in, tmp_index) {
-	//TODO; I messed it up
 	/* locate and init track */
 	var tmp_track = main_view_tracks[tmp_index];
 
@@ -753,7 +753,7 @@ function resetSourceBuffer() {
 	} else {
 		mse_initAndAdd(active_video_index, seg_n);
 	}
-	//TODO workaround because Chrome does not auto-play (nor auto-pauses) after reset
+	//TODO Chrome-specific workaround because it does not auto-play (nor auto-pauses) after reset
 	if (navigator.userAgent.indexOf("Chrome") != -1) {
 		p.v.currentTime += 0.001;
 	}

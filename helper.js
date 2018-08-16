@@ -154,7 +154,7 @@ function calcBearing(lat1, lng1, lat2, lng2) {
     let y = Math.cos(lat1) * Math.sin(lat2) -
         Math.sin(lat1) * Math.cos(lat2) * Math.cos(lng2 - lng1);
     let brng = Math.atan2(x, y); //in radians
-    return radToDeg(brng);  //in degrees
+    return radToDeg(brng); //in degrees
 }
 
 function calcDistanceBetweenCoords(lat1, lng1, lat2, lng2) {
@@ -172,11 +172,11 @@ function calcDistanceBetweenCoords(lat1, lng1, lat2, lng2) {
     return earthRadiusM * c;
 }
 
-function getBearing(set_in){
+function getBearing(set_in) {
     return calcBearing(set_in.lastLocation.Latitude, set_in.lastLocation.Longitude, reference_orchestra_center_location[0], reference_orchestra_center_location[1]);
 }
 
-function getDistance(set_in){
+function getDistance(set_in) {
     return calcDistanceBetweenCoords(set_in.lastLocation.Latitude, set_in.lastLocation.Longitude, reference_orchestra_center_location[0], reference_orchestra_center_location[1]);
 }
 
