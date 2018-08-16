@@ -36,6 +36,7 @@ const PL_VIDEO_EXTENSION = '.webm';
 const PL_LOCATION_SUFFIX = '_LOC';
 const PL_ORIENTATION_SUFFIX = '_ORIENT';
 const PL_DESCRIPTOR_SUFFIX = '_DESCRIPTOR';
+const PL_BLUR_SUFFIX = '_BLUR';
 const PORT = '8000';
 var BASE_URL = ''; //set when parse_playlist is called (e.g. 192.0.0.1:8000)
 
@@ -390,6 +391,24 @@ function loadSpatialData() {
 	});
 }
 
+/* Called from fetchAndInitMarkers and fetches image quality metrics sets */
+function loadImageQualityData() {
+
+	let blur_promises = [];
+	for (let i = 0; i < globalSetIndex.length; i++) {
+		blur_promises.push(fetch_promise(globalSetIndex[i].descriptor.imageQFilename, 'json', true));
+	}
+	Promise.all(blur_promises).then(function (values) {
+		for (var i = 0; i < values.length; i++) {
+			loadImageQ(values[i]);
+		}
+	}).catch(function (err) {
+		logERR('Error parsing image quality files');
+		logERR(err);
+	});
+}
+
+
 /* Called from fetchAndInitMarkers and calculates relative time between views */
 function setMainViewStartTime() {
 	let tmp_time = globalSetIndex[PLAYLIST_MAIN_VIEW_INDEX].descriptor.startTimeMs - reference_recording_set.descriptor.startTimeMs;
@@ -497,6 +516,10 @@ function loadLocs(req_in) {
 	loadAssets(PL_ORIENTATION_SUFFIX, req_in);
 }
 
+function loadImageQ(req_in){
+	loadAssets(PL_BLUR_SUFFIX, req_in);
+}
+
 function loadAssets(type, Xreq_target) {
 	var tmp_name = Xreq_target.responseURL.split('/').pop().split('.')[0];
 	for (var i = 0; i < globalSetIndex.length; i++) {
@@ -507,6 +530,9 @@ function loadAssets(type, Xreq_target) {
 					break;
 				case PL_ORIENTATION_SUFFIX:
 					globalSetIndex[i].orientSet = Xreq_target.response;
+					break;
+				case PL_BLUR_SUFFIX:
+					globalSetIndex[i].imageQSet = Xreq_target.response;
 					break;
 				default:
 					logERR('type ' + type + ' not recognized');

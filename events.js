@@ -57,6 +57,7 @@ function fetchAndInitMarkers() {
     });
 
     loadSpatialData();
+    loadImageQualityData();
 }
 
 /**
