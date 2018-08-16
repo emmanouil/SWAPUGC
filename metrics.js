@@ -7,7 +7,6 @@
 function Metrics() {
     //Image-based objective
     this.bluriness = 0;
-    this.brightness = 0;
     //Sensor-based
     this.shakiness = 0;
     this.FOV.orientation = 0;
