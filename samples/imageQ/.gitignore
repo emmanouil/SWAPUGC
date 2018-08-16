@@ -1,0 +1,4 @@
+# Place image quality (e.g. blur detection) files in this dir
+*
+!.gitignore
+# you may delete this file
