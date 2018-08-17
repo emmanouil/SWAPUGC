@@ -45,6 +45,9 @@
                 <select id="quality_slk" disabled onchange="selectQuality(this.selectedOptions[0].value); disable_btn_for('quality_slk', 2000);">
                 </select>
                 <br/>
+                    <br/>
+                    <button id="ShowOrchestra_btn" onclick="placePointerMarker(reference_orchestra_center_location[0], reference_orchestra_center_location[1]);">Show Event Spatial Center</button>
+                    <br/>
                 <div id="bottom_line">
                     <button id="reset_btn" onclick="resetSourceBuffer(); logUI('Manually reseting sourceBuffer'); disable_btn_for('reset_btn', 2000);"
                         disabled>Reset MSE</button>

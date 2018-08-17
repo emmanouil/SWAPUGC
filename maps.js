@@ -244,6 +244,17 @@ function centerMap(latitude, longitude, zoom) {
 			map.setZoom(zoom);
 }
 
+function placePointerMarker(lat, lng){
+	let tmp_m = new Marker();
+
+	if (!lat || !lng ) {
+		logINFO('Marker was not placed on map (check lat, lng args');
+		return;
+	}
+	tmp_m.setPosition(new google.maps.LatLng(lat, lng));
+	tmp_m.setMap(map);
+}
+
 function initMarker(marker, lat, lng, index, recording_id, bearing, active = false) {
 
 	/*
