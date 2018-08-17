@@ -658,11 +658,6 @@ function addMarkerUpdates(set_in, tmp_index) {
 	}
 }
 
-//called when the play button is pressed
-function startPlayback() {
-	p.v.play();
-}
-
 //called when marker is clicked
 function switchToStream(set_index, recordingID) {
 	if (p.v.paused) {

@@ -114,9 +114,9 @@
                 <video id="v_main" width="640" height="360" poster="assets/v_poster.png"></video>
             </div>
             <div id="menu">
-                <button id="play_btn" onclick="goToAndPlay(this);" disabled>Play</button>
+                <button id="play_btn" onclick="goToAndPlayPause(this);" disabled>Play</button>
                 <!--<button id="pause_btn" onclick="pausePlayback(this);" disabled title="When paused, view does not update">Pause</button>-->
-                <button id="mute_btn" style="width: 5em;" onclick="p.v.muted = !p.v.muted; if(this.innerText ==='Mute'){this.innerText ='Unmute'}else{this.innerText ='Mute'};">Mute</button>
+                <button id="mute_btn" style="width: 5em;" onclick="p.v.muted = !p.v.muted; if(this.innerText ==='Mute' && p.v.muted){this.innerText ='Unmute'}else{this.innerText ='Mute'};">Mute</button>
                 <button id="test_btn" onclick="printBufferStatus();" disabled hidden>print Buffer Status</button>
                 <button id="next_btn" onclick="nextStream(); disable_btn_for('next_btn', 2000); disable_btn_for('selector', 2000);disable_btn_for('policy_slk', 2000);"
                     disabled>Switch</button>

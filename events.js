@@ -78,13 +78,24 @@ function initMarkers() {
  * Called when GoToAndPlay button is clicked
  * @param {*} e 
  */
-function goToAndPlay(e) {
-    document.getElementById('play_btn').disabled = true;
-    logINFO('starting playback from (ms): ' + p.t_videoStart);
-    startPlayback();
-    document.getElementById('reset_btn').disabled = false;
-    document.getElementById('next_btn').disabled = false;
-    document.getElementById('selector').disabled = false;
-    document.getElementById('policy_slk').disabled = false;
-    document.getElementById('quality_slk').disabled = false;
+function goToAndPlayPause(e) {
+    if (p.v.paused) {
+        document.getElementById('play_btn').innerText = 'Pause';
+        logINFO('starting playback from (ms): ' + p.v.currentTime);
+        p.v.play();
+        document.getElementById('reset_btn').disabled = false;
+        document.getElementById('next_btn').disabled = false;
+        document.getElementById('selector').disabled = false;
+        document.getElementById('policy_slk').disabled = false;
+        document.getElementById('quality_slk').disabled = false;
+    } else {
+        document.getElementById('play_btn').innerText = 'Play';
+        logINFO('Paused playback at: ' + p.v.currentTime);
+        p.v.pause();
+        document.getElementById('reset_btn').disabled = true;
+        document.getElementById('next_btn').disabled = true;
+        document.getElementById('selector').disabled = true;
+        document.getElementById('policy_slk').disabled = true;
+        document.getElementById('quality_slk').disabled = true;
+    }
 }
