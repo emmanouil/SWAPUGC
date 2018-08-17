@@ -17,3 +17,13 @@ function Metrics() {
     this.bitrate = 0;
     this.resolution = 0;
 }
+
+function printMetrics(index_in) {
+    let temp_frame = parseInt(p.v.currentTime - globalSetIndex[index_in].descriptor.tDiffwReferenceMs / 1000);
+    let temp_set = globalSetIndex[index_in];
+    logUI('Showing metrics for set at index: ' + index_in + ' at video time' + p.v.currentTime +
+        ' Blur Metric (for frame: ' + temp_frame + '): ' + temp_set.imageQSet[temp_frame].Blur +
+        'Tilt: ' + temp_set.lastOrientation['Y'] +
+        'Orientation: ' + temp_set.lastOrientation['X'] + '  Bearing: ' + getBearing(temp_set) + '   Distance: ' + getDistance(temp_set)
+    );
+}

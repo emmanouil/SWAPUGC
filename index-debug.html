@@ -25,6 +25,7 @@
     <script src="mse.js"></script>
     <script src="player.js"></script>
     <script src="main.js" defer></script>
+    <script src="metrics.js" defer></script>
     <div id="body_div">
 
         <div id="d_view" style="text-align: justify; font-family: 'Roboto', sans-serif;">
@@ -45,9 +46,17 @@
                 <select id="quality_slk" disabled onchange="selectQuality(this.selectedOptions[0].value); disable_btn_for('quality_slk', 2000);">
                 </select>
                 <br/>
+                <p>
+                    ===========
+                    <br/> DEBUG FUNCTIONS:
+                    <br/>
+                    <button id="Qstatus_btn" onclick="printMetrics(active_video_index); disable_btn_for('Qstatus_btn', 2000);">Show Metrics</button>
                     <br/>
                     <button id="ShowOrchestra_btn" onclick="placePointerMarker(reference_orchestra_center_location[0], reference_orchestra_center_location[1]);">Show Event Spatial Center</button>
                     <br/>
+                    <br/> ===========
+                    <br/>
+                </p>
                 <div id="bottom_line">
                     <button id="reset_btn" onclick="resetSourceBuffer(); logUI('Manually reseting sourceBuffer'); disable_btn_for('reset_btn', 2000);"
                         disabled>Reset MSE</button>
