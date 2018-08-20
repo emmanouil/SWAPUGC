@@ -23,7 +23,7 @@ function printMetrics(index_in) {
     let temp_set = globalSetIndex[index_in];
     logUI('Showing metrics for set at index: ' + index_in + ' at video time' + p.v.currentTime +
         ' Blur Metric (for frame: ' + temp_frame + '): ' + temp_set.imageQSet[temp_frame].Blur +
-        'Tilt: ' + temp_set.lastOrientation['Y'] +
+        'Tilt: ' + temp_set.lastOrientation['Y'] + '  Skew: ' + temp_set.lastOrientation['Z'] + //tilt should be around 0deg
         'Orientation: ' + temp_set.lastOrientation['X'] + '  Bearing: ' + getBearing(temp_set) + '   Distance: ' + getDistance(temp_set)
     );
 }
