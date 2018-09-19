@@ -245,3 +245,16 @@ function find_attributes_in_children(parent, atr) {
         return bob;
     }
 }
+
+/**
+ * Returns a number mapped between out_min and out_max from 
+ * the range [in_min, in_max]
+ * @param {*} num number to map in range
+ * @param {*} in_min min of current range
+ * @param {*} in_max max of current range
+ * @param {*} out_min min of mapped range
+ * @param {*} out_max max of mapped range
+ */
+function mapToRange (num, in_min, in_max, out_min, out_max) {
+    return (num - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+}
