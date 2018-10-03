@@ -1,4 +1,15 @@
 'use strict';
+
+//Score weights
+const a1 = 0.20; //Shakiness
+const a2 = 0.20; //Tilt/Yaw
+const a3 = 0.20; //Bitrate
+const a4 = 0.20; //Image Quality
+const a5 = 0.20; //Link Reliability
+//Score ranges
+const maxTilt = 5; //Tilt (in degrees) more/less than maxTilt scores 0
+
+
 /**
  * This file contains the definition of the Metrics object, that is present in 
  *  all recording sets and updates during playback
