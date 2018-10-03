@@ -1,9 +1,11 @@
 "use strict";
 /* jshint node: true */
 const fs = require('fs');
+const x2j = require('fast-xml-parser');
+
 
 //Simulator specific
-const TOP_DIR = '../';
+const TOP_DIR = '';
 
 //copied from main.js
 //TODO don't
@@ -68,6 +70,15 @@ var playlist, items_fetched = 0,
     main_view_tracks = [];
 
 
+//from parameters.js
+/* main/reference view recording ID */
+var reference_recordingID = 'A002C001_140325E3';
+var reference_recording_set;
+
+//from helper.js
+var globalSetIndex = [];
+
+
 
 console.log('Simulator script running from ' + process.cwd());
 
@@ -96,7 +107,19 @@ playlist = pl_entries.filter((elem) => {
 
 console.log('Finished parsing playlist. Found ' + playlist.length + ' elements');
 
-/*
-fs.access('../' + PLAYLIST_FILE, fs.constants.R_OK | fs.constants.W_OK, (err) => {
-    console.log(err ? 'no access!' : 'can read/write');
-});*/
+
+for (let i = 0; i < playlist.length; i++) {
+    var loc_obj = {};
+    loc_obj.descriptor = JSON.parse(fs.readFileSync(TOP_DIR + PARSER_DIR + '/' + playlist[i] + PL_DESCRIPTOR_SUFFIX + '.json'));
+    loc_obj.index = globalSetIndex.length;
+    loc_obj.id = loc_obj.descriptor.recordingID;
+    loc_obj.videoFile = loc_obj.id + PL_VIDEO_EXTENSION;
+    globalSetIndex.push(loc_obj);
+    //we check if it is our main view
+    if (loc_obj.id === reference_recordingID) {
+        reference_recording_set = globalSetIndex[globalSetIndex.length - 1];
+    }
+
+}
+
+//TODO GL130 ; parse MPD
