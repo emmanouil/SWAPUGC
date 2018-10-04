@@ -40,24 +40,36 @@ function printMetrics(index_in) {
     );
 }
 
-function getScore(index_in) {
-    let temp_frame = parseInt(p.v.currentTime - globalSetIndex[index_in].descriptor.tDiffwReferenceMs / 1000);
+
+function calculateRanking() {
+    let ranking = [globalSetIndex.length];
+    console.log(ranking)
+
+}
+
+//returns Shakiness metric (Ss)
+function getShakinessMetric(index_in) {
+    let Ss = 1; //TODO shakiness not implemented yet
+    return Ss;
+}
+
+//returns Tilt metric (St)
+function getTiltMetric(index_in) {
     let temp_set = globalSetIndex[index_in];
 
-    //Shakiness
-    let Ss = 1; //TODO shakiness not implemented yet
-    let SSs = 1 - Ss;
-
-    //Tilt
     let St;
     if (Math.abs(temp_set.lastOrientation['Y']) > maxTilt) {
         St = 1;
     } else {
         St = mapToRange(Math.abs(temp_set.lastOrientation['Y']), 0, maxTilt, 0, 1);
     }
-    let SSt = 1 - St;
+    return St;
+}
 
-    //Bitrate
+//returns Bitrate metric (Vb)
+function getBitrateMetric(index_in){
+    let temp_set = globalSetIndex[index_in];
+
     let Vb = 0;
     let Bmin = 999999;
     let Bmax = 0;
@@ -73,6 +85,21 @@ function getScore(index_in) {
         Number(
             temp_set.mpd.representations[temp_set.active_representation].bandwidth
         ), Bmin, Bmax, 0, 1);
+    //TODO should we map it wrt to 0, wrt to minBitrate, or global minBitrate?
+    return Vb;
+}
+
+function getScore(index_in) {
+    let temp_frame = parseInt(p.v.currentTime - globalSetIndex[index_in].descriptor.tDiffwReferenceMs / 1000);
+    let temp_set = globalSetIndex[index_in];
+
+    let Ss = getShakinessMetric(index_in); //this is the metric
+    let SSs = 1 - Ss; //this is the actual score (without the weight)
+
+    let St = getTiltMetric(index_in); //this is the metric
+    let SSt = 1 - St; //this is the actual score (without the weight)
+
+    let Vb = getBitrateMetric(index_in); //this is the metric & score (without the weight)
 
     //Image Q
     let ImQmin = 0;
