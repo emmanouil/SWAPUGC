@@ -67,7 +67,7 @@ function getTiltMetric(index_in) {
 }
 
 //returns Bitrate metric (Vb)
-function getBitrateMetric(index_in){
+function getBitrateMetric(index_in) {
     let temp_set = globalSetIndex[index_in];
 
     let Vb = 0;
@@ -89,17 +89,10 @@ function getBitrateMetric(index_in){
     return Vb;
 }
 
-function getScore(index_in) {
+//returns Image Quality metric (Iq)
+function getImageQualityMetric(index_in) {
     let temp_frame = parseInt(p.v.currentTime - globalSetIndex[index_in].descriptor.tDiffwReferenceMs / 1000);
     let temp_set = globalSetIndex[index_in];
-
-    let Ss = getShakinessMetric(index_in); //this is the metric
-    let SSs = 1 - Ss; //this is the actual score (without the weight)
-
-    let St = getTiltMetric(index_in); //this is the metric
-    let SSt = 1 - St; //this is the actual score (without the weight)
-
-    let Vb = getBitrateMetric(index_in); //this is the metric & score (without the weight)
 
     //Image Q
     let ImQmin = 0;
@@ -113,8 +106,29 @@ function getScore(index_in) {
         ImQmax = (ImQmax < b) ? b : ImQmax;
     }
     let Iq = mapToRange(temp_set.imageQSet[temp_frame].Blur, ImQmin, ImQmax, 0, 1);
+    return Iq;
+}
 
 
+function getScore(index_in) {
+    let temp_frame = parseInt(p.v.currentTime - globalSetIndex[index_in].descriptor.tDiffwReferenceMs / 1000);
+    let temp_set = globalSetIndex[index_in];
+
+    let Ss = getShakinessMetric(index_in); //this is the metric
+    let SSs = 1 - Ss; //this is the actual score (without the weight)
+
+    let St = getTiltMetric(index_in); //this is the metric
+    let SSt = 1 - St; //this is the actual score (without the weight)
+
+    let Vb = getBitrateMetric(index_in); //this is the metric & score (without the weight)
+
+    let Iq = getImageQualityMetric(index_in); //this is the metric & score (without the weight)
+
+    let Lr = 1; //TODO not implemented yet
+
+    let finalScore = a1 * SSs + a2 * SSt + a3 * Vb + a4 * Iq + a5 * Lr;
+
+    return finalScore;
     //    let SSs = a1 * (1 - Ss);
     //    let SSt = a1 * (1 - St);
 
