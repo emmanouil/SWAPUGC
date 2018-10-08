@@ -412,7 +412,7 @@ function loadImageQualityData() {
 
 
 /* Called from fetchAndInitMarkers and fetches location and orientation sets */
-function loadShakeTiltData() {
+function loadShakeData() {
 
 	let shake_promises = [];
 	for (let i = 0; i < globalSetIndex.length; i++) {
@@ -555,11 +555,11 @@ function loadImageQ(req_in) {
 }
 
 function loadShake(req_in) {
-	loadAssets(PL_TILT_SUFFIX, req_in);
+	loadAssets(PL_SHAKE_SUFFIX, req_in);
 }
 
 function loadTilt(req_in) {
-	loadAssets(PL_SHAKE_SUFFIX, req_in);
+	loadAssets(PL_TILT_SUFFIX, req_in);
 }
 
 function loadAssets(type, Xreq_target) {

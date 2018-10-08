@@ -58,6 +58,8 @@ function fetchAndInitMarkers() {
 
     loadSpatialData();
     loadImageQualityData();
+    loadShakeData();
+    loadTiltData();
 }
 
 /**
