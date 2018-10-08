@@ -37,6 +37,7 @@ const PL_LOCATION_SUFFIX = '_LOC';
 const PL_ORIENTATION_SUFFIX = '_ORIENT';
 const PL_DESCRIPTOR_SUFFIX = '_DESCRIPTOR';
 const PL_BLUR_SUFFIX = '_BLUR';
+const PL_TILT_SUFFIX = '_TILT';
 const PORT = '8000';
 var BASE_URL = ''; //set when parse_playlist is called (e.g. 192.0.0.1:8000)
 
@@ -409,6 +410,21 @@ function loadImageQualityData() {
 }
 
 
+function loadTiltData() {
+	let tilt_promises = [];
+	for (let i = 0; i < globalSetIndex.length; i++) {
+		tilt_promises.push(fetch_promise(globalSetIndex[i].descriptor.tiltFilename, 'json', true));
+	}
+	Promise.all(tilt_promises).then(function (values) {
+		for (var i = 0; i < values.length; i++) {
+			loadTilt(values[i]);
+		}
+	}).catch(function (err) {
+		logERR('Error parsing orientation files');
+		logERR(err);
+	});
+}
+
 /* Called from fetchAndInitMarkers and calculates relative time between views */
 function setMainViewStartTime() {
 	let tmp_time = globalSetIndex[PLAYLIST_MAIN_VIEW_INDEX].descriptor.startTimeMs - reference_recording_set.descriptor.startTimeMs;
@@ -520,6 +536,10 @@ function loadImageQ(req_in) {
 	loadAssets(PL_BLUR_SUFFIX, req_in);
 }
 
+function loadTilt(req_in) {
+	loadAssets(PL_SHAKE_SUFFIX, req_in);
+}
+
 function loadAssets(type, Xreq_target) {
 	var tmp_name = Xreq_target.responseURL.split('/').pop().split('.')[0];
 	for (var i = 0; i < globalSetIndex.length; i++) {
@@ -533,6 +553,9 @@ function loadAssets(type, Xreq_target) {
 					break;
 				case PL_BLUR_SUFFIX:
 					globalSetIndex[i].imageQSet = Xreq_target.response;
+					break;
+				case PL_TILT_SUFFIX:
+					globalSetIndex[i].tiltSet = Xreq_target.response;
 					break;
 				default:
 					logERR('type ' + type + ' not recognized');
