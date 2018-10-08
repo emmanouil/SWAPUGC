@@ -37,6 +37,7 @@ const PL_LOCATION_SUFFIX = '_LOC';
 const PL_ORIENTATION_SUFFIX = '_ORIENT';
 const PL_DESCRIPTOR_SUFFIX = '_DESCRIPTOR';
 const PL_BLUR_SUFFIX = '_BLUR';
+const PL_SHAKE_SUFFIX = '_SHAKE';
 const PL_TILT_SUFFIX = '_TILT';
 const PORT = '8000';
 var BASE_URL = ''; //set when parse_playlist is called (e.g. 192.0.0.1:8000)
@@ -410,6 +411,23 @@ function loadImageQualityData() {
 }
 
 
+/* Called from fetchAndInitMarkers and fetches location and orientation sets */
+function loadShakeTiltData() {
+
+	let shake_promises = [];
+	for (let i = 0; i < globalSetIndex.length; i++) {
+		shake_promises.push(fetch_promise(globalSetIndex[i].descriptor.shakeFilename, 'json', true));
+	}
+	Promise.all(shake_promises).then(function (values) {
+		for (var i = 0; i < values.length; i++) {
+			loadShake(values[i]);
+		}
+	}).catch(function (err) {
+		logERR('Error parsing shake files');
+		logERR(err);
+	});
+}
+
 function loadTiltData() {
 	let tilt_promises = [];
 	for (let i = 0; i < globalSetIndex.length; i++) {
@@ -536,6 +554,10 @@ function loadImageQ(req_in) {
 	loadAssets(PL_BLUR_SUFFIX, req_in);
 }
 
+function loadShake(req_in) {
+	loadAssets(PL_TILT_SUFFIX, req_in);
+}
+
 function loadTilt(req_in) {
 	loadAssets(PL_SHAKE_SUFFIX, req_in);
 }
@@ -553,6 +575,9 @@ function loadAssets(type, Xreq_target) {
 					break;
 				case PL_BLUR_SUFFIX:
 					globalSetIndex[i].imageQSet = Xreq_target.response;
+					break;
+				case PL_SHAKE_SUFFIX:
+					globalSetIndex[i].shakeSet = Xreq_target.response;
 					break;
 				case PL_TILT_SUFFIX:
 					globalSetIndex[i].tiltSet = Xreq_target.response;
