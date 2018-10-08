@@ -1,4 +1,4 @@
-# Place location, orientation and descriptor files in this dir
+# Place descriptor files in this dir
 *
 !.gitignore
 # you may delete this file
