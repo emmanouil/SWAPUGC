@@ -633,12 +633,24 @@ function analyzeGeospatialData() {
 					console.log('cue: ' + (this.activeCues[j].text))
 					updateLastLocation(this.setReference, JSON.parse(this.activeCues[j].text), this.activeCues[j].startTime);
 					updateMarkerLocation(this.activeCues[j].track.label, JSON.parse(this.activeCues[j].text));
+				} else if (this.activeCues[j].id === "TiltUpdate") {
+					updateTilt(this.setReference, JSON.parse(this.activeCues[j].text), this.activeCues[j].startTime);
 				} else if (this.activeCues[j].id === "Event") {
 					handleEvent(this.activeCues[j].track.label, JSON.parse(this.activeCues[j].text));
 				}
 			}
 		};
 	}
+
+	/**
+	 * add shake and tilt updates
+	 * 
+	 */
+	for (let i = 0; i < globalSetIndex.length; i++) {
+		let s = globalSetIndex[i];
+		addMetricUpdates(s, i);
+	}
+
 
 	/**
 	 * Add initial Location and Orientation references
@@ -655,6 +667,42 @@ function analyzeGeospatialData() {
 	setMainViewEndTime();
 
 }
+
+
+function addMetricUpdates(set_in, tmp_index) {
+	/* locate and init track */
+	var tmp_track = main_view_tracks[tmp_index];
+
+	var tmp_start = set_in.descriptor.startTimeMs;
+	var t_diff = tmp_start - reference_recording_set.descriptor.startTimeMs;
+	if (p.t_videoStart === 0) {
+		logERR('p.t_videoStart = 0 . Updates will not work properly');
+	}
+
+	//Do the tilts
+	cur_t = set_in.tiltSet[0].PresentationTime;
+	for (let i = 0; i < set_in.tiltSet.length - 1; i++) {
+		let tmp_tilt = set_in.tiltSet[i];
+		//check if we have set a min timespan between marker updates
+		if (MARKER_UPDATE_LIMIT_ON && i > 0) {
+			if (tmp_tilt.PresentationTime - cur_t < MARKER_UPDATE_LIMIT) {
+				continue;
+			}
+		}
+		cur_t = tmp_tilt.PresentationTime;
+		let vtc;
+		if (OVERRIDE_CUE_DURATION_FOR_METRICS && set_in.tiltSet[i + 1]) {
+			let cue_dur = set_in.tiltSet[i + 1].PresentationTime - tmp_tilt.PresentationTime;
+			vtc = new VTTCue((t_diff + cur_t) / 1000, (t_diff + cur_t + cue_dur) / 1000, JSON.stringify(tmp_tilt));
+		} else {
+			//TODO handle cues according to main vid time (not relevant to the take time)
+			let vtc = new VTTCue((t_diff + cur_t) / 1000, (t_diff + cur_t + VTTCUE_DURATION) / 1000, JSON.stringify(tmp_tilt));
+			vtc.id = "TiltUpdate";
+			tmp_track.addCue(vtc);
+		}
+	}
+}
+
 
 //TODO refactor
 function addMarkerUpdates(set_in, tmp_index) {
@@ -864,6 +912,12 @@ function updateLastOrientation(set_in, orient, v_t) {
 function updateLastLocation(set_in, loc, v_t) {
 	set_in.lastLocation = loc;
 	set_in.lastLocation.v_t = v_t;
+}
+
+function updateTilt(set_in, tl_in, v_t) {
+	set_in.lastTilt = tl_in;
+	set_in.lastTilt.v_t = v_t;
+	//TODO update score here
 }
 
 function mse_initAndAdd(stream_index, segment_n) {
