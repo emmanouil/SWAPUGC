@@ -698,6 +698,9 @@ function addMetricUpdates(set_in, tmp_index) {
 		if (OVERRIDE_CUE_DURATION_FOR_METRICS && set_in.shakeSet[i + 1]) {
 			let cue_dur = set_in.shakeSet[i + 1].PresentationTime - tmp_shake.PresentationTime;
 			vtc = new VTTCue((t_diff + cur_t) / 1000, (t_diff + cur_t + cue_dur) / 1000, JSON.stringify(tmp_shake));
+		} else if (i + 1 == set_in.shakeSet.length) {
+			let cue_dur = set_in.descriptor.durationMs - tmp_shake.PresentationTime;
+			vtc = new VTTCue((t_diff + cur_t) / 1000, (t_diff + cur_t + cue_dur) / 1000, JSON.stringify(tmp_shake));
 		} else {
 			//TODO handle cues according to main vid time (not relevant to the take time)
 			vtc = new VTTCue((t_diff + cur_t) / 1000, (t_diff + cur_t + VTTCUE_DURATION) / 1000, JSON.stringify(tmp_shake));
@@ -720,6 +723,9 @@ function addMetricUpdates(set_in, tmp_index) {
 		let vtc;
 		if (OVERRIDE_CUE_DURATION_FOR_METRICS && set_in.tiltSet[i + 1]) {
 			let cue_dur = set_in.tiltSet[i + 1].PresentationTime - tmp_tilt.PresentationTime;
+			vtc = new VTTCue((t_diff + cur_t) / 1000, (t_diff + cur_t + cue_dur) / 1000, JSON.stringify(tmp_tilt));
+		} else if (i + 1 == set_in.tiltSet.length) {
+			let cue_dur = set_in.descriptor.durationMs - tmp_tilt.PresentationTime;
 			vtc = new VTTCue((t_diff + cur_t) / 1000, (t_diff + cur_t + cue_dur) / 1000, JSON.stringify(tmp_tilt));
 		} else {
 			//TODO handle cues according to main vid time (not relevant to the take time)
