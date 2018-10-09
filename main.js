@@ -684,7 +684,7 @@ function addMetricUpdates(set_in, tmp_index) {
 
 	//Do the shakes
 	let cur_t = set_in.shakeSet[0].PresentationTime;
-	for (let i = 0; i < set_in.shakeSet.length - 1; i++) {
+	for (let i = 0; i < set_in.shakeSet.length; i++) {
 		let tmp_shake = set_in.shakeSet[i];
 		//check if we have set a min timespan between marker updates
 		if (MARKER_UPDATE_LIMIT_ON && i > 0) {
@@ -708,7 +708,7 @@ function addMetricUpdates(set_in, tmp_index) {
 
 	//Do the tilts
 	cur_t = set_in.tiltSet[0].PresentationTime;
-	for (let i = 0; i < set_in.tiltSet.length - 1; i++) {
+	for (let i = 0; i < set_in.tiltSet.length; i++) {
 		let tmp_tilt = set_in.tiltSet[i];
 		//check if we have set a min timespan between marker updates
 		if (MARKER_UPDATE_LIMIT_ON && i > 0) {
