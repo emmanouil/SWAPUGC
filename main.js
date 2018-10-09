@@ -51,6 +51,7 @@ const MARKER_UPDATE_LIMIT = 600; // (in ms) limit the timespan between two updat
 //performance parameters
 const INTERVAL_MS = 900; //check interval (in ms)
 const VTTCUE_DURATION = 400; //whenever a cuechange event is fired all cues are checked if active (and if so, updated) - recommended value < MARKER_UPDATE_LIMIT
+const OVERRIDE_CUE_DURATION_FOR_METRICS = true;
 
 //selection policy;
 var policies = ['Manual', 'Round-Robin 10s', 'Round-Robin 20s'];
@@ -635,6 +636,8 @@ function analyzeGeospatialData() {
 					updateMarkerLocation(this.activeCues[j].track.label, JSON.parse(this.activeCues[j].text));
 				} else if (this.activeCues[j].id === "TiltUpdate") {
 					updateTilt(this.setReference, JSON.parse(this.activeCues[j].text), this.activeCues[j].startTime);
+				} else if (this.activeCues[j].id === "ShakeUpdate") {
+					updateShake(this.setReference, JSON.parse(this.activeCues[j].text), this.activeCues[j].startTime);
 				} else if (this.activeCues[j].id === "Event") {
 					handleEvent(this.activeCues[j].track.label, JSON.parse(this.activeCues[j].text));
 				}
@@ -677,6 +680,30 @@ function addMetricUpdates(set_in, tmp_index) {
 	var t_diff = tmp_start - reference_recording_set.descriptor.startTimeMs;
 	if (p.t_videoStart === 0) {
 		logERR('p.t_videoStart = 0 . Updates will not work properly');
+	}
+
+	//Do the shakes
+	let cur_t = set_in.shakeSet[0].PresentationTime;
+	for (let i = 0; i < set_in.shakeSet.length - 1; i++) {
+		let tmp_shake = set_in.shakeSet[i];
+		//check if we have set a min timespan between marker updates
+		if (MARKER_UPDATE_LIMIT_ON && i > 0) {
+			if (tmp_shake.PresentationTime - cur_t < MARKER_UPDATE_LIMIT) {
+				continue;
+			}
+		}
+		cur_t = tmp_shake.PresentationTime;
+
+		let vtc;
+		if (OVERRIDE_CUE_DURATION_FOR_METRICS && set_in.shakeSet[i + 1]) {
+			let cue_dur = set_in.shakeSet[i + 1].PresentationTime - tmp_shake.PresentationTime;
+			vtc = new VTTCue((t_diff + cur_t) / 1000, (t_diff + cur_t + cue_dur) / 1000, JSON.stringify(tmp_shake));
+		} else {
+			//TODO handle cues according to main vid time (not relevant to the take time)
+			vtc = new VTTCue((t_diff + cur_t) / 1000, (t_diff + cur_t + VTTCUE_DURATION) / 1000, JSON.stringify(tmp_shake));
+		}
+		vtc.id = "ShakeUpdate";
+		tmp_track.addCue(vtc);
 	}
 
 	//Do the tilts
@@ -912,6 +939,12 @@ function updateLastOrientation(set_in, orient, v_t) {
 function updateLastLocation(set_in, loc, v_t) {
 	set_in.lastLocation = loc;
 	set_in.lastLocation.v_t = v_t;
+}
+
+function updateShake(set_in, sh_in, v_t) {
+	set_in.lastShake = sh_in;
+	set_in.lastShake.v_t = v_t;
+	//TODO update score here
 }
 
 function updateTilt(set_in, tl_in, v_t) {
