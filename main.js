@@ -723,10 +723,10 @@ function addMetricUpdates(set_in, tmp_index) {
 			vtc = new VTTCue((t_diff + cur_t) / 1000, (t_diff + cur_t + cue_dur) / 1000, JSON.stringify(tmp_tilt));
 		} else {
 			//TODO handle cues according to main vid time (not relevant to the take time)
-			let vtc = new VTTCue((t_diff + cur_t) / 1000, (t_diff + cur_t + VTTCUE_DURATION) / 1000, JSON.stringify(tmp_tilt));
-			vtc.id = "TiltUpdate";
-			tmp_track.addCue(vtc);
+			vtc = new VTTCue((t_diff + cur_t) / 1000, (t_diff + cur_t + VTTCUE_DURATION) / 1000, JSON.stringify(tmp_tilt));
 		}
+		vtc.id = "TiltUpdate";
+		tmp_track.addCue(vtc);
 	}
 }
 
