@@ -52,7 +52,7 @@ function calculateRanking() {
 function getShakinessMetric(index_in) {
     let temp_set = globalSetIndex[index_in];
     let Ss;
-    Ss = mapToRange(temp_set.lastShake, shakeScale[0], shakeScale[1], 0, 1);    
+    Ss = mapToRange(temp_set.lastShake.Shake, shakeScale[0], shakeScale[1], 0, 1);    
     return Ss;
 }
 
@@ -61,10 +61,10 @@ function getTiltMetric(index_in) {
     let temp_set = globalSetIndex[index_in];
 
     let St;
-    if (Math.abs(temp_set.lastTilt) > maxTilt) {
+    if (Math.abs(temp_set.lastTilt.Tilt) > maxTilt) {
         St = 1;
     } else {
-        St = mapToRange(Math.abs(temp_set.lastTilt), 0, maxTilt, 0, 1);
+        St = mapToRange(Math.abs(temp_set.lastTilt.Tilt), 0, maxTilt, 0, 1);
     }
     return St;
 }
