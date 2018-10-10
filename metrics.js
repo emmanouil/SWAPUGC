@@ -8,6 +8,7 @@ const a4 = 0.20; //Image Quality
 const a5 = 0.20; //Link Reliability
 //Score ranges
 const maxTilt = 5; //Tilt (in degrees) more/less than maxTilt scores 0
+const shakeScale = [0, 5]; //The min and max of the shake values
 
 
 /**
@@ -49,7 +50,9 @@ function calculateRanking() {
 
 //returns Shakiness metric (Ss)
 function getShakinessMetric(index_in) {
-    let Ss = 1; //TODO shakiness not implemented yet
+    let temp_set = globalSetIndex[index_in];
+    let Ss;
+    St = mapToRange(temp_set.lastShake, shakeScale[0], shakeScale[1], 0, 1);    
     return Ss;
 }
 
