@@ -255,6 +255,19 @@ function find_attributes_in_children(parent, atr) {
  * @param {*} out_min min of mapped range
  * @param {*} out_max max of mapped range
  */
-function mapToRange (num, in_min, in_max, out_min, out_max) {
+function mapToRange(num, in_min, in_max, out_min, out_max) {
     return (num - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+}
+
+function downloadFile(filename, text) {
+    var element = document.createElement('a');
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+    element.setAttribute('download', filename);
+
+    element.style.display = 'none';
+    document.body.appendChild(element);
+
+    element.click();
+
+    document.body.removeChild(element);
 }
