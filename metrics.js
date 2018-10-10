@@ -9,6 +9,8 @@ const a5 = 0.20; //Link Reliability
 //Score ranges
 const maxTilt = 5; //Tilt (in degrees) more/less than maxTilt scores 0
 const shakeScale = [0, 5]; //The min and max of the shake values
+//engine vars
+var lastMetricTimestamp = 0;
 
 
 /**
@@ -17,17 +19,43 @@ const shakeScale = [0, 5]; //The min and max of the shake values
  * 
  */
 function Metrics() {
-    //Image-based objective
-    this.bluriness = 0;
-    //Sensor-based
-    this.shakiness = 0;
-    this.FOV.orientation = 0;
-    this.FOV.tilt = 0;
-    //proposed
-    this.facing = 0;
-    //Characteristics
-    this.bitrate = 0;
-    this.resolution = 0;
+    //Shakiness (actually this is 1 - Ss)
+    this.Ss = 0;
+    //Tilt (actually this is 1 - St)
+    this.St = 0;
+    //Bitrate
+    this.Vb = 0;
+    //Image Quality (blur)
+    this.Iq = 0;
+    //Link Reliability
+    this.Lr = 0;
+    //Total Score
+    this.S = 0;
+    //Timestamp (wrt video timeline)
+    this.t_video = 0;
+    //Timestamp (wrt start of stream)
+    this.t_abs = 0;
+}
+
+function logMetrics() {
+    if (lastMetricTimestamp != p.v.currentTime) {
+        lastMetricTimestamp = p.v.currentTime;
+    } else {
+        logWARN('last metric timestamp: ' + lastMetricTimestamp + '. current timestamp: ' + p.v.currentTime + '. skipping metric');
+        return;
+    }
+    for (let i = 0; i < globalSetIndex.length; i++) {
+        let tmp_m = new Metrics();
+        tmp_m.Ss = getShakinessMetric(i);
+        tmp_m.St = getTiltMetric(i);
+        tmp_m.Vb = getBitrateMetric(i);
+        tmp_m.Iq = getImageQualityMetric(i);
+        tmp_m.Lr = 0; //TODO
+        tmp_m.S = calculateScore(tmp_m.Ss, tmp_m.St, tmp_m.Vb, tmp_m.Iq, tmp_m.Lr);
+        tmp_m.t_video = p.v.currentTime;
+        tmp_m.t_abs = (p.v.currentTime - globalSetIndex[i].descriptor.tDiffwReferenceMs / 1000);
+        globalSetIndex[i].metrics.push(tmp_m);
+    }
 }
 
 function printMetrics(index_in) {
@@ -39,20 +67,16 @@ function printMetrics(index_in) {
         'Orientation: ' + temp_set.lastOrientation['X'] + '  Bearing: ' + getBearing(temp_set) +
         '   Distance: ' + getDistance(temp_set) + '     __Score:_' + getScore(index_in)
     );
-}
-
-
-function calculateRanking() {
-    let ranking = [globalSetIndex.length];
-    console.log(ranking)
-
+    for (let i = 0; i < globalSetIndex.length; i++) {
+        console.log(i + ' Score: ' + getScore(i));
+    }
 }
 
 //returns Shakiness metric (Ss)
 function getShakinessMetric(index_in) {
     let temp_set = globalSetIndex[index_in];
     let Ss;
-    Ss = mapToRange(temp_set.lastShake.Shake, shakeScale[0], shakeScale[1], 0, 1);    
+    Ss = mapToRange(temp_set.lastShake.Shake, shakeScale[0], shakeScale[1], 0, 1);
     return Ss;
 }
 
@@ -127,12 +151,13 @@ function getScore(index_in) {
 
     let Iq = getImageQualityMetric(index_in); //this is the metric & score (without the weight)
 
-    let Lr = 1; //TODO not implemented yet
+    let Lr = 0; //TODO not implemented yet
 
-    let finalScore = a1 * SSs + a2 * SSt + a3 * Vb + a4 * Iq + a5 * Lr;
+    let finalScore = calculateScore(Ss, St, Vb, Iq, Lr);
 
     return finalScore;
-    //    let SSs = a1 * (1 - Ss);
-    //    let SSt = a1 * (1 - St);
+}
 
+function calculateScore(Ss, St, Vb, Iq, Lr) {
+    return a1 * (1 - Ss) + a2 * (1 - St) + a3 * Vb + a4 * Iq + a5 * Lr;
 }

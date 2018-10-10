@@ -354,6 +354,8 @@ function addVideoToIndex(XMLHttpRequest_in) {
 	loc_obj.videoFile = loc_obj.id + PL_VIDEO_EXTENSION;
 	//this used to hold the coords/orient in previous version
 	//	loc_obj.set = XMLHttpRequest_in.response;
+	//this is used to store the stream metrics
+	loc_obj.metrics = [];
 	globalSetIndex.push(loc_obj);
 	//we check if it is our main view
 	if (loc_obj.id === reference_recordingID) {
