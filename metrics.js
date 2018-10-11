@@ -72,6 +72,13 @@ function printMetrics(index_in) {
     }
 }
 
+function flushMetricsJSON() {
+    var metrics_to_print = [];
+    for (let i = 0; i < globalSetIndex.length; i++) {
+        downloadFile(globalSetIndex[i].id+'_metrics.json',JSON.stringify(globalSetIndex[i].metrics));
+    }
+}
+
 //returns Shakiness metric (Ss)
 function getShakinessMetric(index_in) {
     let temp_set = globalSetIndex[index_in];
