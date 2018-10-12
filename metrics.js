@@ -75,8 +75,30 @@ function printMetrics(index_in) {
 function flushMetricsJSON() {
     var metrics_to_print = [];
     for (let i = 0; i < globalSetIndex.length; i++) {
-        downloadFile(globalSetIndex[i].id+'_metrics.json',JSON.stringify(globalSetIndex[i].metrics));
+        downloadFile(globalSetIndex[i].id + '_metrics.json', JSON.stringify(globalSetIndex[i].metrics));
     }
+}
+
+function flushMetricCSV(metric_type) {
+    var rows = [];
+    var t_row = ['video t (ms)'];
+    for (let i = 0; i < globalSetIndex.length; i++) {
+        t_row.push(globalSetIndex[i].id);
+    }
+    rows.push(t_row)
+    for (let i = 0; i < globalSetIndex[0].metrics.length; i++) {
+        let row = [];
+        row.push(globalSetIndex[0].metrics[i].t_video);
+        for (let j = 0; j < globalSetIndex.length; j++) {
+            row.push(globalSetIndex[j].metrics[i][metric_type]);
+        }
+        rows.push(row);
+    }
+    rows.forEach(function (row) {
+        row.join(', ');
+    });
+    let string_to_print = rows.join('\n');
+    downloadFile(metric_type + '_metric.csv', string_to_print);
 }
 
 //returns Shakiness metric (Ss)
