@@ -43,7 +43,7 @@ const PORT = '8000';
 var BASE_URL = ''; //set when parse_playlist is called (e.g. 192.0.0.1:8000)
 
 //pseudo-simulation parameters
-var interval_id = -1; //timeout id
+var check_interval_id = -1; //timeout id
 const UPDATE_S = 1.7; //condition (in s) to fetch next segment, relative to the current video time and end of the sourceBuffer
 const MARKER_UPDATE_LIMIT_ON = true; //enable cue timespan limit
 const MARKER_UPDATE_LIMIT = 600; // (in ms) limit the timespan between two updates for the same marker (i.e. number of cues)
@@ -54,7 +54,7 @@ const VTTCUE_DURATION = 400; //whenever a cuechange event is fired all cues are 
 const OVERRIDE_CUE_DURATION_FOR_METRICS = true;
 
 //selection policy;
-var policies = ['Manual', 'Round-Robin 10s', 'Round-Robin 20s'];
+var policies = ['Manual', 'Ranking 10s', 'Ranking 20s', 'Round-Robin 10s', 'Round-Robin 20s'];
 var roundRobin_interval_t;
 var roundRobin_interval_id = -1;
 
@@ -238,10 +238,11 @@ function init() {
 			logERR(err);
 		});
 	p.v.addEventListener("playing", function () {
-		interval_id = setInterval(check_status, INTERVAL_MS);
+		check_interval_id = setInterval(check_status, INTERVAL_MS);
 	}, {
 		once: true
 	});
+
 }
 
 function parse_playlist(request) {
@@ -804,13 +805,13 @@ function switchToStream(set_index, recordingID) {
 	let new_set = getSetByVideoId(recordingID);
 	let end_time = p.v.currentTime;
 	/*
-		let end_time = getSourceBufferEnd();
+				let end_time = getSourceBufferEnd();
 	
-		if(Math.abs(end_time - p.v.currentTime) < 0.2){
-			logDEBUG('safety check for time diff between buffer and video end');
-			end_time -= 0.2;
-		}
-	*/
+				if(Math.abs(end_time - p.v.currentTime) < 0.2){
+					logDEBUG('safety check for time diff between buffer and video end');
+					end_time -= 0.2;
+				}
+			*/
 	new_set.marker.highlightMarker(true); //highlight new marker
 	globalSetIndex[active_video_index].marker.highlightMarker(false); //de-hihglight old marker
 
@@ -1010,16 +1011,16 @@ function mse_initAndAdd(stream_index, segment_n) {
 }
 
 function killInterval() {
-	clearInterval(interval_id);
-	interval_id = -1;
+	clearInterval(check_interval_id);
+	check_interval_id = -1;
 }
 
 function startInterval() {
-	if (interval_id != -1) {
+	if (check_interval_id != -1) {
 		logINFO('interval already running');
 		return;
 	}
-	interval_id = setInterval(check_status, INTERVAL_MS);
+	check_interval_id = setInterval(check_status, INTERVAL_MS);
 }
 
 function resetInterval() {
@@ -1042,6 +1043,14 @@ function selectPolicy(p_in) {
 		case 'Manual':
 			stopRoundRobin();
 			activateUIselection();
+			break;
+		case 'Ranking 10s':
+			stopRoundRobin();
+			deactivateUIselection();
+			break;
+		case 'Ranking 20s':
+			stopRoundRobin();
+			deactivateUIselection();
 			break;
 		case 'Round-Robin 10s':
 			deactivateUIselection();
