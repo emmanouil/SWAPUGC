@@ -44,12 +44,14 @@ var BASE_URL = ''; //set when parse_playlist is called (e.g. 192.0.0.1:8000)
 
 //pseudo-simulation parameters
 var check_interval_id = -1; //timeout id
+var metrics_interval_id = -1; //timeout id
 const UPDATE_S = 1.7; //condition (in s) to fetch next segment, relative to the current video time and end of the sourceBuffer
 const MARKER_UPDATE_LIMIT_ON = true; //enable cue timespan limit
 const MARKER_UPDATE_LIMIT = 600; // (in ms) limit the timespan between two updates for the same marker (i.e. number of cues)
 
 //performance parameters
-const INTERVAL_MS = 900; //check interval (in ms)
+const CHECK_INTERVAL_MS = 900; //check buffer interval (in ms)
+const METRICS_INTERVAL_MS = 1000; //metrics update interval (in ms)
 const VTTCUE_DURATION = 400; //whenever a cuechange event is fired all cues are checked if active (and if so, updated) - recommended value < MARKER_UPDATE_LIMIT
 const OVERRIDE_CUE_DURATION_FOR_METRICS = true;
 
@@ -238,7 +240,8 @@ function init() {
 			logERR(err);
 		});
 	p.v.addEventListener("playing", function () {
-		check_interval_id = setInterval(check_status, INTERVAL_MS);
+		check_interval_id = setInterval(check_status, CHECK_INTERVAL_MS);
+		metrics_interval_id = setInterval(logMetrics, METRICS_INTERVAL_MS);
 	}, {
 		once: true
 	});
@@ -884,7 +887,7 @@ function resetSourceBuffer() {
 	if (navigator.userAgent.indexOf("Chrome") != -1) {
 		p.v.currentTime += 0.001;
 	}
-	startInterval();
+	startAllIntervals();
 }
 
 //WARNING: so far we call it only with 2 timeranges inside the source buffer
@@ -921,7 +924,7 @@ function cleanSourceBuffer() {
 	} else {
 		logWARN("cleanSourceBuffer FAILED, check buffer contents (printBufferStatus())");
 	}
-	startInterval();
+	startAllIntervals();
 }
 
 
@@ -1012,20 +1015,49 @@ function mse_initAndAdd(stream_index, segment_n) {
 
 function killInterval() {
 	clearInterval(check_interval_id);
+	clearInterval(metrics_interval_id);
+	check_interval_id = -1;
 	check_interval_id = -1;
 }
+/*
+function startAllIntervals() {
+	let int = [{
+			'id': check_interval_id,
+			'function': check_status,
+			'interval': CHECK_INTERVAL_MS
+		},
+		{
+			'id': metrics_interval_id,
+			'function': logMetrics,
+			'interval': METRICS_INTERVAL_MS
+		}
+	];
+	int.forEach(elem, index, startInterval(elem.id, elem.function, elem.interval));
+}
+*/
 
-function startInterval() {
-	if (check_interval_id != -1) {
+function startAllIntervals() {
+	check_interval_id = startInterval(check_interval_id, check_status, CHECK_INTERVAL_MS);
+	metrics_interval_id = startInterval(metrics_interval_id, logMetrics, METRICS_INTERVAL_MS);
+}
+
+/**
+ * starts an interval with <id>, that calls <function> every <interval_duration>
+ * @param {*} id_in the id of the interval
+ * @param {*} fun_in the function to be called
+ * @param {*} tms_in the interval duration
+ */
+function startInterval(id_in, fun_in, tms_in) {
+	if (id_in != -1) {
 		logINFO('interval already running');
 		return;
 	}
-	check_interval_id = setInterval(check_status, INTERVAL_MS);
+	return setInterval(fun_in, tms_in);
 }
 
 function resetInterval() {
 	killInterval();
-	startInterval();
+	startAllIntervals();
 }
 
 function nextStream() {
