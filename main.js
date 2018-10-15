@@ -39,6 +39,7 @@ const PL_DESCRIPTOR_SUFFIX = '_DESCRIPTOR';
 const PL_BLUR_SUFFIX = '_BLUR';
 const PL_SHAKE_SUFFIX = '_SHAKE';
 const PL_TILT_SUFFIX = '_TILT';
+const PL_FOV_SUFFIX = '_FOV';
 const PORT = '8000';
 var BASE_URL = ''; //set when parse_playlist is called (e.g. 192.0.0.1:8000)
 
@@ -418,7 +419,7 @@ function loadImageQualityData() {
 }
 
 
-/* Called from fetchAndInitMarkers and fetches location and orientation sets */
+/* Called from fetchAndInitMarkers and fetches shake set */
 function loadShakeData() {
 
 	let shake_promises = [];
@@ -435,6 +436,8 @@ function loadShakeData() {
 	});
 }
 
+
+/* Called from fetchAndInitMarkers and fetches tilt set */
 function loadTiltData() {
 	let tilt_promises = [];
 	for (let i = 0; i < globalSetIndex.length; i++) {
@@ -445,7 +448,24 @@ function loadTiltData() {
 			loadTilt(values[i]);
 		}
 	}).catch(function (err) {
-		logERR('Error parsing orientation files');
+		logERR('Error parsing tilt files');
+		logERR(err);
+	});
+}
+
+
+/* Called from fetchAndInitMarkers and fetches FoV set */
+function loadFovData() {
+	let fov_promises = [];
+	for (let i = 0; i < globalSetIndex.length; i++) {
+		fov_promises.push(fetch_promise(globalSetIndex[i].descriptor.fovFilename, 'json', true));
+	}
+	Promise.all(fov_promises).then(function (values) {
+		for (var i = 0; i < values.length; i++) {
+			loadFov(values[i]);
+		}
+	}).catch(function (err) {
+		logERR('Error parsing FoV files');
 		logERR(err);
 	});
 }
@@ -569,6 +589,10 @@ function loadTilt(req_in) {
 	loadAssets(PL_TILT_SUFFIX, req_in);
 }
 
+function loadFov(req_in) {
+	loadAssets(PL_FOV_SUFFIX, req_in);
+}
+
 function loadAssets(type, Xreq_target) {
 	var tmp_name = Xreq_target.responseURL.split('/').pop().split('.')[0];
 	for (var i = 0; i < globalSetIndex.length; i++) {
@@ -588,6 +612,9 @@ function loadAssets(type, Xreq_target) {
 					break;
 				case PL_TILT_SUFFIX:
 					globalSetIndex[i].tiltSet = Xreq_target.response;
+					break;
+				case PL_FOV_SUFFIX:
+					globalSetIndex[i].fovSet = Xreq_target.response;
 					break;
 				default:
 					logERR('type ' + type + ' not recognized');
@@ -644,6 +671,8 @@ function analyzeGeospatialData() {
 					updateTilt(this.setReference, JSON.parse(this.activeCues[j].text), this.activeCues[j].startTime);
 				} else if (this.activeCues[j].id === "ShakeUpdate") {
 					updateShake(this.setReference, JSON.parse(this.activeCues[j].text), this.activeCues[j].startTime);
+				} else if (this.activeCues[j].id === "FovUpdate") {
+					updateFov(this.setReference, JSON.parse(this.activeCues[j].text), this.activeCues[j].startTime);
 				} else if (this.activeCues[j].id === "Event") {
 					handleEvent(this.activeCues[j].track.label, JSON.parse(this.activeCues[j].text));
 				}
@@ -740,6 +769,33 @@ function addMetricUpdates(set_in, tmp_index) {
 		vtc.id = "TiltUpdate";
 		tmp_track.addCue(vtc);
 	}
+
+	//Do the FoVs
+	cur_t = set_in.fovSet[0].PresentationTime;
+	for (let i = 0; i < set_in.fovSet.length; i++) {
+		let tmp_fov = set_in.fovSet[i];
+		//check if we have set a min timespan between marker updates
+		if (MARKER_UPDATE_LIMIT_ON && i > 0) {
+			if (tmp_fov.PresentationTime - cur_t < MARKER_UPDATE_LIMIT) {
+				continue;
+			}
+		}
+		cur_t = tmp_fov.PresentationTime;
+		let vtc;
+		if (OVERRIDE_CUE_DURATION_FOR_METRICS && set_in.fovSet[i + 1]) {
+			let cue_dur = set_in.fovSet[i + 1].PresentationTime - tmp_fov.PresentationTime;
+			vtc = new VTTCue((t_diff + cur_t) / 1000, (t_diff + cur_t + cue_dur) / 1000, JSON.stringify(tmp_fov));
+		} else if (i + 1 == set_in.fovSet.length) {
+			let cue_dur = set_in.descriptor.durationMs - tmp_fov.PresentationTime;
+			vtc = new VTTCue((t_diff + cur_t) / 1000, (t_diff + cur_t + cue_dur) / 1000, JSON.stringify(tmp_fov));
+		} else {
+			//TODO handle cues according to main vid time (not relevant to the take time)
+			vtc = new VTTCue((t_diff + cur_t) / 1000, (t_diff + cur_t + VTTCUE_DURATION) / 1000, JSON.stringify(tmp_fov));
+		}
+		vtc.id = "FovUpdate";
+		tmp_track.addCue(vtc);
+	}
+
 }
 
 
@@ -956,13 +1012,16 @@ function updateLastLocation(set_in, loc, v_t) {
 function updateShake(set_in, sh_in, v_t) {
 	set_in.lastShake = sh_in;
 	set_in.lastShake.v_t = v_t;
-	//TODO update score here
 }
 
 function updateTilt(set_in, tl_in, v_t) {
 	set_in.lastTilt = tl_in;
 	set_in.lastTilt.v_t = v_t;
-	//TODO update score here
+}
+
+function updateFov(set_in, fv_in, v_t) {
+	set_in.isFoV = fv_in;
+	set_in.isFoV.v_t = v_t;
 }
 
 function mse_initAndAdd(stream_index, segment_n) {

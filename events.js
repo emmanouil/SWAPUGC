@@ -60,6 +60,7 @@ function fetchAndInitMarkers() {
     loadImageQualityData();
     loadShakeData();
     loadTiltData();
+    loadFovData();
 }
 
 /**

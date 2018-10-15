@@ -165,6 +165,10 @@ function getImageQualityMetric(index_in) {
     return Iq;
 }
 
+//returns if the current camera is filming the ROI
+function getFoVMetric(index_in) {
+    return globalSetIndex[index_in].inFoV;
+}
 
 function getScore(index_in) {
     let temp_frame = parseInt(p.v.currentTime - globalSetIndex[index_in].descriptor.tDiffwReferenceMs / 1000);
