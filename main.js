@@ -661,8 +661,7 @@ function analyzeGeospatialData() {
 	 * 
 	 */
 	for (let i = 0; i < globalSetIndex.length; i++) {
-		let s = globalSetIndex[i];
-		addMetricUpdates(s, i);
+		addMetricUpdates(i);
 	}
 
 
@@ -683,95 +682,70 @@ function analyzeGeospatialData() {
 }
 
 
-function addMetricUpdates(set_in, tmp_index) {
-	/* locate and init track */
-	var tmp_track = main_view_tracks[tmp_index];
+function addMetricUpdates(index_in) {
 
-	var tmp_start = set_in.descriptor.startTimeMs;
-	var t_diff = tmp_start - reference_recording_set.descriptor.startTimeMs;
 	if (p.t_videoStart === 0) {
 		logERR('p.t_videoStart = 0 . Updates will not work properly');
 	}
 
-	//Do the shakes
-	let cur_t = set_in.shakeSet[0].PresentationTime;
-	for (let i = 0; i < set_in.shakeSet.length; i++) {
-		let tmp_shake = set_in.shakeSet[i];
+	addShakeVTTC(index_in);
+
+	addTiltVTTC(index_in);
+
+	addFovVTTC(index_in);
+}
+
+function addShakeVTTC(index_in) {
+	addVTTCueUpdates(index_in, 'shakeSet', 'ShakeUpdate');
+}
+
+function addTiltVTTC(index_in) {
+	addVTTCueUpdates(index_in, 'tiltSet', 'TiltUpdate');
+}
+
+function addFovVTTC(index_in) {
+	addVTTCueUpdates(index_in, 'fovSet', 'FovUpdate');
+}
+
+/**
+ * Adds VTT Cues for JSON sets, currently used for metrics
+ * 
+ * @param {Number} index_in the index of the set 
+ * @param {String} update_type_set the subset of the set containing the data
+ * @param {String} vtc_id the VTTCue string used to indicate the type of update
+ */
+function addVTTCueUpdates(index_in, update_type_set, vtc_id) {
+	//track to add the VTT Cues on
+	let tmp_track = main_view_tracks[index_in];
+	let set_in = globalSetIndex[index_in];
+	//this is the time difference between this set and the reference
+	let t_diff = set_in.descriptor.startTimeMs - reference_recording_set.descriptor.startTimeMs;
+
+	let cur_t = set_in[update_type_set][0].PresentationTime;
+	for (let i = 0; i < set_in[update_type_set].length; i++) {
+		let tmp_data_set = set_in[update_type_set][i];
 		//check if we have set a min timespan between marker updates
+		//TODO probably not for the non-marker update elements (e.g. FoV), left here as safety
 		if (MARKER_UPDATE_LIMIT_ON && i > 0) {
-			if (tmp_shake.PresentationTime - cur_t < MARKER_UPDATE_LIMIT) {
+			if (tmp_data_set.PresentationTime - cur_t < MARKER_UPDATE_LIMIT) {
 				continue;
 			}
 		}
-		cur_t = tmp_shake.PresentationTime;
-
+		cur_t = tmp_data_set.PresentationTime;
 		let vtc;
-		if (OVERRIDE_CUE_DURATION_FOR_METRICS && set_in.shakeSet[i + 1]) {
-			let cue_dur = set_in.shakeSet[i + 1].PresentationTime - tmp_shake.PresentationTime;
-			vtc = new VTTCue((t_diff + cur_t) / 1000, (t_diff + cur_t + cue_dur) / 1000, JSON.stringify(tmp_shake));
-		} else if (i + 1 == set_in.shakeSet.length) {
-			let cue_dur = set_in.descriptor.durationMs - tmp_shake.PresentationTime;
-			vtc = new VTTCue((t_diff + cur_t) / 1000, (t_diff + cur_t + cue_dur) / 1000, JSON.stringify(tmp_shake));
+		if (OVERRIDE_CUE_DURATION_FOR_METRICS && set_in[update_type_set][i + 1]) {
+			let cue_dur = set_in[update_type_set][i + 1].PresentationTime - tmp_data_set.PresentationTime;
+			vtc = new VTTCue((t_diff + cur_t) / 1000, (t_diff + cur_t + cue_dur) / 1000, JSON.stringify(tmp_data_set));
+		} else if (i + 1 == set_in[update_type_set].length) {
+			let cue_dur = set_in.descriptor.durationMs - tmp_data_set.PresentationTime;
+			vtc = new VTTCue((t_diff + cur_t) / 1000, (t_diff + cur_t + cue_dur) / 1000, JSON.stringify(tmp_data_set));
 		} else {
 			//TODO handle cues according to main vid time (not relevant to the take time)
-			vtc = new VTTCue((t_diff + cur_t) / 1000, (t_diff + cur_t + VTTCUE_DURATION) / 1000, JSON.stringify(tmp_shake));
+			vtc = new VTTCue((t_diff + cur_t) / 1000, (t_diff + cur_t + VTTCUE_DURATION) / 1000, JSON.stringify(tmp_data_set));
 		}
-		vtc.id = "ShakeUpdate";
+		vtc.id = vtc_id;
 		tmp_track.addCue(vtc);
 	}
-
-	//Do the tilts
-	cur_t = set_in.tiltSet[0].PresentationTime;
-	for (let i = 0; i < set_in.tiltSet.length; i++) {
-		let tmp_tilt = set_in.tiltSet[i];
-		//check if we have set a min timespan between marker updates
-		if (MARKER_UPDATE_LIMIT_ON && i > 0) {
-			if (tmp_tilt.PresentationTime - cur_t < MARKER_UPDATE_LIMIT) {
-				continue;
-			}
-		}
-		cur_t = tmp_tilt.PresentationTime;
-		let vtc;
-		if (OVERRIDE_CUE_DURATION_FOR_METRICS && set_in.tiltSet[i + 1]) {
-			let cue_dur = set_in.tiltSet[i + 1].PresentationTime - tmp_tilt.PresentationTime;
-			vtc = new VTTCue((t_diff + cur_t) / 1000, (t_diff + cur_t + cue_dur) / 1000, JSON.stringify(tmp_tilt));
-		} else if (i + 1 == set_in.tiltSet.length) {
-			let cue_dur = set_in.descriptor.durationMs - tmp_tilt.PresentationTime;
-			vtc = new VTTCue((t_diff + cur_t) / 1000, (t_diff + cur_t + cue_dur) / 1000, JSON.stringify(tmp_tilt));
-		} else {
-			//TODO handle cues according to main vid time (not relevant to the take time)
-			vtc = new VTTCue((t_diff + cur_t) / 1000, (t_diff + cur_t + VTTCUE_DURATION) / 1000, JSON.stringify(tmp_tilt));
-		}
-		vtc.id = "TiltUpdate";
-		tmp_track.addCue(vtc);
-	}
-
-	//Do the FoVs
-	cur_t = set_in.fovSet[0].PresentationTime;
-	for (let i = 0; i < set_in.fovSet.length; i++) {
-		let tmp_fov = set_in.fovSet[i];
-		//check if we have set a min timespan between marker updates
-		if (MARKER_UPDATE_LIMIT_ON && i > 0) {
-			if (tmp_fov.PresentationTime - cur_t < MARKER_UPDATE_LIMIT) {
-				continue;
-			}
-		}
-		cur_t = tmp_fov.PresentationTime;
-		let vtc;
-		if (OVERRIDE_CUE_DURATION_FOR_METRICS && set_in.fovSet[i + 1]) {
-			let cue_dur = set_in.fovSet[i + 1].PresentationTime - tmp_fov.PresentationTime;
-			vtc = new VTTCue((t_diff + cur_t) / 1000, (t_diff + cur_t + cue_dur) / 1000, JSON.stringify(tmp_fov));
-		} else if (i + 1 == set_in.fovSet.length) {
-			let cue_dur = set_in.descriptor.durationMs - tmp_fov.PresentationTime;
-			vtc = new VTTCue((t_diff + cur_t) / 1000, (t_diff + cur_t + cue_dur) / 1000, JSON.stringify(tmp_fov));
-		} else {
-			//TODO handle cues according to main vid time (not relevant to the take time)
-			vtc = new VTTCue((t_diff + cur_t) / 1000, (t_diff + cur_t + VTTCUE_DURATION) / 1000, JSON.stringify(tmp_fov));
-		}
-		vtc.id = "FovUpdate";
-		tmp_track.addCue(vtc);
-	}
-
 }
 
 
