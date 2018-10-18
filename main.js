@@ -370,6 +370,7 @@ function addVideoToIndex(XMLHttpRequest_in) {
 }
 
 /* Called from fetchAndInitMarkers and fetches location and orientation sets */
+//TODO: use loadJSONData for this too
 function loadSpatialData() {
 
 	let loc_promises = [];
@@ -403,69 +404,44 @@ function loadSpatialData() {
 
 /* Called from fetchAndInitMarkers and fetches image quality metrics sets */
 function loadImageQualityData() {
-
-	let blur_promises = [];
-	for (let i = 0; i < globalSetIndex.length; i++) {
-		blur_promises.push(fetch_promise(globalSetIndex[i].descriptor.imageQFilename, 'json', true));
-	}
-	Promise.all(blur_promises).then(function (values) {
-		for (var i = 0; i < values.length; i++) {
-			loadImageQ(values[i]);
-		}
-	}).catch(function (err) {
-		logERR('Error parsing image quality files');
-		logERR(err);
-	});
+	loadJSONDataFromGlobalSet('imageQFilename', loadImageQ);
 }
 
 
 /* Called from fetchAndInitMarkers and fetches shake set */
 function loadShakeData() {
-
-	let shake_promises = [];
-	for (let i = 0; i < globalSetIndex.length; i++) {
-		shake_promises.push(fetch_promise(globalSetIndex[i].descriptor.shakeFilename, 'json', true));
-	}
-	Promise.all(shake_promises).then(function (values) {
-		for (var i = 0; i < values.length; i++) {
-			loadShake(values[i]);
-		}
-	}).catch(function (err) {
-		logERR('Error parsing shake files');
-		logERR(err);
-	});
+	loadJSONDataFromGlobalSet('shakeFilename', loadShake);
 }
 
 
 /* Called from fetchAndInitMarkers and fetches tilt set */
 function loadTiltData() {
-	let tilt_promises = [];
-	for (let i = 0; i < globalSetIndex.length; i++) {
-		tilt_promises.push(fetch_promise(globalSetIndex[i].descriptor.tiltFilename, 'json', true));
-	}
-	Promise.all(tilt_promises).then(function (values) {
-		for (var i = 0; i < values.length; i++) {
-			loadTilt(values[i]);
-		}
-	}).catch(function (err) {
-		logERR('Error parsing tilt files');
-		logERR(err);
-	});
+	loadJSONDataFromGlobalSet('tiltFilename', loadTilt);
 }
 
 
 /* Called from fetchAndInitMarkers and fetches FoV set */
 function loadFovData() {
-	let fov_promises = [];
+	loadJSONDataFromGlobalSet('fovFilename', loadFov);
+}
+
+/**
+ * Loads <filename_field> from globalSetIndex and uses the resulting JSON as argument
+ * to <function_to_call>
+ * @param {*} filename_field 
+ * @param {*} function_to_call 
+ */
+function loadJSONDataFromGlobalSet(filename_field, function_to_call) {
+	let t_promises = [];
 	for (let i = 0; i < globalSetIndex.length; i++) {
-		fov_promises.push(fetch_promise(globalSetIndex[i].descriptor.fovFilename, 'json', true));
+		t_promises.push(fetch_promise(globalSetIndex[i].descriptor[filename_field], 'json', true));
 	}
-	Promise.all(fov_promises).then(function (values) {
+	Promise.all(t_promises).then(function (values) {
 		for (var i = 0; i < values.length; i++) {
-			loadFov(values[i]);
+			function_to_call(values[i]);
 		}
 	}).catch(function (err) {
-		logERR('Error parsing FoV files');
+		logERR('Error parsing requested files');
 		logERR(err);
 	});
 }
