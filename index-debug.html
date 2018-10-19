@@ -52,7 +52,18 @@
                     <br/>
                     <button id="Mstatus_btn" onclick="printMetrics(active_video_index); disable_btn_for('Mstatus_btn', 2000);">Show Metrics</button>
                     <br/>
-                    <button id="Mprint_btn" onclick="flushMetricsJSON(); disable_btn_for('Mprint_btn', 2000);">All Metrics Printout</button>
+                    <button id="Mall_print_btn" onclick="flushMetricsJSON(); disable_btn_for('Mprint_btn', 2000);">Per Stream Printout - All Metrics JSON</button>
+                    <br/>
+                    <button id="Mone_print_btn" onclick="flushMetricCSV('S'); disable_btn_for('Mone_print_btn', 2000);">All Streams Printout - Total Score (S) CSV</button>
+                    <br/>
+                    <br/> Print Metric (for all streams):
+                    <select id="metric_csv_slk" enabled onchange="flushMetricCSV(this.selectedOptions[0].value); disable_btn_for('metric_csv_slk', 2000);">
+                        <option value="S">Total Score (S)</option>
+                        <option value="Iq">Image Quality (Iq)</option>
+                        <option value="St">Roll (St)</option>
+                        <option value="Ss">Shakiness (Ss)</option>
+                    </select>
+                    <br/> ===========
                     <br/>
                     <button id="ShowOrchestra_btn" onclick="placePointerMarker(reference_orchestra_center_location[0], reference_orchestra_center_location[1]);">Show Event Spatial Center</button>
                     <br/>
