@@ -19,6 +19,9 @@ var lastMetricTimestamp = 0;
  * 
  */
 function Metrics() {
+    /**
+     * Stream Quality Metrics
+     */
     //Shakiness (actually this is 1 - Ss)
     this.Ss = 0;
     //Tilt (actually this is 1 - St)
@@ -31,6 +34,14 @@ function Metrics() {
     this.Lr = 0;
     //Total Score
     this.S = 0;
+    /**
+     * Cinematic criteria
+     */
+    //FoV is filming ROI
+    this.FoV = true;
+    /**
+     * Timing
+     */
     //Timestamp (wrt video timeline)
     this.t_video = 0;
     //Timestamp (wrt start of stream)
@@ -52,6 +63,7 @@ function logMetrics() {
         tmp_m.Iq = getImageQualityMetric(i);
         tmp_m.Lr = 0; //TODO
         tmp_m.S = calculateScore(tmp_m.Ss, tmp_m.St, tmp_m.Vb, tmp_m.Iq, tmp_m.Lr);
+        tmp_m.FoV = getFoVMetric(i);
         tmp_m.t_video = p.v.currentTime;
         tmp_m.t_abs = (p.v.currentTime - globalSetIndex[i].descriptor.tDiffwReferenceMs / 1000);
         globalSetIndex[i].metrics.push(tmp_m);
@@ -73,7 +85,6 @@ function printMetrics(index_in) {
 }
 
 function flushMetricsJSON() {
-    var metrics_to_print = [];
     for (let i = 0; i < globalSetIndex.length; i++) {
         downloadFile(globalSetIndex[i].id + '_metrics.json', JSON.stringify(globalSetIndex[i].metrics));
     }
@@ -85,7 +96,7 @@ function flushMetricCSV(metric_type) {
     for (let i = 0; i < globalSetIndex.length; i++) {
         t_row.push(globalSetIndex[i].id);
     }
-    rows.push(t_row)
+    rows.push(t_row);
     for (let i = 0; i < globalSetIndex[0].metrics.length; i++) {
         let row = [];
         row.push(globalSetIndex[0].metrics[i].t_video);
@@ -167,7 +178,7 @@ function getImageQualityMetric(index_in) {
 
 //returns if the current camera is filming the ROI
 function getFoVMetric(index_in) {
-    return globalSetIndex[index_in].inFoV;
+    return globalSetIndex[index_in].isFoV.FoV;
 }
 
 function getScore(index_in) {
