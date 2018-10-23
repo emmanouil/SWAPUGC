@@ -640,7 +640,6 @@ function analyzeGeospatialData() {
 					updateLastOrientation(this.setReference, JSON.parse(this.activeCues[j].text), this.activeCues[j].startTime);
 					updateMarkerOrientation(this.activeCues[j].track.label, JSON.parse(this.activeCues[j].text).X); //we only use X for display
 				} else if (this.activeCues[j].id === "LocationUpdate") {
-					console.log('cue: ' + (this.activeCues[j].text))
 					updateLastLocation(this.setReference, JSON.parse(this.activeCues[j].text), this.activeCues[j].startTime);
 					updateMarkerLocation(this.activeCues[j].track.label, JSON.parse(this.activeCues[j].text));
 				} else if (this.activeCues[j].id === "TiltUpdate") {

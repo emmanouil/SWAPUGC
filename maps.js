@@ -244,10 +244,10 @@ function centerMap(latitude, longitude, zoom) {
 			map.setZoom(zoom);
 }
 
-function placePointerMarker(lat, lng){
+function placePointerMarker(lat, lng) {
 	let tmp_m = new Marker();
 
-	if (!lat || !lng ) {
+	if (!lat || !lng) {
 		logINFO('Marker was not placed on map (check lat, lng args');
 		return;
 	}
@@ -298,7 +298,6 @@ function initMarker(marker, lat, lng, index, recording_id, bearing, active = fal
 function updateMarkerOrientation(marker_id, orientation = "none") {
 	if (orientation != "none") {
 		updateMarkerByID(marker_id, orientation);
-		logDEBUG("Updated marker orientation to " + orientation);
 	} else {
 		logWARN("Did not update orientation of marker with id" + marker_id);
 	}
@@ -312,7 +311,6 @@ function updateMarkerLocation(marker_id, loc = "none") {
 			lng: loc.Longitude
 		};
 		updateMarkerByID(marker_id, "none", tmploc);
-		logDEBUG("Updated marker position to " + loc);
 	} else {
 		logWARN("Did not update location of marker with id" + marker_id);
 	}

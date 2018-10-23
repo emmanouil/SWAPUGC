@@ -70,6 +70,10 @@ function logMetrics() {
     }
 }
 
+/**
+ * TODO this is a deprecated function used for debugging - to be deleted
+ * @param {*} index_in 
+ */
 function printMetrics(index_in) {
     let temp_frame = parseInt(p.v.currentTime - globalSetIndex[index_in].descriptor.tDiffwReferenceMs / 1000);
     let temp_set = globalSetIndex[index_in];
