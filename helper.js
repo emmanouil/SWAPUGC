@@ -271,3 +271,17 @@ function downloadFile(filename, text) {
 
     document.body.removeChild(element);
 }
+
+/**
+ * Returns true if the args have same sign, false otherwise
+ *  if either is 0 or -0, returns true
+ */
+function compareSigns(n1, n2) {
+	if(Math.abs(n1) == 0 || Math.abs(n2) == 0) {
+		return true;
+	}
+	if (Math.sign(n1) - Math.sign(n2) == 0) {
+		return true;
+	}
+	return false;
+}
