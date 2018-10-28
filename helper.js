@@ -299,3 +299,18 @@ function norm360(n_in){
 	}
 	return n_in;
 }
+
+
+/**
+ * Difference between two view angles 
+ * TODO: rename (?)
+ * TODO: move out of helper(?)
+ */
+function angle0N180_0P180(a, b){
+	if(Math.abs(a) > 180 || Math.abs(b) > 180){
+		return null;	//safety check
+	}
+	let a1 = norm360(a);
+	let b1 = norm360(b);
+	return (Math.abs(b1 - a1) % 360);
+}
