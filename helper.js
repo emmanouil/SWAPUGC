@@ -285,3 +285,17 @@ function compareSigns(n1, n2) {
 	}
 	return false;
 }
+
+/**
+ * Inputs a value between -180 and 0 (returns null otherwise ) and returns
+ *  it mapped to range [180, 360]
+ *  (used for android rotation)
+ */
+function norm360(n_in){
+	if(n_in<-180 || n_in>180){
+		return null;
+	}else if(n_in<0){
+		return mapToRange(n_in, -180, 0, 180, 360);
+	}
+	return n_in;
+}
