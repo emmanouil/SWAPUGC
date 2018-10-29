@@ -277,13 +277,13 @@ function downloadFile(filename, text) {
  *  if either is 0 or -0, returns true
  */
 function compareSigns(n1, n2) {
-	if(Math.abs(n1) == 0 || Math.abs(n2) == 0) {
-		return true;
-	}
-	if (Math.sign(n1) - Math.sign(n2) == 0) {
-		return true;
-	}
-	return false;
+    if (Math.abs(n1) == 0 || Math.abs(n2) == 0) {
+        return true;
+    }
+    if (Math.sign(n1) - Math.sign(n2) == 0) {
+        return true;
+    }
+    return false;
 }
 
 /**
@@ -291,26 +291,25 @@ function compareSigns(n1, n2) {
  *  it mapped to range [180, 360]
  *  (used for android rotation)
  */
-function norm360(n_in){
-	if(n_in<-180 || n_in>180){
-		return null;
-	}else if(n_in<0){
-		return mapToRange(n_in, -180, 0, 180, 360);
-	}
-	return n_in;
+function norm360(n_in) {
+    if (n_in < -180 || n_in > 180) {
+        return null;
+    } else if (n_in < 0) {
+        return mapToRange(n_in, -180, 0, 180, 360);
+    }
+    return n_in;
 }
-
 
 /**
  * Difference between two view angles 
  * TODO: rename (?)
  * TODO: move out of helper(?)
  */
-function angle0N180_0P180(a, b){
-	if(Math.abs(a) > 180 || Math.abs(b) > 180){
-		return null;	//safety check
-	}
-	let a1 = norm360(a);
-	let b1 = norm360(b);
-	return (Math.abs(b1 - a1) % 360);
+function angle0N180_0P180(a, b) {
+    if (Math.abs(a) > 180 || Math.abs(b) > 180) {
+        return null; //safety check
+    }
+    let a1 = norm360(a);
+    let b1 = norm360(b);
+    return (Math.abs(b1 - a1) % 360);
 }

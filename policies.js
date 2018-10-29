@@ -24,15 +24,17 @@ Scene.prototype.endScene = function (endtime) {
     this.endTime = endtime;
 };
 
+
+
+
 function newScene(cur_t, new_id, old_id, overridden = false) {
     let tmp = scenes.push(new Scene(cur_t, new_id, old_id, overridden));
     let i = tmp - 1;
     if (i) {
-        scenes[i].endScene(cur_t);
+        scenes[i - 1].endScene(cur_t);
     }
 
 }
-
 
 function filterStreams() {
     let filteredStreams = [];
