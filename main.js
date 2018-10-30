@@ -1088,6 +1088,12 @@ function nextStream() {
 	switchToStream(next_index, globalSetIndex[next_index].id);
 }
 
+function nextPolicyStream() {
+	let tmp_s;
+	tmp_s = getSwitchStream();
+	switchToStream(tmp_s.index, tmp_s.id);
+}
+
 function selectPolicy(p_in) {
 	switch (p_in) {
 		case 'Manual':
@@ -1128,6 +1134,7 @@ function deactivateUIselection() {
 		markers[i].deactivateClick();
 	}
 	document.getElementById('next_btn').disabled = true;
+	document.getElementById('next_p_btn').disabled = true;
 	document.getElementById('selector').disabled = true;
 }
 
@@ -1136,6 +1143,7 @@ function activateUIselection() {
 		markers[i].activateClick();
 	}
 	document.getElementById('next_btn').disabled = false;
+	document.getElementById('next_p_btn').disabled = false;
 	document.getElementById('selector').disabled = false;
 }
 

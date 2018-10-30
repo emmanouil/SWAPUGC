@@ -88,6 +88,7 @@ function goToAndPlayPause(e) {
         p.v.play();
         document.getElementById('reset_btn').disabled = false;
         document.getElementById('next_btn').disabled = false;
+        document.getElementById('next_p_btn').disabled = false;
         document.getElementById('selector').disabled = false;
         document.getElementById('policy_slk').disabled = false;
         document.getElementById('quality_slk').disabled = false;
@@ -97,6 +98,7 @@ function goToAndPlayPause(e) {
         p.v.pause();
         document.getElementById('reset_btn').disabled = true;
         document.getElementById('next_btn').disabled = true;
+        document.getElementById('next_p_btn').disabled = true;
         document.getElementById('selector').disabled = true;
         document.getElementById('policy_slk').disabled = true;
         document.getElementById('quality_slk').disabled = true;

@@ -37,6 +37,8 @@
                 <button id="test_btn" onclick="printBufferStatus();" disabled hidden>print Buffer Status</button>
                 <button id="next_btn" onclick="nextStream(); disable_btn_for('next_btn', 2000); disable_btn_for('selector', 2000);disable_btn_for('policy_slk', 2000);"
                     disabled>Switch</button>
+                <button id="next_p_btn" onclick="nextPolicyStream(); disable_btn_for('next_p_btn', 2000); disable_btn_for('selector', 2000);disable_btn_for('policy_slk', 2000);"
+                    disabled>Policy Switch</button>
                 <br/>
                 <select id="selector" disabled onchange="selectFile(this.selectedIndex, this.selectedOptions[0].value); disable_btn_for('selector', 2000);">
                 </select>
