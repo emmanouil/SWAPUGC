@@ -197,6 +197,10 @@ function getSetByVideoId(id_in) {
     }
 }
 
+function getIdByIndex(index_in){
+    return globalSetIndex[index_in].id;
+}
+
 function disable_btn_for(btn_name, dur) {
     document.getElementById(btn_name).disabled = true;
     setTimeout(function () {
@@ -301,7 +305,7 @@ function norm360(n_in) {
 }
 
 /**
- * Difference between two view angles 
+ * Difference between two view angles (considers the android [-180, 0], [0, 180] system)
  * TODO: rename (?)
  * TODO: move out of helper(?)
  */
