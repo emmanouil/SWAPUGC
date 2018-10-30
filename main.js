@@ -800,6 +800,11 @@ function addMarkerUpdates(set_in, tmp_index) {
 
 //called when marker is clicked
 function switchToStream(set_index, recordingID) {
+
+	if (!recordingID) {
+		recordingID = getIdByIndex(set_index);
+	}
+
 	if (p.v.paused) {
 		logUI("Ignoring switch - main view paused");
 		return;
@@ -810,8 +815,10 @@ function switchToStream(set_index, recordingID) {
 	} else {
 		logUI("Switching to stream with ID: " + recordingID);
 	}
+
 	let new_set = getSetByVideoId(recordingID);
 	let end_time = p.v.currentTime;
+
 	/*
 				let end_time = getSourceBufferEnd();
 	
@@ -819,7 +826,10 @@ function switchToStream(set_index, recordingID) {
 					logDEBUG('safety check for time diff between buffer and video end');
 					end_time -= 0.2;
 				}
-			*/
+	*/
+
+	newScene(end_time, recordingID, active_video_id);
+
 	new_set.marker.highlightMarker(true); //highlight new marker
 	globalSetIndex[active_video_index].marker.highlightMarker(false); //de-hihglight old marker
 
