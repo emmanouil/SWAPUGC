@@ -141,21 +141,12 @@ function getTiltMetric(index_in) {
 function getBitrateMetric(index_in) {
     let temp_set = globalSetIndex[index_in];
 
+    let B = getMinMaxBitrate(temp_set.mpd);
     let Vb = 0;
-    let Bmin = 999999;
-    let Bmax = 0;
-    temp_set.mpd.representations.forEach((rep) => {
-        let b = Number(rep.bandwidth);
-        if (b < Bmin) {
-            Bmin = b;
-        } else if (b > Bmax) {
-            Bmax = b;
-        }
-    });
     Vb = mapToRange(
         Number(
             temp_set.mpd.representations[temp_set.active_representation].bandwidth
-        ), Bmin, Bmax, 0, 1);
+        ), B.min, B.max, 0, 1);
     //TODO should we map it wrt to 0, wrt to minBitrate, or global minBitrate?
     return Vb;
 }

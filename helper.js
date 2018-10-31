@@ -198,7 +198,7 @@ function getSetByVideoId(id_in) {
     }
 }
 
-function getIdByIndex(index_in){
+function getIdByIndex(index_in) {
     return globalSetIndex[index_in].id;
 }
 
@@ -317,4 +317,21 @@ function angle0N180_0P180(a, b) {
     let a1 = norm360(a);
     let b1 = norm360(b);
     return (Math.abs(b1 - a1) % 360);
+}
+
+function getMinMaxBitrate(mpd_in) {
+    let Bmin = 999999;
+    let Bmax = 0;
+    mpd_in.representations.forEach((rep) => {
+        let b = Number(rep.bandwidth);
+        if (b < Bmin) {
+            Bmin = b;
+        } else if (b > Bmax) {
+            Bmax = b;
+        }
+    });
+    return {
+        min: Bmin,
+        max: Bmax
+    };
 }
