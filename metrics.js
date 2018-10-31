@@ -35,6 +35,13 @@ function Metrics() {
     //Total Score
     this.S = 0;
     /**
+     * Link Reliability breakdown
+     */
+    //Average bitrate
+    this.mu_b = 0;
+    //Number of switches
+    this.sigma_2 = 0;
+    /**
      * Cinematic criteria
      */
     //FoV is filming ROI
@@ -49,9 +56,7 @@ function Metrics() {
 }
 
 function logMetrics() {
-    if (lastMetricTimestamp != p.v.currentTime) {
-        lastMetricTimestamp = p.v.currentTime;
-    } else {
+    if (lastMetricTimestamp == p.v.currentTime) {
         logWARN('last metric timestamp: ' + lastMetricTimestamp + '. current timestamp: ' + p.v.currentTime + '. skipping metric');
         return;
     }
@@ -61,13 +66,17 @@ function logMetrics() {
         tmp_m.St = getTiltMetric(i);
         tmp_m.Vb = getBitrateMetric(i);
         tmp_m.Iq = getImageQualityMetric(i);
-        tmp_m.Lr = 0; //TODO
+        tmp_m.mu_b = calculateAvgBitrateMetric(getAvgBitrate(i), getMinMaxBitrate(globalSetIndex[i].mpd).max);
+        tmp_m.sigma_2 = globalSetIndex[i].stats.switches;
+        tmp_m.Lr = tmp_m.mu_b * (1 / tmp_m.sigma_2);
         tmp_m.S = calculateScore(tmp_m.Ss, tmp_m.St, tmp_m.Vb, tmp_m.Iq, tmp_m.Lr);
         tmp_m.FoV = getFoVMetric(i);
         tmp_m.t_video = p.v.currentTime;
         tmp_m.t_abs = (p.v.currentTime - globalSetIndex[i].descriptor.tDiffwReferenceMs / 1000);
+        tmp_m.t_elapsed = p.v.currentTime - p.v.startTime;
         globalSetIndex[i].metrics.push(tmp_m);
     }
+    lastMetricTimestamp = p.v.currentTime;
 }
 
 /**
@@ -114,6 +123,36 @@ function flushMetricCSV(metric_type) {
     });
     let string_to_print = rows.join('\n');
     downloadFile(metric_type + '_metric.csv', string_to_print);
+}
+
+function recRepresentationChange(index_in, rep_index) {
+    globalSetIndex[index_in].stats.switches++;
+    globalSetIndex[index_in].stats.last_switch_t = p.v.currentTime;
+}
+
+//Stores AvgBitrate at temp_set.stats.avgBitrate and returns th Vb (=avgBitrate/maxBitrate)
+//NOTE: it is only used in regular intervals and ONCE
+//TODO add safety check
+function getAvgBitrate(index_in) {
+    let temp_set = globalSetIndex[index_in];
+    let curr_B = Number(temp_set.mpd.representations[Number(temp_set.active_representation)].bandwidth);
+    let tmp_B = temp_set.stats.avgBitrate;
+
+    if (lastMetricTimestamp == 0) {
+        temp_set.stats.avgBitrate = curr_B;
+        return curr_B;
+    }
+
+    if (curr_B == tmp_B) {
+        return curr_B;
+    }
+    temp_set.stats.avgBitrate = tmp_B + ((curr_B - tmp_B) / (p.v.currentTime - p.v.startTime));
+
+    return temp_set.stats.avgBitrate;
+}
+
+function calculateAvgBitrateMetric(Bavg, Bmax) {
+    return Bavg / Bmax;
 }
 
 //returns Shakiness metric (Ss)
@@ -177,6 +216,7 @@ function getFoVMetric(index_in) {
 }
 
 function getScore(index_in) {
+    index_in = Number(index_in);
     let temp_frame = parseInt(p.v.currentTime - globalSetIndex[index_in].descriptor.tDiffwReferenceMs / 1000);
     let temp_set = globalSetIndex[index_in];
 
