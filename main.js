@@ -57,7 +57,7 @@ const VTTCUE_DURATION = 400; //whenever a cuechange event is fired all cues are 
 const OVERRIDE_CUE_DURATION_FOR_METRICS = true;
 
 //selection policy;
-var policies = ['Manual', 'Ranking 10s', 'Ranking 20s', 'Round-Robin 10s', 'Round-Robin 20s'];
+var policies = ['Manual', 'Round-Robin 10s', 'Round-Robin 20s', 'Ranking 10s', 'Ranking 20s', ];
 var roundRobin_interval_t;
 var roundRobin_interval_id = -1;
 
@@ -352,10 +352,26 @@ function check_status() {
 //returns recording id
 function addVideoToIndex(XMLHttpRequest_in) {
 	var tmp_req = XMLHttpRequest_in;
-	var loc_obj = {};
-	loc_obj.descriptor = tmp_req.response;
-	loc_obj.index = globalSetIndex.length;
-	loc_obj.id = tmp_req.response.recordingID;
+	var loc_obj = {
+		descriptor: tmp_req.response,
+		id: tmp_req.response.recordingID,
+		index: globalSetIndex.length,
+		active_representation: 0,
+		stats: {
+			switches: 1,
+			last_switch_t: 0,
+			avgBitrate: 0,
+		},
+		get ActiveRepresentation() {
+			return this.active_representation;
+		},
+		set ActiveRepresentation(x) {
+			if (this.active_representation != x) {
+				this.active_representation = x;
+				recRepresentationChange(this.index, x);
+			}
+		}
+	};
 	loc_obj.videoFile = loc_obj.id + PL_VIDEO_EXTENSION;
 	//this used to hold the coords/orient in previous version
 	//	loc_obj.set = XMLHttpRequest_in.response;
@@ -1100,14 +1116,6 @@ function selectPolicy(p_in) {
 			stopRoundRobin();
 			activateUIselection();
 			break;
-		case 'Ranking 10s':
-			stopRoundRobin();
-			deactivateUIselection();
-			break;
-		case 'Ranking 20s':
-			stopRoundRobin();
-			deactivateUIselection();
-			break;
 		case 'Round-Robin 10s':
 			deactivateUIselection();
 			startRoundRobin(10);
@@ -1115,6 +1123,14 @@ function selectPolicy(p_in) {
 		case 'Round-Robin 20s':
 			deactivateUIselection();
 			startRoundRobin(20);
+			break;
+		case 'Ranking 10s':
+			stopRoundRobin();
+			deactivateUIselection();
+			break;
+		case 'Ranking 20s':
+			stopRoundRobin();
+			deactivateUIselection();
 			break;
 		case 'Proximity-Stability':
 			break;
@@ -1126,7 +1142,7 @@ function selectPolicy(p_in) {
 
 function selectQuality(p_in) {
 	logDEBUG('Switching to representation index ' + p_in);
-	globalSetIndex[active_video_index].active_representation = p_in;
+	globalSetIndex[active_video_index].ActiveRepresentation = p_in;
 }
 
 function deactivateUIselection() {
