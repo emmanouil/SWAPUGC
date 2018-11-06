@@ -230,7 +230,7 @@ function getScore(index_in) {
 
     let Iq = getImageQualityMetric(index_in); //this is the metric & score (without the weight)
 
-    let Lr = 0; //TODO not implemented yet
+    let Lr = globalSetIndex[index_in].metrics[globalSetIndex[index_in].metrics.length - 1].Lr;
 
     let finalScore = calculateScore(Ss, St, Vb, Iq, Lr);
 
