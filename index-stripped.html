@@ -13,25 +13,63 @@
     <div id="title_div">
         SWAPUGC: Software for Adaptive Playback of UGC videos - Demo
     </div>
-
     <script src="parameters.js"></script>
     <script src="events.js" defer></script>
     <script src="maps.js"></script>
     <!-- For asynchronous load (non-blocking) -->
     <!--<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB90QIExwNn50gJayF-NozhHWvhjhO0A88&callback=initMap" async defer></script>-->
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB90QIExwNn50gJayF-NozhHWvhjhO0A88&callback=initMap" defer></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB90QIExwNn50gJayF-NozhHWvhjhO0A88&callback=initMap"
+        defer></script>
     <script src="helper.js" defer></script>
     <script src="mpd_tools.js"></script>
     <script src="mse.js"></script>
     <script src="player.js"></script>
     <script src="main.js" defer></script>
+    <script src="metrics.js" defer></script>
+    <script src="policies.js" defer></script>
+    <script src="tests.js" defer></script>
     <div id="body_div">
-        <div id="map">
-            As long as you see this text, the map is still loading...
-            <br/>
-            <br/> NOTE: this demo uses the Google Maps API. If the map is not loading, make sure that the Google Maps service
-            is online and that it is not blocked by your firewall/proxy
-
+        <div>
+            <div id="map">
+                As long as you see this text, the map is still loading...
+                <br />
+                <br /> NOTE: this demo uses the Google Maps API. If the map is not loading, make sure that the Google
+                Maps service
+                is online and that it is not blocked by your firewall/proxy
+            </div>
+            <br />
+            ===========
+            <br />
+            TESTS:
+            <br /> <button id="Play_1_btn" onclick="test1();" style=" color: teal">1. Baseline (Fov only)</button>
+            <br /> <button id="Play_2_btn" onclick="test2();" style=" color: teal">2. Sensor-Only (HiQ)</button>
+            <br /> <button id="Play_3_btn" onclick="test3();" style=" color: orangered">3. Sensor-Only (VarQ)</button>
+            <br /> <button id="Play_4_btn" onclick="test4();" style=" color: orangered">4. Full (VarQ)</button>
+            <br /> <button id="Play_4_btn" onclick="test5();" style=" color: navy">5. Full w/ Disconnects (Nearest)</button>
+            <br /> <button id="Play_4_btn" onclick="test6();" style=" color: navy">6. Full w/ Disconnects (Ranking)</button>
+            <br />
+            ===========
+            <br />
+            METRICS PRINTOUTS:
+            <br />
+            <button id="Scene_print_btn" onclick="downloadFile('scenes.json', JSON.stringify(scenes)); disable_btn_for('Scene_print_btn', 2000);">Scene
+                Printout (until now) - JSON</button>
+            <br />
+            <button id="Mall_print_btn" onclick="flushMetricsJSON(); disable_btn_for('Mall_print_btn', 2000);">Per
+                Stream Printout - All Metrics JSON</button>
+            <br />
+            <button id="Mone_print_btn" onclick="flushMetricCSV('S'); disable_btn_for('Mone_print_btn', 2000);">All
+                Streams Printout - Total Score (S) CSV</button>
+            <br /> Print Metric (for all streams) CSV:
+            <select id="metric_csv_slk" enabled onchange="flushMetricCSV(this.selectedOptions[0].value); disable_btn_for('metric_csv_slk', 2000);">
+                <option value="S">Total Score (S)</option>
+                <option value="Iq">Image Quality (Iq)</option>
+                <option value="St">Roll (St)</option>
+                <option value="Ss">Shakiness (Ss)</option>
+                <option value="FoV">ROI in Fov (FoV)</option>
+                <option value="Lr">Link Reliability (Lr)</option>
+            </select>
+            <br />
         </div>
 
         <div id="container">
@@ -39,7 +77,7 @@
                 <video id="v_main" width="960" height="540" poster="assets/v_poster.png"></video>
             </div>
             <div id="menu">
-                <button id="play_btn" onclick="goToAndPlay(this);" disabled>Play</button>
+                <button id="play_btn" onclick="goToAndPlayPause(this);" disabled>Play</button>
                 <!--<button id="pause_btn" onclick="pausePlayback(this);" disabled title="When paused, view does not update">Pause</button>-->
                 <button id="mute_btn" style="width: 5em;" onclick="p.v.muted = !p.v.muted; if(this.innerText ==='Mute'){this.innerText ='Unmute'}else{this.innerText ='Mute'};">Mute</button>
                 <button id="test_btn" onclick="printBufferStatus();" disabled hidden>print Buffer Status</button>
@@ -53,26 +91,26 @@
                 Quality:
                 <select id="quality_slk" disabled onchange="selectQuality(this.selectedOptions[0].value); disable_btn_for('quality_slk', 2000);">
                 </select>
-                <br/>
+                <br />
+                <p>
+                    ===========
+                    <br />
+                    <button id="ShowOrchestra_btn" onclick="placePointerMarker(reference_orchestra_center_location[0], reference_orchestra_center_location[1]);">Show
+                        Event Spatial Center</button>
+                    <br /> ===========
+                    <br />
+                </p>
                 <div id="bottom_line">
                     <button id="reset_btn" onclick="resetSourceBuffer(); logUI('Manually reseting sourceBuffer'); disable_btn_for('reset_btn', 2000);"
                         disabled>Reset MSE</button>
-                    <span id="messages_div" style="text-align: justify; font-size:small; font-family: 'Roboto', sans-serif;">What is
+                    <span id="messages_div" style="text-align: justify; font-size:small; font-family: 'Roboto', sans-serif;">What
+                        is
                         <a href="https://github.com/emmanouil/SWAPUGC#swapugc" target="_blank" style="color:black;">SWAPUGC</a>?</span>
                 </div>
             </div>
         </div>
-        <br/>
+        <br />
     </div>
-    <!--
-    <div id="about">
-        <p>The demo plays a segmented mp4 file (generated using MP4Box of
-            <a href="http://www.gpac.io" target="_blank">GPAC</a>). The entire movie is 'streamed' to a video element by appending each segment using the
-            <a href="https://dvcs.w3.org/hg/html-media/raw-file/tip/media-source/media-source.html" target="_blank">MediaSource API</a>.
-        </p>
-    </div>
--->
-
 </body>
 
 </html>
