@@ -628,7 +628,7 @@ function analyzeGeospatialData() {
 	for (let i = 0; i < globalSetIndex.length; i++) {
 		let s = globalSetIndex[i];
 		let is_active = false;
-		if (s.coordSet.length > 3) { //we consider a recording to be mobile if it has more than 2 updates
+		if (s.coordSet.length > 2) { //we consider a recording to be mobile if it has more than 2 updates
 			s.descriptor.is_mobile = true;
 		} else {
 			s.descriptor.is_mobile = false;
