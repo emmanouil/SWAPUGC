@@ -1186,7 +1186,9 @@ function activate_policies() {
 }
 
 function handleEvent(marker_id, obj_in) {
-	if (obj_in.Event === 'video_end') {
+	if (obj_in.Event === 'test_switch') {
+		testEvent(parseInt(obj_in.TestId));
+	} else if (obj_in.Event === 'video_end') {
 		video_end();
 	}
 }
