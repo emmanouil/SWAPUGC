@@ -1051,7 +1051,7 @@ function killInterval() {
 	clearInterval(check_interval_id);
 	clearInterval(metrics_interval_id);
 	check_interval_id = -1;
-	check_interval_id = -1;
+	metrics_interval_id = -1;
 }
 /*
 function startAllIntervals() {
@@ -1077,13 +1077,14 @@ function startAllIntervals() {
 
 /**
  * starts an interval with <id>, that calls <function> every <interval_duration>
+ * TODO: replace all setInterval
  * @param {*} id_in the id of the interval
  * @param {*} fun_in the function to be called
  * @param {*} tms_in the interval duration
  */
 function startInterval(id_in, fun_in, tms_in) {
 	if (id_in != -1) {
-		logINFO('interval already running');
+		logINFO('interval for ' + fun_in.name + 'already running');
 		return;
 	}
 	return setInterval(fun_in, tms_in);

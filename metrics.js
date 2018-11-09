@@ -215,7 +215,7 @@ function getFoVMetric(index_in) {
     return globalSetIndex[index_in].isFoV.FoV;
 }
 
-function getScore(index_in) {
+function getScore(index_in, with_Lr = true) {
     index_in = Number(index_in);
     let temp_frame = parseInt(p.v.currentTime - globalSetIndex[index_in].descriptor.tDiffwReferenceMs / 1000);
     let temp_set = globalSetIndex[index_in];
@@ -230,7 +230,10 @@ function getScore(index_in) {
 
     let Iq = getImageQualityMetric(index_in); //this is the metric & score (without the weight)
 
-    let Lr = globalSetIndex[index_in].metrics[globalSetIndex[index_in].metrics.length - 1].Lr;
+    let Lr = 0;
+    if (with_Lr) {
+        Lr = globalSetIndex[index_in].metrics[globalSetIndex[index_in].metrics.length - 1].Lr;
+    }
 
     let finalScore = calculateScore(Ss, St, Vb, Iq, Lr);
 
