@@ -377,6 +377,7 @@ function addVideoToIndex(XMLHttpRequest_in) {
 	//	loc_obj.set = XMLHttpRequest_in.response;
 	//this is used to store the stream metrics
 	loc_obj.metrics = [];
+	loc_obj.reps = [];
 	globalSetIndex.push(loc_obj);
 	//we check if it is our main view
 	if (loc_obj.id === reference_recordingID) {

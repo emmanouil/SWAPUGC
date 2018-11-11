@@ -60,6 +60,7 @@ function logMetrics() {
         logWARN('last metric timestamp: ' + lastMetricTimestamp + '. current timestamp: ' + p.v.currentTime + '. skipping metric');
         return;
     }
+    logRepresentations();
     for (let i = 0; i < globalSetIndex.length; i++) {
         let tmp_m = new Metrics();
         tmp_m.Ss = getShakinessMetric(i);
@@ -77,6 +78,16 @@ function logMetrics() {
         globalSetIndex[i].metrics.push(tmp_m);
     }
     lastMetricTimestamp = p.v.currentTime;
+}
+
+function logRepresentations() {
+    for (let i = 0; i < globalSetIndex.length; i++) {
+        let tmp_r = {};
+         tmp_r.Representation = globalSetIndex[i].active_representation;
+         tmp_r.Time_v = p.v.currentTime;
+         tmp_r.Time_abs = (p.v.currentTime - globalSetIndex[i].descriptor.tDiffwReferenceMs / 1000);
+        globalSetIndex[i].reps.push(tmp_r);
+    }
 }
 
 /**
