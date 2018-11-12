@@ -79,9 +79,8 @@ function initMarkers() {
 
 /**
  * Called when GoToAndPlay button is clicked
- * @param {*} e 
  */
-function goToAndPlayPause(e) {
+function goToAndPlayPause() {
     if (p.v.paused) {
         document.getElementById('play_btn').innerText = 'Pause';
         logINFO('starting playback from (ms): ' + p.v.currentTime);
