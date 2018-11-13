@@ -11,6 +11,9 @@ const maxTilt = 5; //Tilt (in degrees) more/less than maxTilt scores 0
 const shakeScale = [0, 5]; //The min and max of the shake values
 //engine vars
 var lastMetricTimestamp = 0;
+//others
+const m_segment_length = 2; //in sec
+
 
 
 /**
@@ -41,11 +44,19 @@ function Metrics() {
     this.mu_b = 0;
     //Number of switches
     this.sigma_2 = 0;
+    //Number of switches per minute
+    this.sigma_2pm = 0;
+    //Number of switches per segment
+    this.sigma_2ps = 0;
     /**
      * Cinematic criteria
      */
     //FoV is filming ROI
     this.FoV = true;
+    //Angle difference with active recorder
+    this.a_diff = 0;
+    //Distance from active recorder
+    this.dist = 0;
     /**
      * Timing
      */
@@ -69,7 +80,11 @@ function logMetrics() {
         tmp_m.Iq = getImageQualityMetric(i);
         tmp_m.mu_b = calculateAvgBitrateMetric(getAvgBitrate(i), getMinMaxBitrate(globalSetIndex[i].mpd).max);
         tmp_m.sigma_2 = globalSetIndex[i].stats.switches;
-        tmp_m.Lr = tmp_m.mu_b * (1 / tmp_m.sigma_2);
+        //tmp_m.sigma_2pm = globalSetIndex[i].stats.switches / ((p.v.currentTime - p.v.startTime) / 60);
+        tmp_m.sigma_2ps = globalSetIndex[i].stats.switches / ((p.v.currentTime - p.v.startTime) / m_segment_length);
+        tmp_m.Lr = (tmp_m.sigma_2ps > 1) ? 0 : tmp_m.mu_b * (1 - tmp_m.sigma_2ps); //Per segment
+        //tmp_m.Lr = tmp_m.mu_b * (1 / tmp_m.sigma_2pm); //Per minute
+        tmp_m.Lr_o = tmp_m.mu_b * (1 / tmp_m.sigma_2);  //Original
         tmp_m.S = calculateScore(tmp_m.Ss, tmp_m.St, tmp_m.Vb, tmp_m.Iq, tmp_m.Lr);
         tmp_m.FoV = getFoVMetric(i);
         tmp_m.t_video = p.v.currentTime;
@@ -83,9 +98,9 @@ function logMetrics() {
 function logRepresentations() {
     for (let i = 0; i < globalSetIndex.length; i++) {
         let tmp_r = {};
-         tmp_r.Representation = globalSetIndex[i].active_representation;
-         tmp_r.Time_v = p.v.currentTime;
-         tmp_r.Time_abs = (p.v.currentTime - globalSetIndex[i].descriptor.tDiffwReferenceMs / 1000);
+        tmp_r.Representation = globalSetIndex[i].active_representation;
+        tmp_r.Time_v = p.v.currentTime;
+        tmp_r.Time_abs = (p.v.currentTime - globalSetIndex[i].descriptor.tDiffwReferenceMs / 1000);
         globalSetIndex[i].reps.push(tmp_r);
     }
 }
@@ -105,6 +120,13 @@ function printMetrics(index_in) {
     );
     for (let i = 0; i < globalSetIndex.length; i++) {
         console.log(i + ' Score: ' + getScore(i));
+    }
+}
+
+
+function flushRepresentationsJSON() {
+    for (let i = 0; i < globalSetIndex.length; i++) {
+        downloadFile(globalSetIndex[i].id + '_reps.json', JSON.stringify(globalSetIndex[i].reps));
     }
 }
 
