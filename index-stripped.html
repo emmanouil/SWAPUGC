@@ -41,12 +41,18 @@
             ===========
             <br />
             TESTS:
-            <br /> <button id="Play_1_btn" onclick="test1();" style=" color: teal">1. Baseline (Fov only)</button>
-            <br /> <button id="Play_2_btn" onclick="test2();" style=" color: teal">2. Sensor-Only (HiQ)</button>
-            <br /> <button id="Play_3_btn" onclick="test3();" style=" color: orangered">3. Sensor-Only (VarQ)</button>
-            <br /> <button id="Play_4_btn" onclick="test4();" style=" color: orangered">4. Full (VarQ)</button>
-            <br /> <button id="Play_4_btn" onclick="test5();" style=" color: navy">5. Full w/ Disconnects (Nearest)</button>
-            <br /> <button id="Play_4_btn" onclick="test6();" style=" color: navy">6. Full w/ Disconnects (Ranking)</button>
+            <br /> <button id="Play_1_btn" onclick="goToAndPlayPause(); setTimeout(test1, 3000);" style=" color: teal">1.
+                Baseline (Fov only)</button>
+            <br /> <button id="Play_2_btn" onclick="goToAndPlayPause(); setTimeout(test2, 3000);" style=" color: teal">2.
+                Sensor-Only (HiQ)</button>
+            <br /> <button id="Play_3_btn" onclick="goToAndPlayPause(); setTimeout(test3, 3000);" style=" color: orangered">3.
+                Sensor-Only (VarQ)</button>
+            <br /> <button id="Play_4_btn" onclick="goToAndPlayPause(); setTimeout(test4, 3000);" style=" color: orangered">4.
+                Full (VarQ)</button>
+            <br /> <button id="Play_4_btn" onclick="goToAndPlayPause(); setTimeout(test5, 3000);" style=" color: navy">5.
+                Full w/ Disconnects (Nearest)</button>
+            <br /> <button id="Play_4_btn" onclick="goToAndPlayPause(); setTimeout(test6, 3000);" style=" color: navy">6.
+                Full w/ Disconnects (Ranking)</button>
             <br />
             ===========
             <br />
@@ -54,6 +60,8 @@
             <br />
             <button id="Scene_print_btn" onclick="downloadFile('scenes.json', JSON.stringify(scenes)); disable_btn_for('Scene_print_btn', 2000);">Scene
                 Printout (until now) - JSON</button>
+            <br />
+            <button id="Qswitch_print_btn" onclick="flushRepresentationsJSON(); disable_btn_for('Qswitch_print_btn', 2000);">Qswitches Printout - JSON</button>
             <br />
             <button id="Mall_print_btn" onclick="flushMetricsJSON(); disable_btn_for('Mall_print_btn', 2000);">Per
                 Stream Printout - All Metrics JSON</button>
@@ -81,12 +89,14 @@
                 <video id="v_main" width="960" height="540" poster="assets/v_poster.png"></video>
             </div>
             <div id="menu">
-                <button id="play_btn" onclick="goToAndPlayPause(this);" disabled>Play</button>
+                <button id="play_btn" onclick="goToAndPlayPause();" disabled>Play</button>
                 <!--<button id="pause_btn" onclick="pausePlayback(this);" disabled title="When paused, view does not update">Pause</button>-->
                 <button id="mute_btn" style="width: 5em;" onclick="p.v.muted = !p.v.muted; if(this.innerText ==='Mute'){this.innerText ='Unmute'}else{this.innerText ='Mute'};">Mute</button>
                 <button id="test_btn" onclick="printBufferStatus();" disabled hidden>print Buffer Status</button>
                 <button id="next_btn" onclick="nextStream(); disable_btn_for('next_btn', 2000); disable_btn_for('selector', 2000);disable_btn_for('policy_slk', 2000);"
                     disabled>Switch</button>
+                <button id="next_p_btn" onclick="nextPolicyStream(); disable_btn_for('next_p_btn', 2000); disable_btn_for('selector', 2000);disable_btn_for('policy_slk', 2000);"
+                    disabled>Policy Switch</button>
                 <select id="selector" hidden disabled onchange="selectFile(this.selectedIndex, this.selectedOptions[0].value); disable_btn_for('selector', 2000);">
                 </select>
                 Switching Policy:
