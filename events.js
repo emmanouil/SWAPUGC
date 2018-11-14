@@ -85,6 +85,7 @@ function goToAndPlayPause() {
         document.getElementById('play_btn').innerText = 'Pause';
         logINFO('starting playback from (ms): ' + p.v.currentTime);
         p.v.play();
+        logScs();
         document.getElementById('reset_btn').disabled = false;
         document.getElementById('next_btn').disabled = false;
         document.getElementById('next_p_btn').disabled = false;

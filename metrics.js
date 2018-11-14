@@ -13,6 +13,8 @@ const shakeScale = [0, 5]; //The min and max of the shake values
 var lastMetricTimestamp = 0;
 //others
 const m_segment_length = 2; //in sec
+//scene (Sc) logs
+var scs = [];
 
 
 
@@ -72,6 +74,7 @@ function logMetrics() {
         return;
     }
     logRepresentations();
+    logSc();
     for (let i = 0; i < globalSetIndex.length; i++) {
         let tmp_m = new Metrics();
         tmp_m.Ss = getShakinessMetric(i);
@@ -84,7 +87,7 @@ function logMetrics() {
         tmp_m.sigma_2ps = globalSetIndex[i].stats.switches / ((p.v.currentTime - p.v.startTime) / m_segment_length);
         tmp_m.Lr = (tmp_m.sigma_2ps > 1) ? 0 : tmp_m.mu_b * (1 - tmp_m.sigma_2ps); //Per segment
         //tmp_m.Lr = tmp_m.mu_b * (1 / tmp_m.sigma_2pm); //Per minute
-        tmp_m.Lr_o = tmp_m.mu_b * (1 / tmp_m.sigma_2);  //Original
+        tmp_m.Lr_o = tmp_m.mu_b * (1 / tmp_m.sigma_2); //Original
         tmp_m.S = calculateScore(tmp_m.Ss, tmp_m.St, tmp_m.Vb, tmp_m.Iq, tmp_m.Lr);
         tmp_m.FoV = getFoVMetric(i);
         tmp_m.t_video = p.v.currentTime;
@@ -93,6 +96,26 @@ function logMetrics() {
         globalSetIndex[i].metrics.push(tmp_m);
     }
     lastMetricTimestamp = p.v.currentTime;
+}
+
+function logSc() {
+    if (scs.length > 0) {
+        scs.push(logScs());
+    }
+}
+
+function logScs() {
+    let tmp = {};
+    let tmp_s = globalSetIndex[active_video_index];
+    tmp.id = active_video_id;
+    tmp.index = active_video_index;
+    tmp.rep = tmp_s.ActiveRepresentation;
+    tmp.t_video = p.v.currentTime;
+    tmp.t_abs = (p.v.currentTime - tmp_s.descriptor.tDiffwReferenceMs / 1000);
+    tmp.t_elapsed = p.v.currentTime - p.v.startTime;
+    if (tmp_s.metrics.length)
+        tmp.Score = tmp_s.metrics[tmp_s.metrics.length - 1].S;
+    return tmp;
 }
 
 function logRepresentations() {
@@ -123,6 +146,9 @@ function printMetrics(index_in) {
     }
 }
 
+function flushScsJSON() {
+    downloadFile('Scs.json', JSON.stringify(scs));
+}
 
 function flushRepresentationsJSON() {
     for (let i = 0; i < globalSetIndex.length; i++) {
