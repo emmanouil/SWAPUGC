@@ -99,9 +99,7 @@ function logMetrics() {
 }
 
 function logSc() {
-    if (scs.length > 0) {
-        scs.push(logScs());
-    }
+    scs.push(logScs());
 }
 
 function logScs() {
