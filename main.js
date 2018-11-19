@@ -823,7 +823,7 @@ function switchToStream(set_index, recordingID) {
 	}
 
 	if (p.v.paused) {
-		logUI("Ignoring switch - main view paused");
+		logUI("Ignoring switch to " + recordingID + ", at index " + set_index + " - main view paused");
 		return;
 	}
 	if (active_video_id === recordingID) {

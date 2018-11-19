@@ -3,8 +3,6 @@
 /* global sourceBuffer */ //in mse.js
 
 //Cinematic Criteria Parameters
-var MIN_SCENE_DURATION = 9; //in s
-var MAX_SCENE_DURATION = 12; //in s
 var JUMP_CUT_TOLERANCE_MIN = 160; //in deg
 var JUMP_CUT_TOLERANCE_MAX = 200; //in deg
 
