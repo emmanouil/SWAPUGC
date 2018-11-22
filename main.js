@@ -221,7 +221,7 @@ function init() {
 									//add representations to sources
 									for (let j = 0; j < globalSetIndex[i].mpd.representations.length; j++) {
 										let mpd_rep = globalSetIndex[i].mpd.representations[j];
-										let tmp_rep = new Representation(i, Number(mpd_rep.bandwidth), mpd_rep.id, Number(mpd_rep.width), Number(mpd_rep.height));
+										let tmp_rep = new Representation(j, Number(mpd_rep.bandwidth), mpd_rep.id, Number(mpd_rep.width), Number(mpd_rep.height));
 										tmp_source.addRepresentation(tmp_rep);	//TODO - this
 									}
 								}

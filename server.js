@@ -61,6 +61,6 @@ Representation.prototype = {
         return this.available;
     },
     set isAvailable(i) {
-        this.isAvailable = i;
+        this.available = i;
     }
 };
