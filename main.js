@@ -81,6 +81,7 @@ window.onload = init;
  */
 function init() {
 
+	s = new Server();
 	p = new Player(document.getElementById('v_main'), new MediaSource());
 	p.v.src = window.URL.createObjectURL(p.ms);
 
@@ -212,6 +213,20 @@ function init() {
 										once: true
 									});
 								}
+
+								//setup Sources
+								for (let i = 0; i < globalSetIndex.length; i++) {
+									var tmp_source = new Source(globalSetIndex[i].id, globalSetIndex[i].index);
+									s.addSource(tmp_source);
+									//add representations to sources
+									for (let j = 0; j < globalSetIndex[i].mpd.representations.length; j++) {
+										let mpd_rep = globalSetIndex[i].mpd.representations[j];
+										let tmp_rep = new Representation(i, Number(mpd_rep.bandwidth), mpd_rep.id, Number(mpd_rep.width), Number(mpd_rep.height));
+										tmp_source.addRepresentation(tmp_rep);	//TODO - this
+									}
+								}
+
+
 								active_video_id = globalSetIndex[PLAYLIST_MAIN_VIEW_INDEX].id;
 								active_video_index = PLAYLIST_MAIN_VIEW_INDEX;
 								logINFO('active_video_id set to ' + active_video_id);

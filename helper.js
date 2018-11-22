@@ -1,6 +1,7 @@
 "use strict";
 var globalSetIndex = [];
 var p = {}; //The Player obj
+var s = {}; //The Server obj
 var scenes = []; //holds the scenes
 var msg_div = document.getElementById('messages_div');
 const SHOW_DEBUG = true;
