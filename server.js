@@ -4,11 +4,16 @@
  * to vars and Sources used to simulate delivery environment
  * 
  */
-function Server(video_element, media_source) {
+function Server() {
     this.sources = [];
     this.buffer_size = NaN; //from server to clients
     this.latency = NaN; //from server to clients
 }
+
+
+Server.prototype.addSource = function (source_in) {
+    this.sources.push(source_in);
+};
 
 /**
  * Source object, that holds references
@@ -24,6 +29,19 @@ function Source(id, index) {
     this.latency = NaN; //from source to server
 }
 
+
+Source.prototype = {
+    addRepresentation: function (rep_in) {
+        this.representations.push(rep_in);
+    },
+    get isAvailable() {
+        return this.available;
+    },
+    set isAvailable(i) {
+        this.isAvailable = i;
+    }
+};
+
 /**
  * Representations object, that holds
  * to vars used to simulate delivery environment
@@ -37,3 +55,12 @@ function Representation(index, bandwidth, id, width, height) {
     this.width = width;
     this.height = height;
 }
+
+Representation.prototype = {
+    get isAvailable() {
+        return this.available;
+    },
+    set isAvailable(i) {
+        this.isAvailable = i;
+    }
+};
