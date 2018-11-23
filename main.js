@@ -222,7 +222,7 @@ function init() {
 									for (let j = 0; j < globalSetIndex[i].mpd.representations.length; j++) {
 										let mpd_rep = globalSetIndex[i].mpd.representations[j];
 										let tmp_rep = new Representation(j, Number(mpd_rep.bandwidth), mpd_rep.id, Number(mpd_rep.width), Number(mpd_rep.height));
-										tmp_source.addRepresentation(tmp_rep);	//TODO - this
+										tmp_source.addRepresentation(tmp_rep); //TODO - this
 									}
 								}
 
@@ -330,31 +330,34 @@ function check_status() {
 	}
 
 	let seg_n = 0;
-	if (globalSetIndex[active_video_index].mpd.isLiveProfile) {
-		if (globalSetIndex[0].mpd.representationCount > 1) {
-			seg_n = mpd_getSegmentNumAtTime4Live(globalSetIndex[active_video_index].mpd.representations[globalSetIndex[active_video_index].active_representation].SegmentTemplate, end_time - globalSetIndex[active_video_index].descriptor.tDiffwReferenceMs / 1000);
+	let tmp_set = globalSetIndex[active_video_index];
+
+	//check if we are in live profile
+	if (tmp_set.mpd.isLiveProfile) {
+		if (tmp_set.mpd.representationCount > 1) {
+			seg_n = mpd_getSegmentNumAtTime4Live(tmp_set.mpd.representations[tmp_set.active_representation].SegmentTemplate, end_time - tmp_set.descriptor.tDiffwReferenceMs / 1000);
 		} else {
-			seg_n = mpd_getSegmentNumAtTime4Live(globalSetIndex[active_video_index].mpd.SegmentTemplate, end_time - globalSetIndex[active_video_index].descriptor.tDiffwReferenceMs / 1000);
+			seg_n = mpd_getSegmentNumAtTime4Live(tmp_set.mpd.SegmentTemplate, end_time - tmp_set.descriptor.tDiffwReferenceMs / 1000);
 		}
 	} else {
-		seg_n = mpd_getSegmentIndexAtTime(globalSetIndex[active_video_index].mpd.representations[0], end_time - globalSetIndex[active_video_index].descriptor.tDiffwReferenceMs / 1000);
+		seg_n = mpd_getSegmentIndexAtTime(tmp_set.mpd.representations[0], end_time - tmp_set.descriptor.tDiffwReferenceMs / 1000);
 	}
 	seg_n++; //in this case we need the next segment
 
-	if (seg_n === last_fetched_seg_n && active_video_index === active_video_index) {
+	if (seg_n === last_fetched_seg_n && active_video_index === last_fetched_index) {
 		logWARN('previously fetched seg had same number, incrementing by 1');
 		seg_n++;
 	}
 	last_fetched_seg_n = seg_n;
 	last_fetched_index = active_video_index;
-	if (globalSetIndex[active_video_index].mpd.isLiveProfile) {
-		if (globalSetIndex[0].mpd.representationCount > 1) {
-			fetch_res(DASH_DIR + '/' + globalSetIndex[active_video_index].mpd.representations[globalSetIndex[active_video_index].active_representation].SegmentTemplate.media.replace("$Number$", seg_n), addSegment, "arraybuffer");
+	if (tmp_set.mpd.isLiveProfile) {
+		if (tmp_set.mpd.representationCount > 1) {
+			fetch_res(DASH_DIR + '/' + tmp_set.mpd.representations[tmp_set.ActiveRepresentation].SegmentTemplate.media.replace("$Number$", seg_n), addSegment, "arraybuffer");
 		} else {
-			fetch_res(DASH_DIR + '/' + globalSetIndex[active_video_index].mpd.SegmentTemplate.media.replace("$Number$", seg_n), addSegment, "arraybuffer");
+			fetch_res(DASH_DIR + '/' + tmp_set.mpd.SegmentTemplate.media.replace("$Number$", seg_n), addSegment, "arraybuffer");
 		}
 	} else {
-		fetch_res(DASH_DIR + '/' + globalSetIndex[active_video_index].mpd.representations[0].SegmentList.Segments[seg_n], addSegment, "arraybuffer");
+		fetch_res(DASH_DIR + '/' + tmp_set.mpd.representations[tmp_set.ActiveRepresentation].SegmentList.Segments[seg_n], addSegment, "arraybuffer");
 	}
 
 }
