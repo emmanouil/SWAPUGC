@@ -332,16 +332,8 @@ function check_status() {
 	let seg_n = 0;
 	let tmp_set = globalSetIndex[active_video_index];
 
-	//check if we are in live profile
-	if (tmp_set.mpd.isLiveProfile) {
-		if (tmp_set.mpd.representationCount > 1) {
-			seg_n = mpd_getSegmentNumAtTime4Live(tmp_set.mpd.representations[tmp_set.active_representation].SegmentTemplate, end_time - tmp_set.descriptor.tDiffwReferenceMs / 1000);
-		} else {
-			seg_n = mpd_getSegmentNumAtTime4Live(tmp_set.mpd.SegmentTemplate, end_time - tmp_set.descriptor.tDiffwReferenceMs / 1000);
-		}
-	} else {
-		seg_n = mpd_getSegmentIndexAtTime(tmp_set.mpd.representations[0], end_time - tmp_set.descriptor.tDiffwReferenceMs / 1000);
-	}
+	seg_n = mpd_getNextSegmentNum(active_video_index, end_time);
+
 	seg_n++; //in this case we need the next segment
 
 	if (seg_n === last_fetched_seg_n && active_video_index === last_fetched_index) {
@@ -870,25 +862,17 @@ function switchToStream(set_index, recordingID) {
 
 	active_video_id = recordingID;
 	active_video_index = set_index;
+	let tmp_set = globalSetIndex[set_index];
 
 	//display available representations
 	setQualitySelector(set_index);
 
-	p.ms.sourceBuffers[0].timestampOffset = globalSetIndex[set_index].descriptor.tDiffwReferenceMs / 1000;
+	p.ms.sourceBuffers[0].timestampOffset = tmp_set.descriptor.tDiffwReferenceMs / 1000;
 
 
 	let seg_n = 0;
-	if (globalSetIndex[set_index].mpd.isLiveProfile) {
-		let tmp_template;
-		if (globalSetIndex[0].mpd.representationCount > 1) {
-			tmp_template = globalSetIndex[set_index].mpd.representations[globalSetIndex[set_index].active_representation].SegmentTemplate;
-		} else {
-			tmp_template = globalSetIndex[set_index].mpd.SegmentTemplate;
-		}
-		seg_n = mpd_getSegmentNumAtTime4Live(tmp_template, end_time - globalSetIndex[set_index].descriptor.tDiffwReferenceMs / 1000);
-	} else {
-		seg_n = mpd_getSegmentIndexAtTime(globalSetIndex[set_index].mpd.representations[0], end_time - globalSetIndex[set_index].descriptor.tDiffwReferenceMs / 1000);
-	}
+	seg_n = mpd_getNextSegmentNum(active_video_index, end_time);
+
 	seg_n++; //because we are switching we need the segment after the end of the currently playing
 	mse_initAndAdd(set_index, seg_n);
 }
@@ -910,19 +894,9 @@ function resetSourceBuffer() {
 	}
 	sourceBuffer.remove(sourceBuffer.buffered.start(0), sourceBuffer.buffered.end(sourceBuffer.buffered.length - 1));
 
-	let seg_n;
+	let seg_n = 0;
+	seg_n = mpd_getNextSegmentNum(active_video_index, p.v.currentTime);
 
-	if (globalSetIndex[active_video_index].mpd.isLiveProfile) {
-		let tmp_template;
-		if (globalSetIndex[0].mpd.representationCount > 1) {
-			tmp_template = globalSetIndex[active_video_index].mpd.representations[globalSetIndex[active_video_index].active_representation].SegmentTemplate;
-		} else {
-			tmp_template = globalSetIndex[active_video_index].mpd.SegmentTemplate;
-		}
-		seg_n = mpd_getSegmentNumAtTime4Live(tmp_template, p.v.currentTime - (globalSetIndex[active_video_index].descriptor.tDiffwReferenceMs / 1000));
-	} else {
-		seg_n = mpd_getSegmentIndexAtTime(globalSetIndex[active_video_index].mpd.representations[0], p.v.currentTime - (globalSetIndex[active_video_index].descriptor.tDiffwReferenceMs / 1000));
-	}
 
 	if (sourceBuffer.updating) {
 		sourceBuffer.addEventListener('updateend', function () {

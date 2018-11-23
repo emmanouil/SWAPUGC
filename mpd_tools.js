@@ -132,6 +132,26 @@ function mpd_getInitSegURL(node_in) {
 }
 
 /**
+ * Returns the first segment number (starting counting at 1 ) after the specified buffer end time (in s)
+ */
+function mpd_getNextSegmentNum(set_index, t_buffer_end) {
+    let tmp_set = globalSetIndex[set_index];
+    let seg_n = 0;
+
+    //check if we are in live profile
+    if (tmp_set.mpd.isLiveProfile) {
+        if (tmp_set.mpd.representationCount > 1) {
+            seg_n = mpd_getSegmentNumAtTime4Live(tmp_set.mpd.representations[tmp_set.ActiveRepresentation].SegmentTemplate, t_buffer_end - tmp_set.descriptor.tDiffwReferenceMs / 1000);
+        } else {
+            seg_n = mpd_getSegmentNumAtTime4Live(tmp_set.mpd.SegmentTemplate, t_buffer_end - tmp_set.descriptor.tDiffwReferenceMs / 1000);
+        }
+    } else {
+        seg_n = mpd_getSegmentIndexAtTime(tmp_set.mpd.representations[tmp_set.ActiveRepresentation], t_buffer_end - tmp_set.descriptor.tDiffwReferenceMs / 1000);
+    }
+    return seg_n;
+}
+
+/**
  * Returns segment numbers (starting counting at 1 )corresponding to the specified time (in s)
  */
 function mpd_getSegmentNumAtTime(representation_in, t_sec) {
