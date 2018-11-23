@@ -134,7 +134,7 @@ function mpd_getInitSegURL(node_in) {
 /**
  * Returns the first segment number (starting counting at 1 ) after the specified buffer end time (in s)
  */
-function mpd_getNextSegmentNum(set_index, t_buffer_end) {
+function mpd_getSegmentNum(set_index, t_buffer_end) {
     let tmp_set = globalSetIndex[set_index];
     let seg_n = 0;
 

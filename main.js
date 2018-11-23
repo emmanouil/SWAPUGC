@@ -332,7 +332,7 @@ function check_status() {
 	let seg_n = 0;
 	let tmp_set = globalSetIndex[active_video_index];
 
-	seg_n = mpd_getNextSegmentNum(active_video_index, end_time);
+	seg_n = mpd_getSegmentNum(active_video_index, end_time);
 
 	seg_n++; //in this case we need the next segment
 
@@ -871,7 +871,7 @@ function switchToStream(set_index, recordingID) {
 
 
 	let seg_n = 0;
-	seg_n = mpd_getNextSegmentNum(active_video_index, end_time);
+	seg_n = mpd_getSegmentNum(active_video_index, end_time);
 
 	seg_n++; //because we are switching we need the segment after the end of the currently playing
 	mse_initAndAdd(set_index, seg_n);
@@ -895,7 +895,7 @@ function resetSourceBuffer() {
 	sourceBuffer.remove(sourceBuffer.buffered.start(0), sourceBuffer.buffered.end(sourceBuffer.buffered.length - 1));
 
 	let seg_n = 0;
-	seg_n = mpd_getNextSegmentNum(active_video_index, p.v.currentTime);
+	seg_n = mpd_getSegmentNum(active_video_index, p.v.currentTime);
 
 
 	if (sourceBuffer.updating) {
