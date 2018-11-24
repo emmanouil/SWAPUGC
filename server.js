@@ -11,10 +11,18 @@ function Server() {
 }
 
 
-Server.prototype.addSource = function (source_in) {
-    this.sources.push(source_in);
+Server.prototype = {
+    addSource: function (source_in) {
+        this.sources.push(source_in);
+    },
+    getSourceById: function (id_in) {
+        for (let i = 0; i < this.sources.length; i++) {
+            if (this.sources[i].id == id_in) {
+                return this.sources[i];
+            }
+        }
+    }
 };
-
 /**
  * Source object, that holds references
  * to vars and Representations used to simulate delivery environment
