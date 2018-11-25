@@ -51,7 +51,7 @@ const MARKER_UPDATE_LIMIT_ON = true; //enable cue timespan limit
 const MARKER_UPDATE_LIMIT = 600; // (in ms) limit the timespan between two updates for the same marker (i.e. number of cues)
 
 //performance parameters
-const CHECK_INTERVAL_MS = 900; //check buffer interval (in ms)
+const CHECK_INTERVAL_MS = 900; //check MSE buffer interval (in ms)
 const METRICS_INTERVAL_MS = 1000; //metrics update interval (in ms)
 const VTTCUE_DURATION = 400; //whenever a cuechange event is fired all cues are checked if active (and if so, updated) - recommended value < MARKER_UPDATE_LIMIT
 const OVERRIDE_CUE_DURATION_FOR_METRICS = true;
@@ -294,12 +294,12 @@ function parse_pl_descriptor(req) {
 	}
 }
 
-//called at regular intervals to check if the stream has changed, or if we have buffer starvation
+//called at regular intervals (every CHECK_INTERVAL_MS) to check if the stream has changed, or if we have buffer starvation
 function check_status() {
+	//info on readyState: https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/readyState
 	if (p.v.readyState === HTMLMediaElement.HAVE_CURRENT_DATA) {
 		logUI('Buffer empty - If video is frozen your internet connection might not support this demo');
 	}
-
 
 
 	//first we check if the video is rolling
@@ -329,8 +329,10 @@ function check_status() {
 		return;
 	}
 
-	let seg_n = 0;
 	let tmp_set = globalSetIndex[active_video_index];
+
+
+	let seg_n = 0;
 
 	seg_n = mpd_getSegmentNum(active_video_index, end_time);
 
@@ -1046,22 +1048,6 @@ function killInterval() {
 	check_interval_id = -1;
 	metrics_interval_id = -1;
 }
-/*
-function startAllIntervals() {
-	let int = [{
-			'id': check_interval_id,
-			'function': check_status,
-			'interval': CHECK_INTERVAL_MS
-		},
-		{
-			'id': metrics_interval_id,
-			'function': logMetrics,
-			'interval': METRICS_INTERVAL_MS
-		}
-	];
-	int.forEach(elem, index, startInterval(elem.id, elem.function, elem.interval));
-}
-*/
 
 function startAllIntervals() {
 	check_interval_id = startInterval(check_interval_id, check_status, CHECK_INTERVAL_MS);

@@ -1,10 +1,13 @@
 "use strict";
-/* global globalSetIndex */ //standard supported by Firefox and Chrome (not IE)
+/* global globalSetIndex */
 /* global sourceBuffer */ //in mse.js
+
 
 //Cinematic Criteria Parameters
 var JUMP_CUT_TOLERANCE_MIN = 160; //in deg
 var JUMP_CUT_TOLERANCE_MAX = 200; //in deg
+
+//Start of View Selection Policy Functions
 
 function filterStreams() {
     let filteredStreams = [];
