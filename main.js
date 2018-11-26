@@ -296,11 +296,18 @@ function parse_pl_descriptor(req) {
 
 //called at regular intervals (every CHECK_INTERVAL_MS) to check if the stream has changed, or if we have buffer starvation
 function check_status() {
+
+	//if true, will fetch next segment
+	let should_fetch_next_seg = true;
+
 	//info on readyState: https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/readyState
 	if (p.v.readyState === HTMLMediaElement.HAVE_CURRENT_DATA) {
 		logUI('Buffer empty - If video is frozen your internet connection might not support this demo');
 	}
 
+
+	let tmp_set = globalSetIndex[active_video_index];
+	let tmp_source = s.getSourceById(active_video_id);
 
 	//first we check if the video is rolling
 	//TODO later, add support for updating buffer *and* switching videos at paused state
@@ -325,14 +332,21 @@ function check_status() {
 		logDEBUG('sourceBuffer contains 2 time ranges. cleaning up contents...');
 		cleanSourceBuffer();
 		return;
-	} else if (end_time - p.v.currentTime > UPDATE_S || getSourceBufferTimeRangeNumber === 0) {
+	} else if (end_time - p.v.currentTime > UPDATE_S) {
 		return;
 	}
 
-	let tmp_set = globalSetIndex[active_video_index];
+	if (should_fetch_next_seg) {
+		fetch_next_segment();
+	}
+
+}
 
 
+function fetch_next_segment() {
 	let seg_n = 0;
+	let tmp_set = globalSetIndex[active_video_index];
+	let end_time = getSourceBufferEnd();
 
 	seg_n = mpd_getSegmentNum(active_video_index, end_time);
 
