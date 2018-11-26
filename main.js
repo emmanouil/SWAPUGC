@@ -859,6 +859,17 @@ function switchToStream(set_index, recordingID) {
 		logUI("Switching to stream with ID: " + recordingID);
 	}
 
+	doTheSwitch(set_index, recordingID);
+
+}
+
+function forceSwitch(set_index) {
+	logWARN('Performing Forced Switch');
+	let recordingID = getIdByIndex(set_index);
+	doTheSwitch(set_index, recordingID);
+}
+
+function doTheSwitch(set_index, recordingID) {
 	let new_set = getSetByVideoId(recordingID);
 	let end_time = p.v.currentTime;
 
