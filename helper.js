@@ -177,14 +177,14 @@ function calcDistanceBetweenCoords(lat1, lng1, lat2, lng2) {
 }
 
 function calcDistanceBetweenCoords_BETA(lat1, lon1, lat2, lon2) {
-    var p = 0.017453292519943295;    // Math.PI / 180
+    var p = 0.017453292519943295; // Math.PI / 180
     var c = Math.cos;
-    var a = 0.5 - c((lat2 - lat1) * p)/2 + 
-            c(lat1 * p) * c(lat2 * p) * 
-            (1 - c((lon2 - lon1) * p))/2;
-  
+    var a = 0.5 - c((lat2 - lat1) * p) / 2 +
+        c(lat1 * p) * c(lat2 * p) *
+        (1 - c((lon2 - lon1) * p)) / 2;
+
     return 12742 * Math.asin(Math.sqrt(a)); // 2 * R; R = 6371 km
-  }
+}
 
 function getBearing(set_in) {
     return calcBearing(set_in.lastLocation.Latitude, set_in.lastLocation.Longitude, reference_orchestra_center_location[0], reference_orchestra_center_location[1]);

@@ -189,9 +189,12 @@ function recRepresentationChange(index_in, rep_index) {
 
 //Stores AvgBitrate at temp_set.stats.avgBitrate and returns th Vb (=avgBitrate/maxBitrate)
 //NOTE: it is only used in regular intervals and ONCE
-//TODO add safety check
+//TODO add proper safety check
+var last_Br_check = -1;
+
 function getAvgBitrate(index_in) {
     let temp_set = globalSetIndex[index_in];
+
     let curr_B = Number(temp_set.mpd.representations[Number(temp_set.active_representation)].bandwidth);
     let tmp_B = temp_set.stats.avgBitrate;
 
@@ -203,6 +206,13 @@ function getAvgBitrate(index_in) {
     if (curr_B == tmp_B) {
         return curr_B;
     }
+
+    if (last_Br_check == p.v.currentTime) {
+        return temp_set.metrics[temp_set.metrics.length - 1].mu_b;
+    } else {
+        last_Br_check = p.v.currentTime;
+    }
+
     temp_set.stats.avgBitrate = tmp_B + ((curr_B - tmp_B) / (p.v.currentTime - p.v.startTime));
 
     return temp_set.stats.avgBitrate;

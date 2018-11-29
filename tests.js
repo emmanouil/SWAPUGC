@@ -25,7 +25,6 @@ var test_id = null; //set when a test is running
 var DASH_POLICY = 'NONE'; //initialized when test stats [accepted values: 'CONSERVATIVE' or 'AGGRESSIVE']
 
 
-
 //------- START OF 00000 --------
 //TEST 1 
 //Environment: HiQ
@@ -133,7 +132,6 @@ function test3() {
 
 //Returns 1 single stream, FULL criteria + cinematic
 function test_3_getSwitchStream() {
-    p.justSwitchedStream = true;
     let s = test_2_streamselect();
     switchToStream(s.index, s.id);
     return s;
@@ -164,7 +162,6 @@ function test4() {
 
 //Returns 1 single stream, FULL criteria + cinematic
 function test_4_getSwitchStream() {
-    p.justSwitchedStream = true;
     //Filter streams (that do not film the ROI)
     let filteredStreams = filterStreams();
 
