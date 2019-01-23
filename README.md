@@ -52,6 +52,8 @@ When the client is launched it does the following, in the corresponding order:
 
 ## Demo
 
+**NOTE**: Due to github size limitations and restructuring of the SWAPUGC project, the demo is currently not hosted on this repository. An archived version of the demo is available at https://acmmmsys.github.io/2018-SWAPUGC/ . The instructions are the same as bellow and the version of the source code used in that demo can be found at https://github.com/acmmmsys/2018-SWAPUGC
+
 An online demo is available at [https://emmanouil.github.io/SWAPUGC/](https://emmanouil.github.io/SWAPUGC/). All the sample videos are encoded using H264, in 1080p at 2000kbps with 2s-long segments. Because we are simulating live scenario with dynamic switching, the buffer size is one segment, thus a stable high-speed connection is required; if such is not available, try running the demo locally.
 
 To run a local demo:
